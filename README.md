@@ -1,3 +1,9 @@
+
+# Hasznos linkek:
+https://www.becomebetterprogrammer.com/mysql-nodejs-expressjs-typescript/
+https://arctype.com/blog/rest-api-tutorial/
+https://blog.logrocket.com/build-rest-api-node-express-mysql/
+ 
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
