@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es2020" /*es5*/ /*changed later*/,
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
@@ -14,7 +14,12 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react-jsx"
+    "checkJs": true /*added later*/,
+    "jsx": "react-jsx",
+    "baseUrl": "./" /*added later*/,
+    "paths": {
+      "@/*": ["./*"] /*added later*/
+    }
   },
-  "include": ["src"]
+  "include": [".eslintrc.js", "src", "./babel.config.js", "./jest.config.js"] /*added later*/
 }
