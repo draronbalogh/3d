@@ -1,5 +1,4 @@
 # dependencies
-node_modules
 /node_modules
 /.pnp
 .pnp.js
@@ -10,6 +9,17 @@ node_modules
 # production
 /build
 /dist
+
+# misc
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
 # misc
 .DS_Store
@@ -72,6 +82,7 @@ desktop.ini
 *.psd
 *.xcf
 
+
 # Video stuff #
 ######################
 *.mp4
@@ -86,3 +97,9 @@ desktop.ini
 ######################
 *.mp3
 *.wav
+
+# npm and yarn #
+######################
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

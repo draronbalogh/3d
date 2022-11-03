@@ -1,7 +1,11 @@
 import React from 'react';
 import './App.css';
-function App() {
-  return <div id='app3D'>3D fejlesztés</div>;
+/**
+ * App
+ * @returns JSX.Element
+ */
+function App(): JSX.Element {
+  return <div className='App'>3D</div>;
 }
 
 export default App;
