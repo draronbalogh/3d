@@ -1,4 +1,5 @@
 babel.config.js
 server.ts
+server/server.js
 .eslintrc.js
 start-client.js
