@@ -30,3 +30,15 @@ https://github.com/w3tecch/express-typescript-boilerplate
 # Multi remotes
 git remote set-url --add --push origin https://git-scm.mtva.hu:8080/git/3dfejlesztes
 git remote set-url --add --push origin https://github.com/balogharon/3d.git
+
+
+yarn run start
+
+
+# doc
+https://create-react-app.dev/docs/integrating-with-an-api-backend
+https://www.newline.co/fullstack-react/articles/using-create-react-app-with-a-server/
+ 
+
+ # original react script starter in package.json
+"start": "react-scripts start",
