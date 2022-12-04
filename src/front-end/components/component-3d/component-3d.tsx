@@ -28,7 +28,6 @@ export class Component3d extends React.Component<CompProps, CompState> {
   }
 
   render() {
-    const { data } = this.state;
     return (
       <div>
         3d component

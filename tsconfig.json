@@ -4,7 +4,7 @@ https://dev.to/chukwunazaekpere/project-setup-for-nodejs-react-using-typescript-
 */
 {
   "compilerOptions": {
-    "target": "ES2021" /*es5, es6*/ /*changed later*/,
+    "target": "es2022" /*es5, es6*/ /*changed later*/,
     "lib": ["dom", "dom.iterable", "esnext"],
     "outDir": "./dist/",
     "allowJs": true,
@@ -14,7 +14,7 @@ https://dev.to/chukwunazaekpere/project-setup-for-nodejs-react-using-typescript-
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
-    "module": "ESNext",
+    "module": "commonjs",
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,

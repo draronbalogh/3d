@@ -31,7 +31,6 @@ export class DbForm extends React.Component<CompProps, CompState> {
   }
 
   render() {
-    const { data } = this.state;
     return (
       <Form>
         <Form.Group controlId='modelsasdUuid'>

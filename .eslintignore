@@ -1,8 +1,8 @@
+# officials
 babel.config.js
-server.js
-database.js
-server.ts
-server/server.js
 .eslintrc.js
 start-client.js
 webpack.config.js
+# customs
+controllers/
+component-db/
