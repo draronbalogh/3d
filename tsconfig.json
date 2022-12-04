@@ -4,8 +4,9 @@ https://dev.to/chukwunazaekpere/project-setup-for-nodejs-react-using-typescript-
 */
 {
   "compilerOptions": {
-    "target": "ES2021" /*es5*/ /*changed later*/,
+    "target": "ES2021" /*es5, es6*/ /*changed later*/,
     "lib": ["dom", "dom.iterable", "esnext"],
+    "outDir": "./dist/",
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -24,11 +25,13 @@ https://dev.to/chukwunazaekpere/project-setup-for-nodejs-react-using-typescript-
     "removeComments": true,
     "checkJs": true /*added later*/,
     "jsx": "react-jsx",
-    "baseUrl": "./" /*added later*/,
+    "typeRoots": ["node_modules/@types", "@types"],
     "paths": {
-      "@/*": ["./*"] /*added later*/
-    }
+      "@/*": ["./*"] /*added later*/,
+      "*": ["src/*"]
+    },
+    "baseUrl": "." /*added later, or it should be maybe  "./src" */
   },
-  "exclude": ["../node_modules"],
-  "include": [".eslintrc.js", "src", "./babel.config.js", "./jest.config.js"] /*added later*/
+  "exclude": ["../node_modules", "node_modules"],
+  "include": ["src/**/*.tsx", ".eslintrc.js", "src", "src/**/*.ts", "tests/**/*.ts", "./babel.config.js", "./jest.config.js", "webpack.config.js"] /*added later*/
 }

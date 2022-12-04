@@ -1,5 +1,16 @@
 
 # Hasznos linkek:
+jó:
+https://www.becomebetterprogrammer.com/mysql-nodejs-expressjs-typescript/
+
+
+
+
+https://www.tutsmake.com/how-to-send-data-from-react-to-node-js-express-mysql/
+https://codingpr.com/react-typescript-and-express/
+https://www.tutsmake.com/react-js-node-js-file-upload-tutorial-with-example/
+
+
 https://storybook.js.org/tutorials/intro-to-storybook/react/en/get-started/
 https://create-react-app.dev/docs/developing-components-in-isolation
 

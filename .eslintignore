@@ -1,5 +1,7 @@
 babel.config.js
+server.js
 server.ts
 server/server.js
 .eslintrc.js
 start-client.js
+webpack.config.js
