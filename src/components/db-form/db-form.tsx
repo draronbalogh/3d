@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/member-delimiter-style */
 import React from 'react';
-import { fetchData } from '../../common/fetch';
 
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
@@ -20,9 +19,9 @@ export class DbForm extends React.Component<CompProps, CompState> {
   }
 
   componentDidMount() {
-    this.setState({
-      data: fetchData('/some/async/data')
-    });
+    /* this.setState({
+      data: fetchData('http://localhost:3001/api/3dmodels')
+    }); */
   }
 
   componentDidUpdate(prevProps: CompProps) {
@@ -33,7 +32,6 @@ export class DbForm extends React.Component<CompProps, CompState> {
 
   render() {
     const { data } = this.state;
-    console.log('data :>> ', data);
     return (
       <Form>
         <Form.Group controlId='modelsasdUuid'>

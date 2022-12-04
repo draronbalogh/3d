@@ -1,13 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/member-delimiter-style */
 import React from 'react';
-import { fetchData } from '../../common/fetch';
-import Col from 'react-bootstrap/Col';
-import ListGroup from 'react-bootstrap/ListGroup';
-import Row from 'react-bootstrap/Row';
-import Tab from 'react-bootstrap/Tab';
 import Accordion from 'react-bootstrap/Accordion';
-import Button from 'react-bootstrap/Button';
 interface CompProps {
   data: string | unknown | null | []; // string | unknown | null | [];
 }
@@ -24,7 +18,7 @@ export class DbModelList extends React.Component<CompProps, CompState> {
 
   componentDidMount() {
     this.setState({
-      data: fetchData('/some/async/data')
+      data: null
     });
   }
 

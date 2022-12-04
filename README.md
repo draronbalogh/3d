@@ -1,9 +1,11 @@
 
 # Hasznos linkek:
 jó:
+https://www.bezkoder.com/react-node-express-mysql/
 https://www.becomebetterprogrammer.com/mysql-nodejs-expressjs-typescript/
 
-
+https://blog.logrocket.com/build-rest-api-node-express-mysql/
+https://www.designmycodes.com/examples/node-js-express-sequelize-mysql.html
 
 
 https://www.tutsmake.com/how-to-send-data-from-react-to-node-js-express-mysql/

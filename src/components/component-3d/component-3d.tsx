@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/member-delimiter-style */
 import React from 'react';
-import { fetchData } from '../../common/fetch';
 interface CompProps {
   data: string | unknown | null | [];
 }
@@ -17,9 +16,9 @@ export class Component3d extends React.Component<CompProps, CompState> {
   }
 
   componentDidMount() {
-    this.setState({
-      data: fetchData('/some/async/data')
-    });
+    /*   this.setState({
+      data: fetchData('http://localhost:3001/api/3dmodels')
+    }); */
   }
 
   componentDidUpdate(prevProps: CompProps) {
@@ -30,16 +29,13 @@ export class Component3d extends React.Component<CompProps, CompState> {
 
   render() {
     const { data } = this.state;
-    console.log('data :>> ', data);
     return (
       <div>
-        <tr>
-          asd
-          {/*  data?.map((x: any, i: number) => (
+        3d component
+        {/*  data?.map((x: any, i: number) => (
             <td key={i}>{x}</td>
           ))
           */}
-        </tr>
       </div>
     );
   }
