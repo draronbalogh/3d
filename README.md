@@ -1,5 +1,8 @@
 
 # Hasznos linkek:
+itttt:::
+https://mfikri.com/en/blog/node-express-react-mysql
+
 jó:
 https://www.bezkoder.com/react-node-express-mysql/
 https://www.becomebetterprogrammer.com/mysql-nodejs-expressjs-typescript/
@@ -55,3 +58,12 @@ https://www.newline.co/fullstack-react/articles/using-create-react-app-with-a-se
 
  # original react script starter in package.json
 "start": "react-scripts start",
+
+
+# port terminal
+yarn add kill-port
+use:
+netstat -ano | findstr :3000
+tskill typeyourPIDhere   // change tskill for taskkill in git bash
+
+netstat -ano | findstr :5000

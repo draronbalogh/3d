@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 
 interface Model3dProps {
   data: any[];
+  updateId: number;
 }
 interface Model3dState {
   data: any[];
@@ -29,18 +30,18 @@ export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
   }
 
   get3dModel = async () => {
-    const response = await axios.get<any>('http://localhost:5000/api/3dmodels/');
-    console.log(response);
-    const resp = response.data;
-    console.log('resp', resp);
+    const response = await axios.get<any>('http://localhost:5000/api/3dmodels/'),
+      resp = response.data;
     this.setState({ data: resp });
   };
 
   delete3dModel = async (id: number) => {
-    console.log('???', id);
-
     await axios.delete(`http://localhost:5000/api/3dmodels/${id}`);
     this.get3dModel();
+  };
+
+  updateIdNum = (id: number) => {
+    this.props.updateId(id);
   };
 
   render() {
@@ -48,16 +49,16 @@ export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
     return (
       <div>
         <Link to='/add' className='button is-primary mt-2'>
-          Add
+          Hozzáadás
         </Link>
         <table className='table is-striped is-fullwidth'>
           <thead>
             <tr>
-              <th>No</th>
-              <th>modelUuid</th>
-              <th>modelTitle</th>
-              <th>modelDescription</th>
-              <th>Actions</th>
+              <th>#</th>
+              <th>Uuid</th>
+              <th>Cím</th>
+              <th>Leírás</th>
+              <th>Vezérlők</th>
             </tr>
           </thead>
           <tbody>
@@ -69,11 +70,14 @@ export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
                 <td>{model3d.modelDescription}</td>
                 <td>
                   <Link to={`/edit/${model3d.id}`} className='button is-small is-info'>
-                    Edit
+                    Szerk.
                   </Link>
-                  <button onClick={() => this.delete3dModel(model3d.id)} className='button is-small is-danger'>
-                    Delete {model3d.id}
-                  </button>
+                  <a onClick={() => this.delete3dModel(model3d.id)} className='button is-small is-danger'>
+                    Törlés
+                  </a>
+                  <a onClick={() => this.updateIdNum(model3d.id)} className='button is-small is-danger'>
+                    Megjelenítés
+                  </a>
                 </td>
               </tr>
             ))}

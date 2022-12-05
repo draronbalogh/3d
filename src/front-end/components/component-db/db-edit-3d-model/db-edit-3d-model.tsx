@@ -18,12 +18,16 @@ export class DbEdit3dModel extends React.Component<any, Model3dState> {
   constructor(props: any) {
     super(props);
     this.state = {
-      id: props.id,
+      id: Number(window.location.pathname.split('/').pop()),
       modelUuid: '',
       modelTitle: '',
       modelDescription: '',
       isSaved: false
     };
+  }
+
+  componentDidMount(): void {
+    this.get3dModeltById();
   }
 
   componentDidUpdate(prevProps: any) {
@@ -40,7 +44,7 @@ export class DbEdit3dModel extends React.Component<any, Model3dState> {
       this.setState({ modelDescription: this.props.modelDescription });
     }
   }
-  save3dModel = async (e: any) => {
+  /* save3dModel = async (e: any) => {
     e.preventDefault();
     const { id, modelUuid, modelTitle, modelDescription } = this.state;
     await axios.post('http://localhost:5000/api/3dmodels/', {
@@ -49,8 +53,8 @@ export class DbEdit3dModel extends React.Component<any, Model3dState> {
       modelTitle,
       modelDescription
     });
-    // this.setState({ isSaved: true });
-  };
+    this.setState({ isSaved: true });
+  };*/
 
   setModelUuid = (modelUuid: string): void => {
     this.setState({ modelUuid });
@@ -66,17 +70,17 @@ export class DbEdit3dModel extends React.Component<any, Model3dState> {
     e.preventDefault();
     const { id, modelUuid, modelTitle, modelDescription } = this.state;
     await axios.patch(`http://localhost:5000/api/3dmodels/${id}`, {
-      id,
       modelUuid,
       modelTitle,
       modelDescription
     });
-    // this.setState({ isSaved: true });
+    this.setState({ isSaved: true });
   };
 
   get3dModeltById = async () => {
     const { id } = this.state;
     const response = await axios.get(`http://localhost:5000/api/3dmodels/${id}`);
+    console.log('restaaaaaaaaaStt', response.data);
     this.setModelUuid(response.data.modelUuid);
     this.setModelTitle(response.data.modelTitle);
     this.setModelDescription(response.data.modelDescription);
@@ -100,9 +104,13 @@ export class DbEdit3dModel extends React.Component<any, Model3dState> {
             <input className='input' type='text' placeholder='Price' value={modelDescription} onChange={(e) => this.setModelDescription(e.target.value)} />
           </div>
           <div className='field'>
-            <button className='button is-primary' type={'submit'}>
-              Ment
-            </button>
+            {!isSaved ? (
+              <button className='button is-primary' type={'submit'}>
+                Ment
+              </button>
+            ) : (
+              <Navigate to='/' />
+            )}
           </div>
         </form>
       </div>

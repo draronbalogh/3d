@@ -3,15 +3,18 @@
 import React from 'react';
 interface CompProps {
   data: string | unknown | null | [];
+  id: number | null;
 }
 interface CompState {
   data: string | unknown | null | [];
+  id: number | null;
 }
 export class View3dModel extends React.Component<CompProps, CompState> {
   constructor(props: CompProps) {
     super(props);
     this.state = {
-      data: null
+      data: null,
+      id: this.props.id
     };
   }
 
@@ -24,6 +27,9 @@ export class View3dModel extends React.Component<CompProps, CompState> {
   componentDidUpdate(prevProps: CompProps) {
     if (this.props.data !== prevProps.data) {
       this.setState({ data: this.props.data });
+    }
+    if (this.props.id !== prevProps.id) {
+      this.setState({ id: this.props.id });
     }
   }
 
