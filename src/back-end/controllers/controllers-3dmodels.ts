@@ -13,7 +13,7 @@ export const getModels3dById = async (req: Request, res: Response) => {
   try {
     const product = await Models3d.findAll({
       where: {
-        modelId: req.params.modelId
+        id: req.params.id
       }
     });
     res.json(product[0]);
@@ -37,7 +37,7 @@ export const updateModels3d = async (req: Request, res: Response) => {
   try {
     await Models3d.update(req.body, {
       where: {
-        modelId: req.params.modelId
+        id: req.params.id
       }
     });
     res.json({
@@ -48,11 +48,11 @@ export const updateModels3d = async (req: Request, res: Response) => {
   }
 };
 
-export const deleteModels3d = async (req: Request, res: Response) => {
+export const delete3dModel = async (req: Request, res: Response) => {
   try {
     await Models3d.destroy({
       where: {
-        modelId: req.params.modelId
+        id: req.params.id
       }
     });
     res.json({

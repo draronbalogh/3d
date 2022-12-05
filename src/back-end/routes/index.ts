@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import express from 'express';
-import { getAllModels3ds, createModels3d, getModels3dById, updateModels3d, deleteModels3d } from '../controllers/controllers-3dmodels';
+import { getAllModels3ds, createModels3d, getModels3dById, updateModels3d, delete3dModel } from '../controllers/controllers-3dmodels';
 const router = express.Router();
 router.get('/', getAllModels3ds);
-router.get('/:modelId', getModels3dById);
+router.get('/:id', getModels3dById);
 router.post('/', createModels3d);
-router.patch('/:modelId', updateModels3d);
-router.delete('/:modelId', deleteModels3d);
+router.patch('/:id', updateModels3d);
+// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+router.delete('/:id', delete3dModel);
 
 export default router;

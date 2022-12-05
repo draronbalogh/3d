@@ -1,7 +1,7 @@
 import React from 'react';
 import './App.scss';
 import { Routes, Route } from 'react-router-dom';
-import { View3dModel, DbForm, DbModelList } from './components';
+import { View3dModel, DbForm, DbList3dModel, DbAdd3dModel, DbEdit3dModel } from './components';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -14,24 +14,20 @@ function App(): JSX.Element {
   return (
     <Container fluid className={'3dRegform'}>
       <Row>
-        <Col xs={3}>
-          <DbForm data={'form'} />
+        <Col xs={6}>
+          {/*  <DbForm data={'form'} />
 
-          <hr />
+          <hr /> */}
           <Routes>
-            <Route path='/'>
-              <DbModelList data={[]} />
-            </Route>
-            <Route path='/add'>
-              <AddProduct />
-            </Route>
+            <Route path='/' element={<DbList3dModel data={[]} />}></Route>
+            <Route path='/add' element={<DbAdd3dModel />}></Route>
             {/* <Route path='/edit/:id'>
                 <EditProduct />
               </Route> */}
           </Routes>
         </Col>
-        <Col>
-          <Component3d data={'3d'} />
+        <Col xs={6}>
+          <View3dModel data={'3d'} />
         </Col>
       </Row>
     </Container>

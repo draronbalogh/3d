@@ -1,81 +1,110 @@
 import React from 'react';
 import Accordion from 'react-bootstrap/Accordion';
 import axios, { AxiosResponse } from 'axios';
+import { Navigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
+import { isVariableDeclaration } from 'typescript';
+import { NULL } from 'node-sass';
 
-interface Model3dProps {
-  data: any[];
-}
 interface Model3dState {
-  data: any[];
+  id: number;
+  modelUuid: string;
+  modelTitle: string;
+  modelDescription: string;
+  isSaved: boolean;
 }
 
-export class DbEdit3dModel extends React.Component<Model3dProps, Model3dState> {
-  constructor(props: Model3dProps) {
+export class DbEdit3dModel extends React.Component<any, Model3dState> {
+  constructor(props: any) {
     super(props);
     this.state = {
-      data: []
+      id: props.id,
+      modelUuid: '',
+      modelTitle: '',
+      modelDescription: '',
+      isSaved: false
     };
   }
 
-  componentDidMount() {
-    this.getProducts();
-  }
-
-  componentDidUpdate(prevProps: Model3dProps) {
-    if (this.props.data !== prevProps.data) {
-      this.setState({ data: this.props.data });
+  componentDidUpdate(prevProps: any) {
+    if (this.props.id !== prevProps.id) {
+      this.setState({ id: this.props.id });
+    }
+    if (this.props.modelUuid !== prevProps.modelUuid) {
+      this.setState({ modelUuid: this.props.modelUuid });
+    }
+    if (this.props.modelTitle !== prevProps.modelTitle) {
+      this.setState({ modelTitle: this.props.modelTitle });
+    }
+    if (this.props.modelDescription !== prevProps.modelDescription) {
+      this.setState({ modelDescription: this.props.modelDescription });
     }
   }
-
-  getProducts = async () => {
-    const response = await axios.get<any>('http://localhost:5000/api/3dmodels/');
-    console.log(response);
-    const resp = response.data;
-    this.setState({ data: resp });
+  save3dModel = async (e: any) => {
+    e.preventDefault();
+    const { id, modelUuid, modelTitle, modelDescription } = this.state;
+    await axios.post('http://localhost:5000/api/3dmodels/', {
+      id,
+      modelUuid,
+      modelTitle,
+      modelDescription
+    });
+    // this.setState({ isSaved: true });
   };
 
-  deleteProduct = async (id: number) => {
-    await axios.delete(`http://localhost:5000/api/3dmodels/${id}`);
-    this.getProducts();
+  setModelUuid = (modelUuid: string): void => {
+    this.setState({ modelUuid });
+  };
+  setModelTitle = (modelTitle: string): void => {
+    this.setState({ modelTitle });
+  };
+  setModelDescription = (modelDescription: string): void => {
+    this.setState({ modelDescription });
+  };
+
+  update3dModel = async (e: any) => {
+    e.preventDefault();
+    const { id, modelUuid, modelTitle, modelDescription } = this.state;
+    await axios.patch(`http://localhost:5000/api/3dmodels/${id}`, {
+      id,
+      modelUuid,
+      modelTitle,
+      modelDescription
+    });
+    // this.setState({ isSaved: true });
+  };
+
+  get3dModeltById = async () => {
+    const { id } = this.state;
+    const response = await axios.get(`http://localhost:5000/api/3dmodels/${id}`);
+    this.setModelUuid(response.data.modelUuid);
+    this.setModelTitle(response.data.modelTitle);
+    this.setModelDescription(response.data.modelDescription);
   };
 
   render() {
-    const { data } = this.state;
+    const { id, modelUuid, modelTitle, modelDescription, isSaved } = this.state;
     return (
       <div>
-        <Link to='/add' className='button is-primary mt-2'>
-          Add New
-        </Link>
-        <table className='table is-striped is-fullwidth'>
-          <thead>
-            <tr>
-              <th>No</th>
-              <th>modelUuid</th>
-              <th>modelTitle</th>
-              <th>modelDescription</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.map((model3d: any, index: number) => (
-              <tr key={model3d.id}>
-                <td>{index + 1}</td>
-                <td>{model3d.modelUuid}</td>
-                <td>{model3d.modelTitle}</td>
-                <td>{model3d.modelDescription}</td>
-                <td>
-                  <Link to={`/edit/${model3d.id}`} className='button is-small is-info'>
-                    Edit
-                  </Link>
-                  <button onClick={() => this.deleteProduct(model3d.id)} className='button is-small is-danger'>
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <form onSubmit={this.update3dModel}>
+          <div className='field'>
+            <label className='label'>modelUuid</label>
+            <input className='input' type='text' placeholder='modelUuid' value={modelUuid} onChange={(e) => this.setModelUuid(e.target.value)} />
+          </div>
+          <div className='field'>
+            <label className='label'>modelTitle</label>
+            <input className='input' type='text' placeholder='Title' value={modelTitle} onChange={(e) => this.setModelTitle(e.target.value)} />
+          </div>
+          <div className='field'>
+            <label className='label'>modelDescription</label>
+            <input className='input' type='text' placeholder='Price' value={modelDescription} onChange={(e) => this.setModelDescription(e.target.value)} />
+          </div>
+          <div className='field'>
+            <button className='button is-primary' type={'submit'}>
+              Ment
+            </button>
+          </div>
+        </form>
       </div>
     );
   }

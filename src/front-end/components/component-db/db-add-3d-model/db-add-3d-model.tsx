@@ -1,40 +1,35 @@
 import React from 'react';
 import Accordion from 'react-bootstrap/Accordion';
 import axios, { AxiosResponse } from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { isVariableDeclaration } from 'typescript';
 import { NULL } from 'node-sass';
 
-interface Model3dProps {
-  modelUuid: string;
-  modelTitle: string;
-  modelDescription: string;
-}
 interface Model3dState {
   modelUuid: string;
   modelTitle: string;
   modelDescription: string;
+  isSaved: boolean;
 }
 
-export class DbAdd3dModel extends React.Component<Model3dProps, Model3dState> {
-  constructor(props: Model3dProps) {
+export class DbAdd3dModel extends React.Component<any, Model3dState> {
+  constructor(props: any) {
     super(props);
     this.state = {
       modelUuid: '',
       modelTitle: '',
-      modelDescription: ''
+      modelDescription: '',
+      isSaved: false
     };
   }
 
-  componentDidMount() {
-    this.getProducts();
-  }
-  getProducts() {
-    throw new Error('Method not implemented.');
+  componentDidMount(): void {
+    const { isSaved } = this.state;
+    this.setState({ isSaved: false });
   }
 
-  componentDidUpdate(prevProps: Model3dProps) {
+  componentDidUpdate(prevProps: any) {
     if (this.props.modelUuid !== prevProps.modelUuid) {
       this.setState({ modelUuid: this.props.modelUuid });
     }
@@ -45,13 +40,15 @@ export class DbAdd3dModel extends React.Component<Model3dProps, Model3dState> {
       this.setState({ modelDescription: this.props.modelDescription });
     }
   }
-  saveProduct = async (e: any) => {
+  save3dModel = async (e: any) => {
     e.preventDefault();
+    const { modelUuid, modelTitle, modelDescription } = this.state;
     await axios.post('http://localhost:5000/api/3dmodels/', {
-      data: e
+      modelUuid,
+      modelTitle,
+      modelDescription
     });
-    const navigate = useNavigate();
-    navigate('/');
+    this.setState({ isSaved: true });
   };
 
   setModelUuid = (modelUuid: string): void => {
@@ -66,10 +63,10 @@ export class DbAdd3dModel extends React.Component<Model3dProps, Model3dState> {
   };
 
   render() {
-    const { modelUuid, modelTitle, modelDescription } = this.state;
+    const { modelUuid, modelTitle, modelDescription, isSaved } = this.state;
     return (
       <div>
-        <form onSubmit={this.saveProduct}>
+        <form onSubmit={this.save3dModel}>
           <div className='field'>
             <label className='label'>modelUuid</label>
             <input className='input' type='text' placeholder='modelUuid' value={modelUuid} onChange={(e) => this.setModelUuid(e.target.value)} />
@@ -85,7 +82,13 @@ export class DbAdd3dModel extends React.Component<Model3dProps, Model3dState> {
           </div>
 
           <div className='field'>
-            <button className='button is-primary'>Ment</button>
+            {!isSaved ? (
+              <button className='button is-primary' type={'submit'}>
+                Ment
+              </button>
+            ) : (
+              <Navigate to='/' />
+            )}
           </div>
         </form>
       </div>

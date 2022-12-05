@@ -19,7 +19,7 @@ export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
   }
 
   componentDidMount() {
-    this.getProducts();
+    this.get3dModel();
   }
 
   componentDidUpdate(prevProps: Model3dProps) {
@@ -28,16 +28,19 @@ export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
     }
   }
 
-  getProducts = async () => {
+  get3dModel = async () => {
     const response = await axios.get<any>('http://localhost:5000/api/3dmodels/');
     console.log(response);
     const resp = response.data;
+    console.log('resp', resp);
     this.setState({ data: resp });
   };
 
-  deleteProduct = async (id: number) => {
+  delete3dModel = async (id: number) => {
+    console.log('???', id);
+
     await axios.delete(`http://localhost:5000/api/3dmodels/${id}`);
-    this.getProducts();
+    this.get3dModel();
   };
 
   render() {
@@ -45,7 +48,7 @@ export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
     return (
       <div>
         <Link to='/add' className='button is-primary mt-2'>
-          Add New
+          Add
         </Link>
         <table className='table is-striped is-fullwidth'>
           <thead>
@@ -68,8 +71,8 @@ export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
                   <Link to={`/edit/${model3d.id}`} className='button is-small is-info'>
                     Edit
                   </Link>
-                  <button onClick={() => this.deleteProduct(model3d.id)} className='button is-small is-danger'>
-                    Delete
+                  <button onClick={() => this.delete3dModel(model3d.id)} className='button is-small is-danger'>
+                    Delete {model3d.id}
                   </button>
                 </td>
               </tr>

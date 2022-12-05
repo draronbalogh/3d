@@ -7,7 +7,7 @@ interface CompProps {
 interface CompState {
   data: string | unknown | null | [];
 }
-export class DbView3dModel extends React.Component<CompProps, CompState> {
+export class View3dModel extends React.Component<CompProps, CompState> {
   constructor(props: CompProps) {
     super(props);
     this.state = {
