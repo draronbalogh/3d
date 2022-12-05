@@ -10,7 +10,7 @@ interface Model3dState {
   data: any[];
 }
 
-export class DbModelList extends React.Component<Model3dProps, Model3dState> {
+export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
   constructor(props: Model3dProps) {
     super(props);
     this.state = {

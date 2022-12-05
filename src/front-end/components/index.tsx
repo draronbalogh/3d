@@ -1,3 +1,8 @@
-export { Component3d } from './component-3d/component-3d';
+/* view layout with 3d */
+export { View3dModel } from './view-3d-model/view-3d-model';
+
+/* manage 3d db (list, add, edit) */
 export { DbForm } from './component-db/db-form/db-form';
-export { DbModelList } from './component-db/db-model-list/db-model-list';
+export { DbList3dModel } from './component-db/db-list-3d-model/db-list-3d-model';
+export { DbAdd3dModel } from './component-db/db-add-3d-model/db-add-3d-model';
+export { DbEdit3dModel } from './component-db/db-edit-3d-model/db-edit-3d-model';

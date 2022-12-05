@@ -1,7 +1,7 @@
 import React from 'react';
 import './App.scss';
-
-import { Component3d, DbForm, DbModelList } from './components';
+import { Routes, Route } from 'react-router-dom';
+import { View3dModel, DbForm, DbModelList } from './components';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -18,7 +18,17 @@ function App(): JSX.Element {
           <DbForm data={'form'} />
 
           <hr />
-          <DbModelList data={[]} />
+          <Routes>
+            <Route path='/'>
+              <DbModelList data={[]} />
+            </Route>
+            <Route path='/add'>
+              <AddProduct />
+            </Route>
+            {/* <Route path='/edit/:id'>
+                <EditProduct />
+              </Route> */}
+          </Routes>
         </Col>
         <Col>
           <Component3d data={'3d'} />
