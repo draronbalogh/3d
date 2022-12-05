@@ -4,8 +4,7 @@ import axios, { AxiosResponse } from 'axios';
 import { Link } from 'react-router-dom';
 
 interface Model3dProps {
-  data: any[];
-  updateId: number;
+  updateId: any;
 }
 interface Model3dState {
   data: any[];
@@ -23,11 +22,7 @@ export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
     this.get3dModel();
   }
 
-  componentDidUpdate(prevProps: Model3dProps) {
-    if (this.props.data !== prevProps.data) {
-      this.setState({ data: this.props.data });
-    }
-  }
+  componentDidUpdate(prevProps: Model3dProps) {}
 
   get3dModel = async () => {
     const response = await axios.get<any>('http://localhost:5000/api/3dmodels/'),
@@ -40,7 +35,7 @@ export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
     this.get3dModel();
   };
 
-  updateIdNum = (id: number) => {
+  updateId = (id: number) => {
     this.props.updateId(id);
   };
 
@@ -75,7 +70,7 @@ export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
                   <a onClick={() => this.delete3dModel(model3d.id)} className='button is-small is-danger'>
                     Törlés
                   </a>
-                  <a onClick={() => this.updateIdNum(model3d.id)} className='button is-small is-danger'>
+                  <a onClick={() => this.updateId(model3d.id)} className='button is-small is-danger'>
                     Megjelenítés
                   </a>
                 </td>

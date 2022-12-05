@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/member-delimiter-style */
 /* eslint-disable spaced-comment */
 //////////////////////////////////////////////////////////////////////////////////////   IMPORT
@@ -33,7 +36,7 @@ class App extends React.Component<any, State> {
     };
   }
 
-  updateId = (id: number) => {
+  updateId = (id: number | any) => {
     this.setState({ updateIdNum: id });
   };
 
@@ -47,15 +50,15 @@ class App extends React.Component<any, State> {
 
           <hr /> */}
             <Routes>
-              <Route path='/' element={<DbList3dModel updateId={updateIdNum} data={[]} />} />
+              <Route path='/' element={<DbList3dModel updateId={this.updateId} />} />
               <Route path='/add' element={<DbAdd3dModel />} />
               <Route path='/edit/:id' element={<DbEdit3dModel />} />
             </Routes>
           </Col>
           <Col xs={6}>
             <Routes>
-              <Route path='/' element={<View3dModel id={null} data={'3d'} />} />
-              <Route path='/3d/:id' element={<View3dModel updateId={() => this.updateId(id)} data={''} />} />
+              <Route path='/' element={<View3dModel id={updateIdNum} />} />
+              <Route path='/3d/:id' element={<View3dModel id={updateIdNum} />} />
             </Routes>
           </Col>
         </Row>
