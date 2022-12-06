@@ -45,9 +45,9 @@ class App extends React.Component<any, State> {
     return (
       <Container fluid className={'3dRegform'}>
         <Row>
-          <Col xs={6}>
+          <Col xs={4}>
             {/*  <DbForm data={'form'} />
-
+gm
           <hr /> */}
             <Routes>
               <Route path='/' element={<DbList3dModel updateId={this.updateId} />} />
@@ -55,7 +55,7 @@ class App extends React.Component<any, State> {
               <Route path='/edit/:id' element={<DbEdit3dModel />} />
             </Routes>
           </Col>
-          <Col xs={6}>
+          <Col xs={8}>
             <Routes>
               <Route path='/' element={<View3dModel id={updateIdNum} />} />
               <Route path='/3d/:id' element={<View3dModel id={updateIdNum} />} />

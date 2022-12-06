@@ -5,7 +5,8 @@ import { Navigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { isVariableDeclaration } from 'typescript';
 import { NULL } from 'node-sass';
-
+import Button from 'react-bootstrap/Button';
+import Form from 'react-bootstrap/Form';
 interface Model3dState {
   modelUuid: string;
   modelTitle: string;
@@ -65,33 +66,39 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> {
   render() {
     const { modelUuid, modelTitle, modelDescription, isSaved } = this.state;
     return (
-      <div>
-        <form onSubmit={this.save3dModel}>
-          <div className='field'>
-            <label className='label'>modelUuid</label>
-            <input className='input' type='text' placeholder='modelUuid' value={modelUuid} onChange={(e) => this.setModelUuid(e.target.value)} />
-          </div>
-          <div className='field'>
-            <label className='label'>modelTitle</label>
-            <input className='input' type='text' placeholder='Title' value={modelTitle} onChange={(e) => this.setModelTitle(e.target.value)} />
-          </div>
-
-          <div className='field'>
-            <label className='label'>modelDescription</label>
-            <input className='input' type='text' placeholder='Price' value={modelDescription} onChange={(e) => this.setModelDescription(e.target.value)} />
-          </div>
-
-          <div className='field'>
-            {!isSaved ? (
-              <button className='button is-primary' type={'submit'}>
-                Ment
-              </button>
-            ) : (
-              <Navigate to='/' />
-            )}
-          </div>
-        </form>
-      </div>
+      <Form onSubmit={this.save3dModel}>
+        <Form.Group controlId='modelsasdUuid'>
+          <Form.Control type='hidden' />
+        </Form.Group>
+        <Form.Group className='m-1' controlId='modelTitle'>
+          <Form.Control type='text' placeholder='A model címe' value={modelUuid} onChange={(e) => this.setModelUuid(e.target.value)} />
+        </Form.Group>
+        <Form.Group className='m-1' controlId='modelTitle'>
+          <Form.Control type='text' placeholder='A model címe' value={modelTitle} onChange={(e) => this.setModelTitle(e.target.value)} />
+        </Form.Group>
+        <Form.Group className='m-1' controlId='modelDescription'>
+          <Form.Control as='textarea' placeholder='A model részletes leírása' value={modelDescription} onChange={(e) => this.setModelDescription(e.target.value)} />
+        </Form.Group>
+        <Form.Group className='m-1' controlId='modelTags'>
+          <Form.Control type='text' placeholder='Tag-ek, keresőszavak' />
+        </Form.Group>
+        <Form.Group className='m-1' controlId='modelUrl'>
+          <Form.Control type='file' placeholder='Tag-ek vesszővel elválasztva' />
+        </Form.Group>
+        <div className='field'>
+          {!isSaved ? (
+            <Button variant='primary' type='submit'>
+              Mentés
+            </Button>
+          ) : (
+            <Navigate to='/' />
+          )}
+        </div>
+        {/*  data?.map((x: any, i: number) => (
+            <td key={i}>{x}</td>
+          ))
+          */}
+      </Form>
     );
   }
 }

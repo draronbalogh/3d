@@ -2,7 +2,7 @@ import React from 'react';
 import Accordion from 'react-bootstrap/Accordion';
 import axios, { AxiosResponse } from 'axios';
 import { Link } from 'react-router-dom';
-
+import Table from 'react-bootstrap/Table';
 interface Model3dProps {
   updateId: any;
 }
@@ -46,7 +46,7 @@ export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
         <Link to='/add' className='button is-primary mt-2'>
           Hozzáadás
         </Link>
-        <table className='table is-striped is-fullwidth'>
+        <Table striped bordered hover size='sm'>
           <thead>
             <tr>
               <th>#</th>
@@ -64,20 +64,28 @@ export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
                 <td>{model3d.modelTitle}</td>
                 <td>{model3d.modelDescription}</td>
                 <td>
-                  <Link to={`/edit/${model3d.id}`} className='button is-small is-info'>
-                    Szerk.
-                  </Link>
-                  <a onClick={() => this.delete3dModel(model3d.id)} className='button is-small is-danger'>
-                    Törlés
-                  </a>
-                  <a onClick={() => this.updateId(model3d.id)} className='button is-small is-danger'>
-                    Megjelenítés
-                  </a>
+                  <tr>
+                    <td>
+                      <Link to={`/edit/${model3d.id}`} className='button is-small is-info'>
+                        Szerk.
+                      </Link>
+                    </td>
+                    <td>
+                      <a onClick={() => this.delete3dModel(model3d.id)} className='button is-small is-danger'>
+                        Törlés
+                      </a>
+                    </td>
+                    <td>
+                      <a onClick={() => this.updateId(model3d.id)} className='button is-small is-danger'>
+                        Megjelenítés
+                      </a>
+                    </td>
+                  </tr>
                 </td>
               </tr>
             ))}
           </tbody>
-        </table>
+        </Table>
       </div>
     );
   }
