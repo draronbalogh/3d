@@ -64,23 +64,17 @@ export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
                 <td>{model3d.modelTitle}</td>
                 <td>{model3d.modelDescription}</td>
                 <td>
-                  <tr>
-                    <td>
-                      <Link to={`/edit/${model3d.id}`} className='button is-small is-info'>
-                        Szerk.
-                      </Link>
-                    </td>
-                    <td>
-                      <a onClick={() => this.delete3dModel(model3d.id)} className='button is-small is-danger'>
-                        Törlés
-                      </a>
-                    </td>
-                    <td>
-                      <a onClick={() => this.updateId(model3d.id)} className='button is-small is-danger'>
-                        Megjelenítés
-                      </a>
-                    </td>
-                  </tr>
+                  <Link to={`/edit/${model3d.id}`} className='button is-small is-info'>
+                    Szerk.
+                  </Link>
+
+                  <a onClick={() => this.delete3dModel(model3d.id)} className='button is-small is-danger'>
+                    Törlés
+                  </a>
+
+                  <a onClick={() => this.updateId(model3d.id)} className='button is-small is-danger'>
+                    Megjelenítés
+                  </a>
                 </td>
               </tr>
             ))}

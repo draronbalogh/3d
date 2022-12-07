@@ -10,7 +10,7 @@ import { Routes, Route } from 'react-router-dom';
 ///////////////////////////////////////////////////////////   CONFiG
 //import {_CONF} from './config/config';
 ///////////////////////////////////////////////////////////   LIBS
-import { View3dModel, DbForm, DbList3dModel, DbAdd3dModel, DbEdit3dModel } from './components';
+import { View3dModel, DbList3dModel, DbAdd3dModel, DbEdit3dModel } from './components';
 ///////////////////////////////////////////////////////////   DOM
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
@@ -46,9 +46,6 @@ class App extends React.Component<any, State> {
       <Container fluid className={'3dRegform'}>
         <Row>
           <Col xs={4}>
-            {/*  <DbForm data={'form'} />
-gm
-          <hr /> */}
             <Routes>
               <Route path='/' element={<DbList3dModel updateId={this.updateId} />} />
               <Route path='/add' element={<DbAdd3dModel />} />

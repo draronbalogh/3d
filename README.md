@@ -67,3 +67,12 @@ netstat -ano | findstr :3000
 tskill typeyourPIDhere   // change tskill for taskkill in git bash
 
 netstat -ano | findstr :5000
+
+
+# mysql workbanch
+1. 
+Execute the following query in MYSQL Workbench
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'password';
+flush privileges;
+
+2. Start - stop service in Task Manager
