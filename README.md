@@ -70,9 +70,24 @@ netstat -ano | findstr :5000
 
 
 # mysql workbanch
+
+
+0.
+INSERT INTO mysql.user (Host, User, Password) VALUES ('%', 'root', password('YOURPASSWORD'));
+GRANT ALL ON *.* TO 'root'@'%' WITH GRANT OPTION;
+
 1. 
 Execute the following query in MYSQL Workbench
-ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'password';
+
+ALTER USER 'root'@'localhost' IDENTIFIED BY 'Asdqwe123'; 
+
+
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'Asdqwe123';
 flush privileges;
 
-2. Start - stop service in Task Manager
+1. Start - stop service in Task Manager
+
+
+# install
+yarn add nodemon
+yarn add ts-node
