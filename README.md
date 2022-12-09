@@ -91,3 +91,6 @@ flush privileges;
 # install
 yarn add nodemon
 yarn add ts-node
+
+# sequalize data types
+https://sequelize.org/docs/v7/other-topics/other-data-types/

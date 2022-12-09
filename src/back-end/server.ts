@@ -1,6 +1,6 @@
 /* eslint-disable indent */
 import express from 'express';
-import db from './config/config-database';
+import db from '../_config/config-database';
 import routes3d from './routes/index';
 import cors from 'cors';
 import bodyParser from 'body-parser';

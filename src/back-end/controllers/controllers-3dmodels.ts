@@ -1,8 +1,8 @@
-import Models3d from '../models/models-3dmodels';
+import ModelControllerTypes from '../models/models-3dmodels';
 import { Request, Response } from 'express';
 export const getAllModels3ds = async (req: Request, res: Response) => {
   try {
-    const models = await Models3d.findAll();
+    const models = await ModelControllerTypes.findAll();
     res.json(models);
   } catch (error: any | unknown) {
     res.json({ message: error.message });
@@ -11,7 +11,7 @@ export const getAllModels3ds = async (req: Request, res: Response) => {
 
 export const getModels3dById = async (req: Request, res: Response) => {
   try {
-    const product = await Models3d.findAll({
+    const product = await ModelControllerTypes.findAll({
       where: {
         id: req.params.id
       }
@@ -24,9 +24,9 @@ export const getModels3dById = async (req: Request, res: Response) => {
 
 export const createModels3d = async (req: Request, res: Response) => {
   try {
-    await Models3d.create(req.body);
+    await ModelControllerTypes.create(req.body);
     res.json({
-      message: 'Models3d Created'
+      message: 'ModelControllerTypes Created'
     });
   } catch (error: any | unknown) {
     res.json({ message: error.message });
@@ -35,13 +35,13 @@ export const createModels3d = async (req: Request, res: Response) => {
 
 export const updateModels3d = async (req: Request, res: Response) => {
   try {
-    await Models3d.update(req.body, {
+    await ModelControllerTypes.update(req.body, {
       where: {
         id: req.params.id
       }
     });
     res.json({
-      message: 'Models3d Updated'
+      message: 'ModelControllerTypes Updated'
     });
   } catch (error: any | unknown) {
     res.json({ message: error.message });
@@ -50,13 +50,13 @@ export const updateModels3d = async (req: Request, res: Response) => {
 
 export const delete3dModel = async (req: Request, res: Response) => {
   try {
-    await Models3d.destroy({
+    await ModelControllerTypes.destroy({
       where: {
         id: req.params.id
       }
     });
     res.json({
-      message: 'Models3d Deleted'
+      message: 'ModelControllerTypes Deleted'
     });
   } catch (error: any | unknown) {
     res.json({ message: error.message });
