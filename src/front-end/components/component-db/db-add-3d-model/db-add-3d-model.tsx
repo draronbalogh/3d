@@ -7,6 +7,7 @@ import { isVariableDeclaration } from 'typescript';
 import { NULL } from 'node-sass';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
+import { _CONFIG } from '../../../../_config/_config';
 interface Model3dState {
   modelUuid: string;
   modelTitle: string;
@@ -44,7 +45,7 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> {
   save3dModel = async (e: any) => {
     e.preventDefault();
     const { modelUuid, modelTitle, modelDescription } = this.state;
-    await axios.post('http://localhost:5000/api/3dmodels/', {
+    await axios.post(_CONFIG.url.getModel, {
       modelUuid,
       modelTitle,
       modelDescription

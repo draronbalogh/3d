@@ -7,7 +7,7 @@ import { isVariableDeclaration } from 'typescript';
 import { NULL } from 'node-sass';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-
+import { _CONFIG } from '../../../../_config/_config';
 interface Model3dState {
   id: number;
   modelUuid: string;
@@ -46,18 +46,6 @@ export class DbEdit3dModel extends React.Component<any, Model3dState> {
       this.setState({ modelDescription: this.props.modelDescription });
     }
   }
-  /* save3dModel = async (e: any) => {
-    e.preventDefault();
-    const { id, modelUuid, modelTitle, modelDescription } = this.state;
-    await axios.post('http://localhost:5000/api/3dmodels/', {
-      id,
-      modelUuid,
-      modelTitle,
-      modelDescription
-    });
-    this.setState({ isSaved: true });
-  };*/
-
   setModelUuid = (modelUuid: string): void => {
     this.setState({ modelUuid });
   };
@@ -71,7 +59,7 @@ export class DbEdit3dModel extends React.Component<any, Model3dState> {
   update3dModel = async (e: any) => {
     e.preventDefault();
     const { id, modelUuid, modelTitle, modelDescription } = this.state;
-    await axios.patch(`http://localhost:5000/api/3dmodels/${id}`, {
+    await axios.patch(_CONFIG.url.getModel + id, {
       modelUuid,
       modelTitle,
       modelDescription
@@ -81,7 +69,7 @@ export class DbEdit3dModel extends React.Component<any, Model3dState> {
 
   get3dModeltById = async () => {
     const { id } = this.state;
-    const response = await axios.get(`http://localhost:5000/api/3dmodels/${id}`);
+    const response = await axios.get(_CONFIG.url.getModel + id);
     console.log('restaaaaaaaaaStt', response.data);
     this.setModelUuid(response.data.modelUuid);
     this.setModelTitle(response.data.modelTitle);

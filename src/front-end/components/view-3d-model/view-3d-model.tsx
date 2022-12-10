@@ -6,6 +6,7 @@ import React from 'react';
 import Accordion from 'react-bootstrap/Accordion';
 import axios, { AxiosResponse } from 'axios';
 import { Link } from 'react-router-dom';
+import { _CONFIG } from '../../../../src/_config/_config';
 interface CompProps {
   id: number | null;
 }
@@ -33,7 +34,7 @@ export class View3dModel extends React.Component<CompProps, CompState> {
   }
 
   get3dModel = async () => {
-    const response = await axios.get<any>('http://localhost:5000/api/3dmodels/'),
+    const response = await axios.get<any>(_CONFIG.url.getModel),
       resp = response.data;
     this.setState({ data: resp });
   };
