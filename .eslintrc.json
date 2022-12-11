@@ -1,7 +1,7 @@
 {
   "env": {
     "browser": true,
-    "es2021": true
+    "es2022": true
   },
   "extends": ["plugin:react/recommended", "standard-with-typescript", "plugin:@typescript-eslint/recommended", "plugin:@typescript-eslint/recommended-requiring-type-checking"],
   "overrides": [{ "files": ["*.ts", "*.tsx"] }], // added later { "files": ["*.ts", "*.tsx"] }
@@ -13,10 +13,13 @@
   },
   "plugins": ["react", "@typescript-eslint"], // added later "@typescript-eslint"
   "rules": {
-    "semi": ["off"],
+    "semi": "off",
+    "@typescript-eslint/member-delimiter-style": "off",
+    "@typescript-eslint/no-misused-promises": "off",
     "@typescript-eslint/semi": "off",
     "no-unexpected-multiline": "error",
     "space-before-function-paren": "off",
+    "spaced-comment": 0,
     "@typescript-eslint/space-before-function-paren": "off",
     "@typescript-eslint/explicit-function-return-type": "off",
     "@typescript-eslint/no-floating-promises": "off",

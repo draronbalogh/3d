@@ -1,4 +1,3 @@
-/* eslint-disable indent */
 import express from 'express';
 import db from '../_config/config-database';
 import routes3d from './routes/index';

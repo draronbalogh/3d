@@ -1,8 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/member-delimiter-style */
-/* eslint-disable spaced-comment */
 //////////////////////////////////////////////////////////////////////////////////////   IMPORT
 ///////////////////////////////////////////////////////////   REACT
 import React from 'react';
@@ -41,8 +36,6 @@ class App extends React.Component<any, State> {
   };
 
   render() {
-    const { updateIdNum } = this.state;
-
     return (
       <Container fluid className={'3dRegform'}>
         <Row>
