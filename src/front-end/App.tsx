@@ -6,7 +6,7 @@
 //////////////////////////////////////////////////////////////////////////////////////   IMPORT
 ///////////////////////////////////////////////////////////   REACT
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Link } from 'react-router-dom';
 ///////////////////////////////////////////////////////////   CONFiG
 //import {_CONF} from './config/config';
 ///////////////////////////////////////////////////////////   LIBS
@@ -20,7 +20,7 @@ import './App.scss';
 ///////////////////////////////////////////////////////////   INTERFACE
 
 interface State {
-  updateIdNum: number;
+  updateIdNum: number | undefined;
 }
 //////////////////////////////////////////////////////////////////////////////////////    CLASS SETUP
 /**
@@ -32,30 +32,36 @@ class App extends React.Component<any, State> {
   constructor(props: any) {
     super(props);
     this.state = {
-      updateIdNum: 0
+      updateIdNum: undefined
     };
   }
 
-  updateId = (id: number | any) => {
+  updateId = (id: number) => {
     this.setState({ updateIdNum: id });
   };
 
   render() {
     const { updateIdNum } = this.state;
+
     return (
       <Container fluid className={'3dRegform'}>
         <Row>
-          <Col xs={4}>
+          <Col xs={12}>
+            <Link to='/add' className='button is-primary mt-2'>
+              Hozzáadás
+            </Link>
+            <Routes>
+              <Route path='/' element={<View3dModel id={updateIdNum} />} />
+              <Route path='/3d/:id' element={<View3dModel id={updateIdNum} />} />
+            </Routes>
+          </Col>
+        </Row>
+        <Row>
+          <Col xs={12}>
             <Routes>
               <Route path='/' element={<DbList3dModel updateId={this.updateId} />} />
               <Route path='/add' element={<DbAdd3dModel />} />
               <Route path='/edit/:id' element={<DbEdit3dModel />} />
-            </Routes>
-          </Col>
-          <Col xs={8}>
-            <Routes>
-              <Route path='/' element={<View3dModel id={updateIdNum} />} />
-              <Route path='/3d/:id' element={<View3dModel id={updateIdNum} />} />
             </Routes>
           </Col>
         </Row>

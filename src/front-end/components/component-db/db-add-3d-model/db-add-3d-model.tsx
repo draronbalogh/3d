@@ -8,20 +8,12 @@ import { NULL } from 'node-sass';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { _CONFIG } from '../../../../_config/_config';
-interface Model3dState {
-  modelUuid: string;
-  modelTitle: string;
-  modelDescription: string;
-  isSaved: boolean;
-}
 
-export class DbAdd3dModel extends React.Component<any, Model3dState> {
+import { modelConfig } from '../../../../_config/config-model';
+export class DbAdd3dModel extends React.Component<any, any> {
   constructor(props: any) {
     super(props);
     this.state = {
-      modelUuid: '',
-      modelTitle: '',
-      modelDescription: '',
       isSaved: false
     };
   }
@@ -31,29 +23,16 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> {
     this.setState({ isSaved: false });
   }
 
-  componentDidUpdate(prevProps: any) {
-    if (this.props.modelUuid !== prevProps.modelUuid) {
-      this.setState({ modelUuid: this.props.modelUuid });
-    }
-    if (this.props.modelTitle !== prevProps.modelTitle) {
-      this.setState({ modelTitle: this.props.modelTitle });
-    }
-    if (this.props.modelDescription !== prevProps.modelDescription) {
-      this.setState({ modelDescription: this.props.modelDescription });
-    }
-  }
+  componentDidUpdate(prevProps: any) {}
   save3dModel = async (e: any) => {
     e.preventDefault();
     const { modelUuid, modelTitle, modelDescription } = this.state;
-    await axios.post(_CONFIG.url.getModel, {
-      modelUuid,
-      modelTitle,
-      modelDescription
-    });
+    await axios.post(_CONFIG.url.getModel, this.state.data);
+
     this.setState({ isSaved: true });
   };
 
-  setModelUuid = (modelUuid: string): void => {
+  setModelUuid = (modelUuid: number): void => {
     this.setState({ modelUuid });
   };
   setModelTitle = (modelTitle: string): void => {
@@ -64,28 +43,36 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> {
     this.setState({ modelDescription });
   };
 
+  inputDataUpdater = (elm: string, info: any) => {
+    this.setState(
+      {
+        data: {
+          ...this.state.data,
+          [elm]: info
+        }
+      },
+      () => {
+        console.log(this.state);
+      }
+    );
+    this.setState({ isSaved: false });
+  };
   render() {
-    const { modelUuid, modelTitle, modelDescription, isSaved } = this.state;
+    const { data, id, modelUuid, modelTitle, modelDescription, isSaved } = this.state;
     return (
       <Form onSubmit={this.save3dModel}>
-        <Form.Group controlId='modelsasdUuid'>
-          <Form.Control type='hidden' />
-        </Form.Group>
-        <Form.Group className='m-1' controlId='modelTitle'>
-          <Form.Control type='text' placeholder='A model címe' value={modelUuid} onChange={(e) => this.setModelUuid(e.target.value)} />
-        </Form.Group>
-        <Form.Group className='m-1' controlId='modelTitle'>
-          <Form.Control type='text' placeholder='A model címe' value={modelTitle} onChange={(e) => this.setModelTitle(e.target.value)} />
-        </Form.Group>
-        <Form.Group className='m-1' controlId='modelDescription'>
-          <Form.Control as='textarea' placeholder='A model részletes leírása' value={modelDescription} onChange={(e) => this.setModelDescription(e.target.value)} />
-        </Form.Group>
-        <Form.Group className='m-1' controlId='modelTags'>
-          <Form.Control type='text' placeholder='Tag-ek, keresőszavak' />
-        </Form.Group>
-        <Form.Group className='m-1' controlId='modelUrl'>
-          <Form.Control type='file' placeholder='Tag-ek vesszővel elválasztva' />
-        </Form.Group>
+        {modelConfig
+          ? modelConfig.map((elm: any, i: number) => {
+              return (
+                <div key={i}>
+                  <Form.Group className='m-1'>
+                    <Form.Label>{elm.label}</Form.Label>
+                    <Form.Control type='text' onChange={(e) => this.inputDataUpdater(elm.name, e.target.value)}></Form.Control>
+                  </Form.Group>
+                </div>
+              );
+            })
+          : null}
         <div className='field'>
           {!isSaved ? (
             <Button variant='primary' type='submit'>
@@ -95,10 +82,6 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> {
             <Navigate to='/' />
           )}
         </div>
-        {/*  data?.map((x: any, i: number) => (
-            <td key={i}>{x}</td>
-          ))
-          */}
       </Form>
     );
   }

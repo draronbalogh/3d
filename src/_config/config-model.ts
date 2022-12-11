@@ -1,4 +1,5 @@
 export const modelConfig = [
+  { name: 'id', label: 'Id', visible: true },
   { name: 'createdAt', label: 'Létrehozva', visible: true },
   { name: 'updatedAt', label: 'Frissítve', visible: true },
   { name: 'modelUuid', label: 'Egyedi azonosító', visible: true },

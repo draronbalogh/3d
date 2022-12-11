@@ -6,13 +6,14 @@ import React from 'react';
 import Accordion from 'react-bootstrap/Accordion';
 import axios, { AxiosResponse } from 'axios';
 import { Link } from 'react-router-dom';
-import { _CONFIG } from '../../../../src/_config/_config';
+import { _CONFIG } from '../../../_config/_config';
+import { modelConfig } from '../../../_config/config-model';
 interface CompProps {
-  id: number | null;
+  id: number | undefined;
 }
 interface CompState {
   data: any[];
-  id: number | null;
+  id: number | undefined;
 }
 export class View3dModel extends React.Component<CompProps, CompState> {
   constructor(props: CompProps) {
@@ -38,28 +39,36 @@ export class View3dModel extends React.Component<CompProps, CompState> {
       resp = response.data;
     this.setState({ data: resp });
   };
-
+  printModelTitle = (selId: any) => {
+    return modelConfig.map((v: any, i: number) => {
+      return <th key={i}>{v.label}</th>;
+    });
+  };
+  printModelDesc = (selId: any) => {
+    // id === model3d.id ? (
+    const { data } = this.state;
+    return data?.map((elm, i) =>
+      selId === elm.id ? (
+        <tr key={i}>
+          {Object.keys(elm).map((vv: string, ii: any) => {
+            return <td key={ii}>{elm[vv]}</td>;
+          })}
+        </tr>
+      ) : null
+    );
+  };
   render() {
     const { id, data } = this.state;
     return (
       <table>
         <thead>
           <tr>
-            <td>3d component ({id})</td>
+            <th>3d component ({id})</th>
           </tr>
+          <tr>{this.printModelTitle(id)}</tr>
         </thead>
-        <tbody>
-          {data.map((model3d: any, index: number) =>
-            id === model3d.id ? (
-              <tr key={id}>
-                <td>{index + 1}</td>
-                <td>{model3d.modelUuid}</td>
-                <td>{model3d.modelTitle}</td>
-                <td>{model3d.modelDescription}</td>
-              </tr>
-            ) : null
-          )}
-        </tbody>
+
+        <tbody>{this.printModelDesc(id)}</tbody>
       </table>
     );
   }

@@ -3,27 +3,22 @@ import Accordion from 'react-bootstrap/Accordion';
 import axios, { AxiosResponse } from 'axios';
 import { Navigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
-import { isVariableDeclaration } from 'typescript';
+import { isVariableDeclaration, NumericLiteral } from 'typescript';
 import { NULL } from 'node-sass';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { _CONFIG } from '../../../../_config/_config';
+import { modelConfig } from '../../../../_config/config-model';
 interface Model3dState {
-  id: number;
-  modelUuid: string;
-  modelTitle: string;
-  modelDescription: string;
+  id: number | undefined;
   isSaved: boolean;
 }
 
-export class DbEdit3dModel extends React.Component<any, Model3dState> {
+export class DbEdit3dModel extends React.Component<any, any> {
   constructor(props: any) {
     super(props);
     this.state = {
       id: Number(window.location.pathname.split('/').pop()),
-      modelUuid: '',
-      modelTitle: '',
-      modelDescription: '',
       isSaved: false
     };
   }
@@ -36,68 +31,60 @@ export class DbEdit3dModel extends React.Component<any, Model3dState> {
     if (this.props.id !== prevProps.id) {
       this.setState({ id: this.props.id });
     }
-    if (this.props.modelUuid !== prevProps.modelUuid) {
-      this.setState({ modelUuid: this.props.modelUuid });
-    }
-    if (this.props.modelTitle !== prevProps.modelTitle) {
-      this.setState({ modelTitle: this.props.modelTitle });
-    }
-    if (this.props.modelDescription !== prevProps.modelDescription) {
-      this.setState({ modelDescription: this.props.modelDescription });
-    }
   }
-  setModelUuid = (modelUuid: string): void => {
-    this.setState({ modelUuid });
+  inputDataUpdater = (elm: string, info: any) => {
+    console.log('elm?', elm);
+    this.setState(
+      {
+        data: {
+          ...this.state.data,
+          [elm]: info
+        }
+      },
+      () => {
+        // console.log(this.state.data);
+      }
+    );
+    this.setState({ isSaved: false });
   };
-  setModelTitle = (modelTitle: string): void => {
-    this.setState({ modelTitle });
-  };
-  setModelDescription = (modelDescription: string): void => {
-    this.setState({ modelDescription });
-  };
-
   update3dModel = async (e: any) => {
     e.preventDefault();
-    const { id, modelUuid, modelTitle, modelDescription } = this.state;
-    await axios.patch(_CONFIG.url.getModel + id, {
-      modelUuid,
-      modelTitle,
-      modelDescription
-    });
+    const { id } = this.state;
+    await axios.patch(_CONFIG.url.getModel + id, this.state.data);
     this.setState({ isSaved: true });
   };
 
   get3dModeltById = async () => {
     const { id } = this.state;
     const response = await axios.get(_CONFIG.url.getModel + id);
-    console.log('restaaaaaaaaaStt', response.data);
-    this.setModelUuid(response.data.modelUuid);
-    this.setModelTitle(response.data.modelTitle);
-    this.setModelDescription(response.data.modelDescription);
+    this.setState({ data: response.data });
+    // this.setModelUuid(response.data.modelUuid);
+    //  this.setModelTitle(response.data.modelTitle);
+    // this.setModelDescription(response.data.modelDescription);
   };
-
+  getTitle = (elm: any) => {
+    return Object.entries(modelConfig).map(([key, value]) => {
+      // console.log(value.name, elm); // "a 5", "b 7", "c 9"
+      if (value.name === elm) return value.label;
+    });
+    return '';
+  };
   render() {
-    const { id, modelUuid, modelTitle, modelDescription, isSaved } = this.state;
+    const { data, id, modelUuid, modelTitle, modelDescription, isSaved } = this.state;
     return (
       <Form onSubmit={this.update3dModel}>
-        <Form.Group controlId='modelsasdUuid'>
-          <Form.Control type='hidden' />
-        </Form.Group>
-        <Form.Group className='m-1' controlId='modelTitle'>
-          <Form.Control type='text' placeholder='A model címe' value={modelUuid} onChange={(e) => this.setModelUuid(e.target.value)} />
-        </Form.Group>
-        <Form.Group className='m-1' controlId='modelTitle'>
-          <Form.Control type='text' placeholder='A model címe' value={modelTitle} onChange={(e) => this.setModelTitle(e.target.value)} />
-        </Form.Group>
-        <Form.Group className='m-1' controlId='modelDescription'>
-          <Form.Control as='textarea' placeholder='A model részletes leírása' value={modelDescription} onChange={(e) => this.setModelDescription(e.target.value)} />
-        </Form.Group>
-        <Form.Group className='m-1' controlId='modelTags'>
-          <Form.Control type='text' placeholder='Tag-ek, keresőszavak' />
-        </Form.Group>
-        <Form.Group className='m-1' controlId='modelUrl'>
-          <Form.Control type='file' placeholder='Tag-ek vesszővel elválasztva' />
-        </Form.Group>
+        {data
+          ? Object.keys(data)?.map((elm: any, i: number) => {
+              return (
+                <div key={i}>
+                  <Form.Group className='m-1'>
+                    <Form.Label>{this.getTitle(elm)}</Form.Label>
+                    <Form.Control type='text' value={this.state.data[elm] ? this.state.data[elm] : ''} onChange={(e) => this.inputDataUpdater(elm, e.target.value)}></Form.Control>
+                  </Form.Group>
+                </div>
+              );
+            })
+          : null}
         <div className='field'>
           {!isSaved ? (
             <Button variant='primary' type='submit'>
@@ -107,10 +94,6 @@ export class DbEdit3dModel extends React.Component<any, Model3dState> {
             <Navigate to='/' />
           )}
         </div>
-        {/*  data?.map((x: any, i: number) => (
-            <td key={i}>{x}</td>
-          ))
-          */}
       </Form>
     );
   }

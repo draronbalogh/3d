@@ -5,6 +5,8 @@ import { Link } from 'react-router-dom';
 import Table from 'react-bootstrap/Table';
 import { _CONFIG } from '../../../../_config/_config';
 import { modelConfig } from '../../../../_config/config-model';
+// import { printModelTitle, printModelData } from '../db-common/db-common';
+
 interface Model3dProps {
   updateId: any;
 }
@@ -32,7 +34,7 @@ export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
   };
 
   delete3dModel = async (id: number) => {
-    await axios.delete(`${(_CONFIG.url.getModel, id)}`);
+    await axios.delete(_CONFIG.url.getModel + id);
     this.get3dModel();
   };
 
@@ -41,55 +43,48 @@ export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
   };
   printModelTitle = () => {
     return modelConfig.map((v: any, i: number) => {
-      if (v.visible) return <th key={i}>{v.label}</th>;
+      return <th key={i}>{v.label}</th>;
     });
   };
-  printModelData = () => {
+  printModelDesc = () => {
     const { data } = this.state;
-    return data.map((model3d: any, i: number) => {
-      return (
-        <tr key={i}>
-          {
-            // TODO:: innen folytatni
-          }
-          <td>{i + 1}</td>
-          <td>{model3d.modelUuid}</td>
-          <td>{model3d.modelTitle}</td>
-          <td>{model3d.modelDescription}</td>
-          <td>
-            <Link to={`/edit/${model3d.id}`} className='button is-small is-info'>
-              Szerk.
-            </Link>
+    let id: any = null;
+    return data?.map((elm, i) => (
+      <tr key={i}>
+        {Object.keys(elm).map((vv: string, ii: any) => {
+          if (vv === 'id') id = elm[vv];
+          return <td key={ii}>{elm[vv]}</td>;
+        })}
+        {this.printEditorBtns(id)}
+      </tr>
+    ));
+  };
 
-            <a onClick={() => this.delete3dModel(model3d.id)} className='button is-small is-danger'>
-              Törlés
-            </a>
+  printEditorBtns = (id: number) => {
+    return (
+      <td>
+        <Link to={`/edit/${id}`} className='button is-small is-info'>
+          Szerkesztés. -{id}-
+        </Link>
 
-            <a onClick={() => this.updateId(model3d.id)} className='button is-small is-danger'>
-              Megjelenítés
-            </a>
-          </td>
-        </tr>
-      );
-    });
+        <a onClick={() => this.delete3dModel(id)} className='button is-small is-danger'>
+          Törlés
+        </a>
 
-    /* {
-       data.map((model3d: any, index: number) => (
-         
-       ));
-     }*/
+        <a onClick={() => this.updateId(id)} className='button is-small is-danger'>
+          Megjelenítés
+        </a>
+      </td>
+    );
   };
   render() {
     return (
       <div>
-        <Link to='/add' className='button is-primary mt-2'>
-          Hozzáadás
-        </Link>
         <Table striped bordered hover size='sm'>
           <thead>
             <tr>{this.printModelTitle()}</tr>
           </thead>
-          <tbody>{this.printModelData()}</tbody>
+          <tbody>{this.printModelDesc()}</tbody>
         </Table>
       </div>
     );
