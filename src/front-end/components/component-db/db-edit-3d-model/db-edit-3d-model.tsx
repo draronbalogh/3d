@@ -24,16 +24,10 @@ export class DbEdit3dModel extends React.Component<any, any> {
   }
 
   componentDidMount(): void {
-    this.get3dModeltById();
+    this.get3dModelById();
   }
 
-  componentDidUpdate(prevProps: any) {
-    if (this.props.id !== prevProps.id) {
-      this.setState({ id: this.props.id });
-    }
-  }
   inputDataUpdater = (elm: string, info: any) => {
-    console.log('elm?', elm);
     this.setState(
       {
         data: {
@@ -54,23 +48,18 @@ export class DbEdit3dModel extends React.Component<any, any> {
     this.setState({ isSaved: true });
   };
 
-  get3dModeltById = async () => {
+  get3dModelById = async () => {
     const { id } = this.state;
     const response = await axios.get(_CONFIG.url.getModel + id);
     this.setState({ data: response.data });
-    // this.setModelUuid(response.data.modelUuid);
-    //  this.setModelTitle(response.data.modelTitle);
-    // this.setModelDescription(response.data.modelDescription);
   };
   getTitle = (elm: any) => {
     return Object.entries(modelConfig).map(([key, value]) => {
-      // console.log(value.name, elm); // "a 5", "b 7", "c 9"
       if (value.name === elm) return value.label;
     });
-    return '';
   };
   render() {
-    const { data, id, modelUuid, modelTitle, modelDescription, isSaved } = this.state;
+    const { data, isSaved } = this.state;
     return (
       <Form onSubmit={this.update3dModel}>
         {data

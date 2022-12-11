@@ -51,8 +51,7 @@ class App extends React.Component<any, State> {
               Hozzáadás
             </Link>
             <Routes>
-              <Route path='/' element={<View3dModel id={updateIdNum} />} />
-              <Route path='/3d/:id' element={<View3dModel id={updateIdNum} />} />
+              <Route path='/view/:id' element={<View3dModel id={this.updateId} />} />
             </Routes>
           </Col>
         </Row>
