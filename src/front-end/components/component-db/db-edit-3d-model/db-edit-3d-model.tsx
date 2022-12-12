@@ -58,17 +58,37 @@ export class DbEdit3dModel extends React.Component<any, any> {
       if (value.name === elm) return value.label;
     });
   };
+
+  formBuilder = (i: number, elm: string) => {
+    switch (modelConfig[i].control) {
+      case 'switch':
+        return <Form.Check type={'switch'} label='' value={this.state.data[elm] ? this.state.data[elm] : ''} onChange={(e) => this.inputDataUpdater(elm, e.target.value)}></Form.Check>;
+      case 'select':
+        return (
+          <Form.Select onChange={(e) => this.inputDataUpdater(elm, e.target.value)}>
+            {Array.isArray(modelConfig[i].categories)
+              ? // @ts-ignore
+                modelConfig[i].categories.map((element: any) => <option value={element}>{element}</option>)
+              : null}
+          </Form.Select>
+        );
+      default:
+        return <Form.Control type={modelConfig[i].control} value={this.state.data[elm] ? this.state.data[elm] : ''} onChange={(e) => this.inputDataUpdater(elm, e.target.value)}></Form.Control>;
+    }
+  };
+
   render() {
     const { data, isSaved } = this.state;
     return (
       <Form onSubmit={this.update3dModel}>
         {data
           ? Object.keys(data)?.map((elm: any, i: number) => {
+              console.log('modelConfig :>> ', modelConfig[i].label, modelConfig[i].control);
               return (
                 <div key={i}>
                   <Form.Group className='m-1'>
                     <Form.Label>{this.getTitle(elm)}</Form.Label>
-                    <Form.Control type='text' value={this.state.data[elm] ? this.state.data[elm] : ''} onChange={(e) => this.inputDataUpdater(elm, e.target.value)}></Form.Control>
+                    {this.formBuilder(i, elm)}
                   </Form.Group>
                 </div>
               );
