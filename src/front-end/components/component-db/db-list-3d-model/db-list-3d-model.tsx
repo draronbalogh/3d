@@ -5,10 +5,12 @@ import { Link } from 'react-router-dom';
 import Table from 'react-bootstrap/Table';
 import { _CONFIG } from '../../../../_config/_config';
 import { modelConfig } from '../../../../_config/config-model';
+import { Navigate } from 'react-router-dom';
 // import { printModelTitle, printModelData } from '../db-common/db-common';
 
 interface Model3dProps {
   updateId: any;
+  updateData: any;
 }
 interface Model3dState {
   data: any[];
@@ -31,6 +33,7 @@ export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
     const response = await axios.get<any>(_CONFIG.url.getModel),
       resp = response.data;
     this.setState({ data: resp });
+    this.props.updateData(resp);
   };
 
   delete3dModel = async (id: number) => {
@@ -40,6 +43,9 @@ export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
 
   updateId = (id: number) => {
     this.props.updateId(id);
+  };
+  updateData = (updateData: unknown) => {
+    this.props.updateId(updateData);
   };
   printModelTitle = () => {
     return modelConfig.map((v: any, i: number) => {
@@ -61,12 +67,12 @@ export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
   };
 
   printEditorBtns = (id: number) => {
+    const { data } = this.state;
     return (
       <td>
         <Link to={`/edit/${id}`} className='button is-small is-info'>
           Szerkesztés
         </Link>
-
         <a onClick={() => this.delete3dModel(id)} className='button is-small is-danger'>
           Törlés
         </a>
@@ -79,6 +85,9 @@ export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
   render() {
     return (
       <div>
+        <Link to='/add' className='button is-primary mt-2'>
+          Hozzáadás
+        </Link>
         <Table striped bordered hover size='sm'>
           <thead>
             <tr>{this.printModelTitle()}</tr>

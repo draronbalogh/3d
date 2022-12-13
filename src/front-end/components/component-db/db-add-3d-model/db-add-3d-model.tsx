@@ -26,10 +26,16 @@ export class DbAdd3dModel extends React.Component<any, any> {
   componentDidUpdate(prevProps: any) {}
   save3dModel = async (e: any) => {
     e.preventDefault();
-    const { modelUuid, modelTitle, modelDescription } = this.state;
-    await axios.post(_CONFIG.url.getModel, this.state.data);
+    let { data } = this.state;
 
-    this.setState({ isSaved: true });
+    const { modelUuid, modelTitle, modelDescription } = this.state;
+    try {
+      await axios.post(_CONFIG.url.getModel, this.state.data);
+
+      this.setState({ isSaved: true });
+    } catch (e: any) {
+      console.log('Axios Error: ', e);
+    }
   };
 
   setModelUuid = (modelUuid: number): void => {
@@ -48,7 +54,7 @@ export class DbAdd3dModel extends React.Component<any, any> {
       {
         data: {
           ...this.state.data,
-          [elm]: info
+          [elm]: elm === 'switch' ? !info : info
         }
       },
       () => {
@@ -57,20 +63,47 @@ export class DbAdd3dModel extends React.Component<any, any> {
     );
     this.setState({ isSaved: false });
   };
+
+  formBuilder = (i: number, elm: any) => {
+    let { data } = this.state,
+      element = modelConfig[i],
+      ctr = modelConfig[i].control,
+      category = modelConfig[i].categories;
+    console.log('data :>> ', data);
+    switch (ctr) {
+      case 'switch':
+        return <Form.Check type={'switch'} label={elm.label} value={1} onChange={(e) => this.inputDataUpdater(elm.name, e.target.value)}></Form.Check>;
+      case 'select':
+        return (
+          <Form.Select onChange={(e) => this.inputDataUpdater(elm.name, e.target.value)}>
+            {Array.isArray(category)
+              ? category.map((element: any, x: number) => (
+                  <option key={x} value={element}>
+                    {element}
+                  </option>
+                ))
+              : null}
+          </Form.Select>
+        );
+
+      default:
+        return <Form.Control type={ctr} value={data?.hasOwnProperty(elm.name) ? data[elm.name] : ''} onChange={(e) => this.inputDataUpdater(elm.name, e.target.value)}></Form.Control>;
+    }
+  };
   render() {
     const { data, id, modelUuid, modelTitle, modelDescription, isSaved } = this.state;
     return (
       <Form onSubmit={this.save3dModel}>
         {modelConfig
           ? modelConfig.map((elm: any, i: number) => {
-              return (
-                <div key={i}>
-                  <Form.Group className='m-1'>
-                    <Form.Label>{elm.label}</Form.Label>
-                    <Form.Control type='text' onChange={(e) => this.inputDataUpdater(elm.name, e.target.value)}></Form.Control>
-                  </Form.Group>
-                </div>
-              );
+              let ctr = modelConfig[i].control,
+                active = modelConfig[i].active;
+              return active ? (
+                <Form.Group className={ctr !== 'hidden' ? 'm-1' : 'd-nonennnn'} key={i}>
+                  {ctr !== 'switch' ? <Form.Label>{elm.label}</Form.Label> : null}
+                  {this.formBuilder(i, elm)}
+                </Form.Group>
+              ) : null;
             })
           : null}
         <div className='field'>

@@ -16,6 +16,8 @@ import './App.scss';
 
 interface State {
   updateIdNum: number | undefined;
+  updateData: any;
+  data: unknown;
 }
 //////////////////////////////////////////////////////////////////////////////////////    CLASS SETUP
 /**
@@ -27,7 +29,9 @@ class App extends React.Component<any, State> {
   constructor(props: any) {
     super(props);
     this.state = {
-      updateIdNum: undefined
+      updateIdNum: undefined,
+      updateData: undefined,
+      data: []
     };
   }
 
@@ -35,25 +39,28 @@ class App extends React.Component<any, State> {
     this.setState({ updateIdNum: id });
   };
 
+  updateData = (updateData: unknown) => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    this.setState({ data: updateData });
+  };
+
   render() {
+    const { data, updateIdNum } = this.state;
     return (
       <Container fluid className={'3dRegform'}>
         <Row>
           <Col xs={12}>
-            <Link to='/add' className='button is-primary mt-2'>
-              Hozzáadás
-            </Link>
             <Routes>
-              <Route path='/view/:id' element={<View3dModel id={this.updateId} />} />
+              <Route path='/view/:id' element={<View3dModel data={data} />} />
             </Routes>
           </Col>
         </Row>
         <Row>
           <Col xs={12}>
             <Routes>
-              <Route path='/' element={<DbList3dModel updateId={this.updateId} />} />
+              <Route path='/' element={<DbList3dModel updateId={this.updateId} updateData={this.updateData} />} />
               <Route path='/add' element={<DbAdd3dModel />} />
-              <Route path='/edit/:id' element={<DbEdit3dModel />} />
+              <Route path='/edit/:id' element={<DbEdit3dModel data={data} />} />
             </Routes>
           </Col>
         </Row>

@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { _CONFIG } from '../../../_config/_config';
 import { modelConfig } from '../../../_config/config-model';
 interface CompProps {
-  id: number | any;
+  data: any;
 }
 interface CompState {
   data: any;
@@ -15,42 +15,48 @@ export class View3dModel extends React.Component<CompProps, CompState> {
   constructor(props: CompProps) {
     super(props);
     this.state = {
-      data: [],
-      id: Number(window.location.pathname.split('/').pop())
+      id: Number(window.location.pathname.split('/').pop()),
+      data: this.props.data
     };
   }
 
   componentDidMount() {
-    this.get3dModelById();
+    const { data } = this.state;
+    console.log('view1', data);
+    if (data.length >= 1) this.findDataById();
+    if (!data.length) this.fetchModelDataById();
   }
-
-  componentDidUpdate(prevProps: any) {
-    if (this.props.id !== prevProps.id) {
-      this.setState({ id: this.props.id }, () => {
-        this.get3dModelById();
-      });
-    }
-  }
-
-  get3dModelById = async () => {
-    const { id } = this.state;
-    const response = await axios.get(_CONFIG.url.getModel + id);
-    console.log('response.data :>> ', response.data);
-    this.setState({ data: response.data });
+  findDataById = () => {
+    const { data, id } = this.state;
+    let obj = data.find((o: { id: any }) => o.id === id);
+    console.log('view3 obj', obj);
+    this.setState({ data: obj });
   };
-  printModelTitle = () => {
-    return modelConfig.map((v: any, i: number) => {
-      return <th key={i}>{v.label}</th>;
-    });
+  fetchModelDataById = async () => {
+    try {
+      const { id } = this.state;
+      const response = await axios.get(_CONFIG.url.getModel + id);
+      this.setState({ data: response.data });
+    } catch (e: any) {
+      if (e.response) console.log('Axios Error: ', e.response.data);
+    }
   };
 
   printModelDesc = () => {
     const { data } = this.state;
-    console.log('data :>> ', Object.keys(data));
-    return Object.keys(data).map((elm: any, i: number) => {
-      return <td key={elm}>{data[elm]}</td>;
+    return data
+      ? Object.keys(data)?.map((elm: any, i: number) => {
+          console.log('elm :>> ', elm, typeof data[elm], data[elm]);
+          return <td key={i}>{typeof data[elm] !== 'object' ? data[elm] : ''}</td>;
+        })
+      : null;
+  };
+  getTitle = () => {
+    return Object.entries(modelConfig).map(([key, value]) => {
+      return <td key={key}>{value.label}</td>;
     });
   };
+
   render() {
     const { id, data } = this.state;
 
@@ -60,10 +66,12 @@ export class View3dModel extends React.Component<CompProps, CompState> {
           <tr>
             <th>3d component ({id})</th>
           </tr>
-          <tr>{this.printModelTitle()}</tr>
+          <tr>{this.getTitle()}</tr>
         </thead>
 
-        <tbody>{this.printModelDesc()}</tbody>
+        <tbody>
+          <tr>{this.printModelDesc()}</tr>
+        </tbody>
       </table>
     );
   }
