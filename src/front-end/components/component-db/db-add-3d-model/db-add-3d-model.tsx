@@ -50,6 +50,7 @@ export class DbAdd3dModel extends React.Component<any, any> {
   };
 
   inputDataUpdater = (elm: string, info: any) => {
+    console.log('elm :>> ', elm);
     this.setState(
       {
         data: {
@@ -69,10 +70,10 @@ export class DbAdd3dModel extends React.Component<any, any> {
       element = modelConfig[i],
       ctr = modelConfig[i].control,
       category = modelConfig[i].categories;
-    console.log('data :>> ', data);
+    console.log('element :>> ', data?.ctr);
     switch (ctr) {
       case 'switch':
-        return <Form.Check type={'switch'} label={elm.label} value={1} onChange={(e) => this.inputDataUpdater(elm.name, e.target.value)}></Form.Check>;
+        return <Form.Check type={'switch'} label={elm.label} value={data ? data : 0} onChange={(e) => this.inputDataUpdater(elm.name, e.target.value)}></Form.Check>;
       case 'select':
         return (
           <Form.Select onChange={(e) => this.inputDataUpdater(elm.name, e.target.value)}>
