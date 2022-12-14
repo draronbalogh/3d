@@ -14,13 +14,19 @@ export class DbAdd3dModel extends React.Component<any, any> {
   constructor(props: any) {
     super(props);
     this.state = {
-      isSaved: false
+      isSaved: false,
+      data: {}
     };
   }
 
   componentDidMount(): void {
-    const { isSaved } = this.state;
-    this.setState({ isSaved: false });
+    let { data } = this.state;
+    modelConfig?.forEach((elm: any, i: number) => {
+      data[modelConfig[i].name] = '';
+      this.setState({
+        data: data
+      });
+    });
   }
 
   componentDidUpdate(prevProps: any) {}
@@ -49,20 +55,29 @@ export class DbAdd3dModel extends React.Component<any, any> {
     this.setState({ modelDescription });
   };
 
-  inputDataUpdater = (elm: string, info: any) => {
-    console.log('elm :>> ', elm);
-    this.setState(
-      {
-        data: {
-          ...this.state.data,
-          [elm]: elm === 'switch' ? !info : info
-        }
-      },
-      () => {
-        console.log(this.state);
+  inputDataUpdater = (elm: any, trgVal: any) => {
+    // console.log('inputDataUpdater :>> ');
+    // console.log(elm);
+    // console.log('inputDataUpdater info');
+    this.setState({
+      data: {
+        ...this.state.data,
+        [elm]: trgVal
       }
-    );
+    });
     this.setState({ isSaved: false });
+  };
+
+  switcher = (elm: any, trgVal: any) => {
+    const { data } = this.state;
+
+    this.setState({
+      data: {
+        ...this.state.data,
+        [elm]: trgVal
+      }
+    });
+    console.log('elm', this.state.data['modelVisibility']);
   };
 
   formBuilder = (i: number, elm: any) => {
@@ -70,10 +85,11 @@ export class DbAdd3dModel extends React.Component<any, any> {
       element = modelConfig[i],
       ctr = modelConfig[i].control,
       category = modelConfig[i].categories;
-    console.log('element :>> ', data?.ctr);
+    //console.log('formBuilder :>> ');
+    //console.log(data);
     switch (ctr) {
       case 'switch':
-        return <Form.Check type={'switch'} label={elm.label} value={data ? data : 0} onChange={(e) => this.inputDataUpdater(elm.name, e.target.value)}></Form.Check>;
+        return <Form.Check type={'switch'} label={elm.label} onChange={(e) => this.inputDataUpdater(elm.name, this.switcher(elm.name, e.target.value))}></Form.Check>;
       case 'select':
         return (
           <Form.Select onChange={(e) => this.inputDataUpdater(elm.name, e.target.value)}>
