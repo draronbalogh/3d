@@ -8,8 +8,12 @@ import { NULL } from 'node-sass';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { _CONFIG } from '../../../../_config/_config';
-
 import { modelConfig } from '../../../../_config/config-model';
+interface Model3dState {
+  id: number | undefined;
+  data: any;
+  isSaved: boolean;
+}
 export class DbAdd3dModel extends React.Component<any, any> {
   constructor(props: any) {
     super(props);
@@ -22,7 +26,7 @@ export class DbAdd3dModel extends React.Component<any, any> {
   componentDidMount(): void {
     let { data } = this.state;
     modelConfig?.forEach((elm: any, i: number) => {
-      data[modelConfig[i].name] = '';
+      elm.name !== 'id' && elm.control !== 'switch' ? (data[modelConfig[i].name] = '') : null;
       this.setState({
         data: data
       });
@@ -32,13 +36,11 @@ export class DbAdd3dModel extends React.Component<any, any> {
   componentDidUpdate(prevProps: any) {}
   save3dModel = async (e: any) => {
     e.preventDefault();
-    let { data } = this.state;
-
-    const { modelUuid, modelTitle, modelDescription } = this.state;
+    const { data } = this.state;
     try {
-      await axios.post(_CONFIG.url.getModel, this.state.data);
-
+      const response = await axios.post(_CONFIG.url.getModel, data);
       this.setState({ isSaved: true });
+      // console.log('response :>> ', response.data);
     } catch (e: any) {
       console.log('Axios Error: ', e);
     }
@@ -55,11 +57,11 @@ export class DbAdd3dModel extends React.Component<any, any> {
     this.setState({ modelDescription });
   };
 
-  inputDataUpdater = (elm: any, trgVal: any) => {
+  inputDataUpdater = (elm: string, info: any) => {
     this.setState({
       data: {
         ...this.state.data,
-        [elm]: trgVal
+        [elm]: info
       }
     });
     this.setState({ isSaved: false });
@@ -81,7 +83,7 @@ export class DbAdd3dModel extends React.Component<any, any> {
       category = modelConfig[i].categories;
     switch (ctr) {
       case 'switch':
-        return <Form.Check type={'switch'} label={elm.label} onChange={(e) => this.switcher(elm.name, e.target.checked)} />;
+        return <Form.Check type={'switch'} id={`ctr${i}`} label={elm.label} defaultChecked={elm.name === 'visibility' ? true : false} onChange={(e) => this.switcher(elm.name, e.target.checked)} />;
       case 'select':
         return (
           <Form.Select onChange={(e) => this.inputDataUpdater(elm.name, e.target.value)}>
@@ -94,7 +96,9 @@ export class DbAdd3dModel extends React.Component<any, any> {
               : null}
           </Form.Select>
         );
-
+      case 'file':
+        // directory='' webkitdirectory=''
+        return <Form.Control type={ctr} name='imageName' onChange={(e) => this.inputDataUpdater(elm.name, e.target.value)}></Form.Control>;
       default:
         return <Form.Control type={ctr} value={data?.hasOwnProperty(elm.name) ? data[elm.name] : ''} onChange={(e) => this.inputDataUpdater(elm.name, e.target.value)}></Form.Control>;
     }
