@@ -57,6 +57,17 @@ export class DbEdit3dModel extends React.Component<any, any> {
         [elm]: info
       }
     });
+    if (elm === 'modelUrl' || elm === 'modelImgs') {
+      let files = '';
+      for (const i of info) files += `${i.name},`;
+      this.setState({
+        data: {
+          ...this.state.data,
+          [elm]: files.slice(0, -1)
+        }
+      });
+    }
+
     this.setState({ isSaved: false });
   };
   update3dModel = async (e: any) => {
@@ -114,8 +125,8 @@ export class DbEdit3dModel extends React.Component<any, any> {
           </Form.Select>
         );
       case 'file':
-        // directory='' webkitdirectory=''
-        return <Form.Control type={ctr} name='imageName' onChange={(e) => this.inputDataUpdater(elm, e.target.value)}></Form.Control>;
+        //@ts-ignore
+        return <Form.Control multiple type={ctr} name='imageName' onChange={(e) => this.inputDataUpdater(elm, e.target.files)}></Form.Control>;
       default:
         return <Form.Control type={ctr} value={element ? element : ''} onChange={(e) => this.inputDataUpdater(elm, e.target.value)}></Form.Control>;
     }

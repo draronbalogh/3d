@@ -64,6 +64,17 @@ export class DbAdd3dModel extends React.Component<any, any> {
         [elm]: info
       }
     });
+    if (elm === 'modelUrl' || elm === 'modelImgs') {
+      let files = '';
+      for (const i of info) files += `${i.name},`;
+      this.setState({
+        data: {
+          ...this.state.data,
+          [elm]: files.slice(0, -1)
+        }
+      });
+    }
+
     this.setState({ isSaved: false });
   };
 
@@ -83,7 +94,7 @@ export class DbAdd3dModel extends React.Component<any, any> {
       category = modelConfig[i].categories;
     switch (ctr) {
       case 'switch':
-        return <Form.Check type={'switch'} id={`ctr${i}`} label={elm.label} defaultChecked={elm.name === 'visibility' ? true : false} onChange={(e) => this.switcher(elm.name, e.target.checked)} />;
+        return <Form.Check type={'switch'} id={`ctr${i}`} label={elm.label} defaultChecked={elm.name === 'modelVisibility' ? true : false} onChange={(e) => this.switcher(elm.name, e.target.checked)} />;
       case 'select':
         return (
           <Form.Select onChange={(e) => this.inputDataUpdater(elm.name, e.target.value)}>
@@ -97,8 +108,9 @@ export class DbAdd3dModel extends React.Component<any, any> {
           </Form.Select>
         );
       case 'file':
-        // directory='' webkitdirectory=''
-        return <Form.Control type={ctr} name='imageName' onChange={(e) => this.inputDataUpdater(elm.name, e.target.value)}></Form.Control>;
+        // webkitdirectory={'false'}
+        //@ts-ignore
+        return <Form.Control multiple type={ctr} name='imageName' onChange={(e) => this.inputDataUpdater(elm.name, e.target.files)}></Form.Control>;
       default:
         return <Form.Control type={ctr} value={data?.hasOwnProperty(elm.name) ? data[elm.name] : ''} onChange={(e) => this.inputDataUpdater(elm.name, e.target.value)}></Form.Control>;
     }

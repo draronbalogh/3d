@@ -1,4 +1,12 @@
 
+# todo
+- Iframe data as db rekord!!!
+- form validation
+- axios try catch 
+- form design
+- 3d layout 2 zindex
+ 
+
 # Hasznos linkek:
 itttt:::
 https://mfikri.com/en/blog/node-express-react-mysql
