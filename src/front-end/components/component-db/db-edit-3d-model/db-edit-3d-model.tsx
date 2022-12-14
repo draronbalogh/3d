@@ -14,7 +14,12 @@ interface Model3dState {
   data: any;
   isSaved: boolean;
 }
-
+declare module 'react' {
+  interface HTMLAttributes<T> {
+    directory?: string;
+    webkitdirectory?: string;
+  }
+}
 export class DbEdit3dModel extends React.Component<any, any> {
   constructor(props: any) {
     super(props);
@@ -46,17 +51,12 @@ export class DbEdit3dModel extends React.Component<any, any> {
   };
 
   inputDataUpdater = (elm: string, info: any) => {
-    this.setState(
-      {
-        data: {
-          ...this.state.data,
-          [elm]: info
-        }
-      },
-      () => {
-        // console.log(this.state.data);
+    this.setState({
+      data: {
+        ...this.state.data,
+        [elm]: info
       }
-    );
+    });
     this.setState({ isSaved: false });
   };
   update3dModel = async (e: any) => {
@@ -82,17 +82,26 @@ export class DbEdit3dModel extends React.Component<any, any> {
     }, 500);
     return elm;
   };
+  switcher = (elm: any, trgVal: any) => {
+    this.setState({
+      data: {
+        ...this.state.data,
+        [elm]: trgVal
+      }
+    });
+    return trgVal;
+  };
+
   formBuilder = (i: number, elm: string) => {
     let { data } = this.state,
       element = data[elm],
       ctr = modelConfig[i].control,
-      category = modelConfig[i].categories;
-
+      category = modelConfig[i].categories,
+      label = modelConfig[i].label;
     switch (ctr) {
       case 'switch':
-        return <Form.Check type={'switch'} label='' value={element ? element : ''} onChange={(e) => this.inputDataUpdater(elm, e.target.value)}></Form.Check>;
+        return <Form.Check type={'switch'} id={`ctr${i}`} label={label} defaultChecked={element} onChange={(e) => this.switcher(elm, e.target.checked)} />;
       case 'select':
-        let selectedCat = data['category'];
         return (
           <Form.Select onChange={(e) => this.inputDataUpdater(elm, e.target.value)} defaultValue={element ? element : ''}>
             {Array.isArray(category)
@@ -105,7 +114,8 @@ export class DbEdit3dModel extends React.Component<any, any> {
           </Form.Select>
         );
       case 'file':
-        return <Form.Control type={ctr} value={this.getFiles(element)} onChange={(e) => this.inputDataUpdater(elm, e.target.value)}></Form.Control>;
+        // directory='' webkitdirectory=''
+        return <Form.Control type={ctr} name='imageName' onChange={(e) => this.inputDataUpdater(elm, e.target.value)}></Form.Control>;
       default:
         return <Form.Control type={ctr} value={element ? element : ''} onChange={(e) => this.inputDataUpdater(elm, e.target.value)}></Form.Control>;
     }
@@ -120,8 +130,7 @@ export class DbEdit3dModel extends React.Component<any, any> {
           ? Object.keys(data)?.map((elm: any, i: number) => {
               let ctr = modelConfig[i].control,
                 active = modelConfig[i].active;
-              //  console.log('elm :>> ', elm);
-              return active && ctr !== 'file' ? (
+              return active ? (
                 <Form.Group className={ctr !== 'hidden' ? 'm-1' : 'd-none'} key={i}>
                   {ctr !== 'switch' ? <Form.Label>{this.getTitle(elm)}</Form.Label> : null}
                   {this.formBuilder(i, elm)}

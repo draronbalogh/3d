@@ -22,14 +22,12 @@ export class View3dModel extends React.Component<CompProps, CompState> {
 
   componentDidMount() {
     const { data } = this.state;
-    console.log('view1', data);
     if (data.length >= 1) this.findDataById();
     if (!data.length) this.fetchModelDataById();
   }
   findDataById = () => {
     const { data, id } = this.state;
     let obj = data.find((o: { id: any }) => o.id === id);
-    console.log('view3 obj', obj);
     this.setState({ data: obj });
   };
   fetchModelDataById = async () => {
@@ -46,7 +44,6 @@ export class View3dModel extends React.Component<CompProps, CompState> {
     const { data } = this.state;
     return data
       ? Object.keys(data)?.map((elm: any, i: number) => {
-          console.log('elm :>> ', elm, typeof data[elm], data[elm]);
           return <td key={i}>{typeof data[elm] !== 'object' ? data[elm] : ''}</td>;
         })
       : null;

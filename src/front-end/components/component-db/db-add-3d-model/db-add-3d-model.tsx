@@ -56,9 +56,6 @@ export class DbAdd3dModel extends React.Component<any, any> {
   };
 
   inputDataUpdater = (elm: any, trgVal: any) => {
-    // console.log('inputDataUpdater :>> ');
-    // console.log(elm);
-    // console.log('inputDataUpdater info');
     this.setState({
       data: {
         ...this.state.data,
@@ -69,27 +66,22 @@ export class DbAdd3dModel extends React.Component<any, any> {
   };
 
   switcher = (elm: any, trgVal: any) => {
-    const { data } = this.state;
-
     this.setState({
       data: {
         ...this.state.data,
         [elm]: trgVal
       }
     });
-    console.log('elm', this.state.data['modelVisibility']);
+    return trgVal;
   };
 
   formBuilder = (i: number, elm: any) => {
     let { data } = this.state,
-      element = modelConfig[i],
       ctr = modelConfig[i].control,
       category = modelConfig[i].categories;
-    //console.log('formBuilder :>> ');
-    //console.log(data);
     switch (ctr) {
       case 'switch':
-        return <Form.Check type={'switch'} label={elm.label} onChange={(e) => this.inputDataUpdater(elm.name, this.switcher(elm.name, e.target.value))}></Form.Check>;
+        return <Form.Check type={'switch'} label={elm.label} onChange={(e) => this.switcher(elm.name, e.target.checked)} />;
       case 'select':
         return (
           <Form.Select onChange={(e) => this.inputDataUpdater(elm.name, e.target.value)}>
