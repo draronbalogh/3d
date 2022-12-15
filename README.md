@@ -6,6 +6,23 @@
 - form design
 - 3d layout 2 zindex
  
+/* Render engine
+ * MAterialok --> tex
+ * Script
+ * Iframe-ek
+ * UV-zott
+ * poylgonszám automata
+ * Ai file
+ * login
+ */
+
+/**
+ * node-sp-auth-config
+ * Profil
+ * Kedvencek
+ * Feltöltéseim
+ */
+
 
 # Hasznos linkek:
 itttt:::
