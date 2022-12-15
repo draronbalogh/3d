@@ -6,7 +6,6 @@ import Table from 'react-bootstrap/Table';
 import { _CONFIG } from '../../../../_config/_config';
 import { modelConfig } from '../../../../_config/config-model';
 import { Navigate } from 'react-router-dom';
-// import { printModelTitle, printModelData } from '../db-common/db-common';
 
 interface Model3dProps {
   updateId: any;

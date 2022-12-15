@@ -46,17 +46,6 @@ export class DbAdd3dModel extends React.Component<any, any> {
     }
   };
 
-  setModelUuid = (modelUuid: number): void => {
-    this.setState({ modelUuid });
-  };
-  setModelTitle = (modelTitle: string): void => {
-    this.setState({ modelTitle });
-  };
-
-  setModelDescription = (modelDescription: string): void => {
-    this.setState({ modelDescription });
-  };
-
   inputDataUpdater = (elm: string, info: any) => {
     this.setState({
       data: {
@@ -116,7 +105,7 @@ export class DbAdd3dModel extends React.Component<any, any> {
     }
   };
   render() {
-    const { data, id, modelUuid, modelTitle, modelDescription, isSaved } = this.state;
+    const { isSaved } = this.state;
     return (
       <Form onSubmit={this.save3dModel}>
         {modelConfig
