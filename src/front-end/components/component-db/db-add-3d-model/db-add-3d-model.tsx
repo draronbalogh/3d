@@ -111,8 +111,8 @@ export class DbAdd3dModel extends React.Component<any, any> {
         {modelConfig
           ? modelConfig.map((elm: any, i: number) => {
               let ctr = modelConfig[i].control,
-                active = modelConfig[i].active;
-              return active ? (
+                isVisible = modelConfig[i].isVisible;
+              return isVisible ? (
                 <Form.Group className={ctr !== 'hidden' ? 'm-1' : 'd-nonennnn'} key={i}>
                   {ctr !== 'switch' ? <Form.Label>{elm.label}</Form.Label> : null}
                   {this.formBuilder(i, elm)}

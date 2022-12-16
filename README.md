@@ -1,26 +1,21 @@
 
 # todo
-- Iframe data as db rekord!!!
 - form validation
 - axios try catch 
 - form design
 - 3d layout 2 zindex
  
-/* Render engine
- * MAterialok --> tex
- * Script
- * Iframe-ek
- * UV-zott
- * poylgonszám automata
- * Ai file
- * login
+/*
+ * Materialok --> cinema3D-nél tex
  */
 
 /**
  * node-sp-auth-config
  * Profil
+ * Login
  * Kedvencek
  * Feltöltéseim
+ * Ai file
  */
 
 

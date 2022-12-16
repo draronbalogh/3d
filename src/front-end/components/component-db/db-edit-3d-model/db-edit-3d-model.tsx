@@ -140,8 +140,8 @@ export class DbEdit3dModel extends React.Component<any, any> {
         {data
           ? Object.keys(data)?.map((elm: any, i: number) => {
               let ctr = modelConfig[i].control,
-                active = modelConfig[i].active;
-              return active ? (
+                isVisible = modelConfig[i].isVisible;
+              return isVisible ? (
                 <Form.Group className={ctr !== 'hidden' ? 'm-1' : 'd-none'} key={i}>
                   {ctr !== 'switch' ? <Form.Label>{this.getTitle(elm)}</Form.Label> : null}
                   {this.formBuilder(i, elm)}
