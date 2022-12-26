@@ -29,6 +29,8 @@ export const modelConfigSequalizeDataTypes = {
   modelUv: { type: DataTypes.STRING },
   modelLegality: { type: DataTypes.STRING },
   modelScript: { type: DataTypes.STRING },
-  modelDownloadedBy: { type: DataTypes.STRING },
-  modelDownloadCount: { type: DataTypes.STRING }
+  modelViewerUid: { type: DataTypes.STRING },
+  modelViewCount: { type: DataTypes.INTEGER },
+  modelDownloaderUid: { type: DataTypes.STRING },
+  modelDownloadCount: { type: DataTypes.INTEGER }
 };

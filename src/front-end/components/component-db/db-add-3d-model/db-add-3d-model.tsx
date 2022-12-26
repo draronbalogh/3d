@@ -26,7 +26,9 @@ export class DbAdd3dModel extends React.Component<any, any> {
   componentDidMount(): void {
     let { data } = this.state;
     modelConfig?.forEach((elm: any, i: number) => {
-      elm.name !== 'id' && elm.control !== 'switch' ? (data[modelConfig[i].name] = '') : null;
+      let d = data[modelConfig[i].name];
+      elm.name !== 'id' && elm.control !== 'switch' ? (d = '') : null;
+      if (elm.name === 'modelViewCount' || elm.name === 'modelViewCount') d = 1;
       this.setState({
         data: data
       });
@@ -37,11 +39,20 @@ export class DbAdd3dModel extends React.Component<any, any> {
   save3dModel = async (e: any) => {
     e.preventDefault();
     const { data } = this.state;
+
     try {
       const response = await axios.post(_CONFIG.url.getModel, data);
       this.setState({ isSaved: true });
-      // console.log('response :>> ', response.data);
+      console.log('response :>> ', response.data);
     } catch (e: any) {
+      let errorStatus = '';
+      if (!e.response) {
+        // network error
+        errorStatus = 'Error: Network Error';
+      } else {
+        errorStatus = e.response.data.message;
+      }
+      console.log('Axios Reports Error: ', errorStatus);
       console.log('Axios Error: ', e);
     }
   };
@@ -78,9 +89,12 @@ export class DbAdd3dModel extends React.Component<any, any> {
   };
 
   formBuilder = (i: number, elm: any) => {
+    // console.log('elm :>> ', elm);
     let { data } = this.state,
       ctr = modelConfig[i].control,
       category = modelConfig[i].categories;
+    // console.log('elm :>> ', elm.name);
+    // console.log('ctr', ctr);
     switch (ctr) {
       case 'switch':
         return <Form.Check type={'switch'} id={`ctr${i}`} label={elm.label} defaultChecked={elm.name === 'modelVisibility' ? true : false} onChange={(e) => this.switcher(elm.name, e.target.checked)} />;
@@ -100,19 +114,23 @@ export class DbAdd3dModel extends React.Component<any, any> {
         // webkitdirectory={'false'}
         //@ts-ignore
         return <Form.Control multiple type={ctr} name='imageName' onChange={(e) => this.inputDataUpdater(elm.name, e.target.files)}></Form.Control>;
+      case 'textarea':
+        return <Form.Control as={ctr} rows={3} value={data?.hasOwnProperty(elm.name) ? data[elm.name] : ''} onChange={(e) => this.inputDataUpdater(elm.name, e.target.value)}></Form.Control>;
       default:
-        return <Form.Control type={ctr} value={data?.hasOwnProperty(elm.name) ? data[elm.name] : ''} onChange={(e) => this.inputDataUpdater(elm.name, e.target.value)}></Form.Control>;
+        return <Form.Control type={ctr} value={data?.hasOwnProperty(elm.name) ? data[elm.name] : ''} onChange={(e) => this.inputDataUpdater(elm.name, e.target.value)} required={elm.isRequired}></Form.Control>;
     }
   };
   render() {
     const { isSaved } = this.state;
+
     return (
       <Form onSubmit={this.save3dModel}>
         {modelConfig
           ? modelConfig.map((elm: any, i: number) => {
               let ctr = modelConfig[i].control,
-                isVisible = modelConfig[i].isVisible;
-              return isVisible ? (
+                enableForAddEdit = modelConfig[i].enableForAddEdit;
+
+              return enableForAddEdit ? (
                 <Form.Group className={ctr !== 'hidden' ? 'm-1' : 'd-nonennnn'} key={i}>
                   {ctr !== 'switch' ? <Form.Label>{elm.label}</Form.Label> : null}
                   {this.formBuilder(i, elm)}

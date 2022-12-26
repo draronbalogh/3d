@@ -4,7 +4,6 @@ import axios, { AxiosResponse } from 'axios';
 import { Navigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { isVariableDeclaration, NumericLiteral } from 'typescript';
-import { NULL } from 'node-sass';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { _CONFIG } from '../../../../_config/_config';
@@ -28,6 +27,7 @@ export class DbEdit3dModel extends React.Component<any, any> {
       isSaved: false,
       data: this.props.data
     };
+    // console.log(' this.props.data', this.props.data);
   }
 
   componentDidMount(): void {
@@ -35,12 +35,18 @@ export class DbEdit3dModel extends React.Component<any, any> {
     if (data.length >= 1) this.findDataById();
     if (!data.length) this.fetchModelDataById();
   }
+  componentDidUpdate(prevProps: any, prevState: any) {
+    if (JSON.stringify(this.props.data) !== JSON.stringify(prevProps.data)) {
+      this.setState({ data: this.props.data });
+    }
+  }
   findDataById = () => {
     const { data, id } = this.state;
     let obj = data.find((o: { id: any }) => o.id === id);
     this.setState({ data: obj });
   };
   fetchModelDataById = async () => {
+    console.log('fetichng');
     try {
       const { id } = this.state;
       const response = await axios.get(_CONFIG.url.getModel + id);
@@ -86,13 +92,7 @@ export class DbEdit3dModel extends React.Component<any, any> {
       if (value.name === elm) return value.label;
     });
   };
-  getFiles = (element: any) => {
-    let elm = '';
-    setTimeout(() => {
-      elm = element ? element : '';
-    }, 500);
-    return elm;
-  };
+
   switcher = (elm: any, trgVal: any) => {
     this.setState({
       data: {
@@ -102,46 +102,58 @@ export class DbEdit3dModel extends React.Component<any, any> {
     });
     return trgVal;
   };
-
+  newFunction = (category: any) => {
+    //console.log('category', category);
+    return Array.isArray(category)
+      ? category.map((element: any, x: number) => (
+          <option key={x} value={element}>
+            {element}
+          </option>
+        ))
+      : null;
+  };
   formBuilder = (i: number, elm: string) => {
     let { data } = this.state,
       element = data[elm],
       ctr = modelConfig[i].control,
       category = modelConfig[i].categories,
+      isRequired = modelConfig[i].isRequired,
       label = modelConfig[i].label;
+
     switch (ctr) {
       case 'switch':
         return <Form.Check type={'switch'} id={`ctr${i}`} label={label} defaultChecked={element} onChange={(e) => this.switcher(elm, e.target.checked)} />;
       case 'select':
         return (
-          <Form.Select onChange={(e) => this.inputDataUpdater(elm, e.target.value)} defaultValue={element ? element : ''}>
-            {Array.isArray(category)
-              ? category.map((element: any, x: number) => (
-                  <option key={x} value={element}>
-                    {element}
-                  </option>
-                ))
-              : null}
+          <Form.Select onChange={(e) => this.inputDataUpdater(elm, e.target.value)} value={element ? element : ''}>
+            <>
+              {
+                // TODO:: itt kéne valami setTimeout
+              }
+              {this.newFunction(category)}
+            </>
           </Form.Select>
         );
       case 'file':
         //@ts-ignore
         return <Form.Control multiple type={ctr} name='imageName' onChange={(e) => this.inputDataUpdater(elm, e.target.files)}></Form.Control>;
+      case 'textarea':
+        return <Form.Control as={ctr} rows={3} value={element ? element : ''} onChange={(e) => this.inputDataUpdater(elm, e.target.value)}></Form.Control>;
       default:
-        return <Form.Control type={ctr} value={element ? element : ''} onChange={(e) => this.inputDataUpdater(elm, e.target.value)}></Form.Control>;
+        return <Form.Control type={ctr} value={element ? element : ''} onChange={(e) => this.inputDataUpdater(elm, e.target.value)} required={isRequired}></Form.Control>;
     }
   };
 
   render() {
     const { data, isSaved } = this.state;
-
+    // console.log('data :>> ', typeof data);
     return (
       <Form onSubmit={this.update3dModel}>
         {data
           ? Object.keys(data)?.map((elm: any, i: number) => {
               let ctr = modelConfig[i].control,
-                isVisible = modelConfig[i].isVisible;
-              return isVisible ? (
+                enableForAddEdit = modelConfig[i].enableForAddEdit;
+              return enableForAddEdit ? (
                 <Form.Group className={ctr !== 'hidden' ? 'm-1' : 'd-none'} key={i}>
                   {ctr !== 'switch' ? <Form.Label>{this.getTitle(elm)}</Form.Label> : null}
                   {this.formBuilder(i, elm)}
