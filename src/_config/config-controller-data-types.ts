@@ -17,7 +17,7 @@ export const modelConfigSequalizeDataTypes = {
   modelTags: { type: DataTypes.STRING },
   modelUrl: { type: DataTypes.STRING },
   modelFileName: { type: DataTypes.STRING },
-  modelImgs: { type: DataTypes.TEXT },
+  modelImgs: { type: DataTypes.STRING },
   modelSourceUrl: { type: DataTypes.STRING },
   modelIframeUrl: { type: DataTypes.STRING },
   modelExtraLinks: { type: DataTypes.TEXT },

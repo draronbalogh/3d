@@ -37,6 +37,7 @@ export class DbAdd3dModel extends React.Component<any, any> {
 
   componentDidUpdate(prevProps: any) {}
   save3dModel = async (e: any) => {
+    console.log('starter :>> ');
     e.preventDefault();
     const { data } = this.state;
 
@@ -64,7 +65,7 @@ export class DbAdd3dModel extends React.Component<any, any> {
         [elm]: info
       }
     });
-    if (elm === 'modelUrl' || elm === 'modelImgs') {
+    if (elm === 'modelUrl' || elm === 'modelImgs' || elm === 'modelSourceUrl' || elm === 'modelMaterialUrl') {
       let files = '';
       for (const i of info) files += `${i.name},`;
       this.setState({

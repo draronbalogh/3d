@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////////////   IMPORT
 ///////////////////////////////////////////////////////////   REACT
 import React from 'react';
-import { Routes, Route, Link } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 ///////////////////////////////////////////////////////////   CONFiG
 //import {_CONF} from './config/config';
 ///////////////////////////////////////////////////////////   LIBS
@@ -16,7 +16,7 @@ import './App.scss';
 
 interface State {
   updateIdNum: number | undefined;
-  updateData: any;
+  updateData: unknown;
   data: unknown;
 }
 //////////////////////////////////////////////////////////////////////////////////////    CLASS SETUP
@@ -24,9 +24,9 @@ interface State {
  * App
  * @returns JSX.Element
  */
-class App extends React.Component<any, State> {
+class App extends React.Component<unknown, State> {
   //public data: any;
-  constructor(props: any) {
+  constructor(props: unknown) {
     super(props);
     this.state = {
       updateIdNum: undefined,
@@ -45,7 +45,7 @@ class App extends React.Component<any, State> {
   };
 
   render() {
-    const { data, updateIdNum } = this.state;
+    const { data } = this.state;
     return (
       <Container fluid className={'3dRegform'}>
         <Row>
