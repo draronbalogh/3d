@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import Accordion from 'react-bootstrap/Accordion';
 import axios, { AxiosResponse } from 'axios';
 import { Navigate } from 'react-router-dom';
@@ -9,18 +9,22 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { _CONFIG } from '../../../../_config/_config';
 import { modelConfig } from '../../../../_config/config-model';
+const multer = require('multer');
+
 interface Model3dState {
   id: number | undefined;
   data: any;
   isSaved: boolean;
 }
 export class DbAdd3dModel extends React.Component<any, any> {
+  form: React.RefObject<any>;
   constructor(props: any) {
     super(props);
     this.state = {
       isSaved: false,
       data: {}
     };
+    this.form = React.createRef();
   }
 
   componentDidMount(): void {
@@ -37,12 +41,42 @@ export class DbAdd3dModel extends React.Component<any, any> {
 
   componentDidUpdate(prevProps: any) {}
   save3dModel = async (e: any) => {
-    console.log('starter :>> ');
     e.preventDefault();
-    const { data } = this.state;
+    const upload = multer({ dest: 'uploads/' });
 
+    var storage = multer.diskStorage({
+      destination: function (req, file, cb) {
+        cb(null, './public/images');
+      },
+      filename: function (req, file, cb) {
+        cb(null, Date.now() + '-' + file.originalname.replace(/\s+/g, ''));
+      }
+    });
+
+    /*
+    let upload = multer({
+      storage: storage,
+      limits: {
+        fileSize: 3000000
+      }
+    });*/
+    const { data } = this.state;
     try {
-      const response = await axios.post(_CONFIG.url.getModel, data);
+      const form = this.form.current;
+      const formData = new FormData(form);
+      // formData.append(data, data);
+      for (const d in data) {
+        if (data.hasOwnProperty(d)) {
+          formData.append(d, data[d]); //or .set()?
+        }
+      }
+
+      const response = await axios.post(_CONFIG.url.getModel, data, {
+        /*  headers: {
+          'Content-Type': 'multipart/form-data'
+        }*/
+      });
+
       this.setState({ isSaved: true });
       console.log('response :>> ', response.data);
     } catch (e: any) {
@@ -125,7 +159,7 @@ export class DbAdd3dModel extends React.Component<any, any> {
     const { isSaved } = this.state;
 
     return (
-      <Form onSubmit={this.save3dModel}>
+      <Form onSubmit={this.save3dModel} ref={this.form}>
         {modelConfig
           ? modelConfig.map((elm: any, i: number) => {
               let ctr = modelConfig[i].control,
