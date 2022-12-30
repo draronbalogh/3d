@@ -2,6 +2,7 @@ import express from 'express';
 import db from '../_config/config-database';
 import routes3d from './routes/index';
 import cors from 'cors';
+import bodyParser from 'body-parser';
 const app = express();
 const etst = async () => {
   await db.authenticate();
@@ -16,8 +17,10 @@ try {
 }
 
 app.use(cors());
-app.use(express.json());
-// app.use(express.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+/*app.use(express.json());
+app.use(express.urlencoded({ extended: true }));*/
 app.use('/api/3dmodels', routes3d);
 
 app.listen(5000, () => console.log('Server running at port 5000'));

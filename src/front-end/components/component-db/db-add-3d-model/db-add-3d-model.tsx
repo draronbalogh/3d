@@ -9,7 +9,7 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { _CONFIG } from '../../../../_config/_config';
 import { modelConfig } from '../../../../_config/config-model';
-const multer = require('multer');
+// const multer = require('multer');
 
 interface Model3dState {
   id: number | undefined;
@@ -42,43 +42,30 @@ export class DbAdd3dModel extends React.Component<any, any> {
   componentDidUpdate(prevProps: any) {}
   save3dModel = async (e: any) => {
     e.preventDefault();
-    const upload = multer({ dest: 'uploads/' });
-
-    var storage = multer.diskStorage({
-      destination: function (req, file, cb) {
-        cb(null, './public/images');
-      },
-      filename: function (req, file, cb) {
-        cb(null, Date.now() + '-' + file.originalname.replace(/\s+/g, ''));
-      }
-    });
-
-    /*
-    let upload = multer({
-      storage: storage,
-      limits: {
-        fileSize: 3000000
-      }
-    });*/
     const { data } = this.state;
     try {
       const form = this.form.current;
-      const formData = new FormData(form);
-      // formData.append(data, data);
+      let formData = new FormData();
       for (const d in data) {
         if (data.hasOwnProperty(d)) {
-          formData.append(d, data[d]); //or .set()?
+          formData.append(d, data[d]);
         }
       }
-
-      const response = await axios.post(_CONFIG.url.getModel, data, {
-        /*  headers: {
+      console.log(...formData);
+      console.log('formData', [...formData]);
+      formData.delete('imageName');
+      // formData = { ...data };
+      const response = await axios.post(_CONFIG.url.getModel, formData, {
+        headers: {
           'Content-Type': 'multipart/form-data'
-        }*/
+        },
+        transformRequest: (data, headers) => {
+          return formData;
+        }
       });
 
       this.setState({ isSaved: true });
-      console.log('response :>> ', response.data);
+      console.log('response :>> ', response);
     } catch (e: any) {
       let errorStatus = '';
       if (!e.response) {
