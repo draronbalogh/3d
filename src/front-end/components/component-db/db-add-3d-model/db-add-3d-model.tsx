@@ -55,13 +55,13 @@ export class DbAdd3dModel extends React.Component<any, any> {
       console.log('formData', [...formData]);
       formData.delete('imageName');
       // formData = { ...data };
-      const response = await axios.post(_CONFIG.url.getModel, formData, {
-        headers: {
+      const response = await axios.post(_CONFIG.url.getModel, data, {
+        /* headers: {
           'Content-Type': 'multipart/form-data'
         },
         transformRequest: (data, headers) => {
           return formData;
-        }
+        }*/
       });
 
       this.setState({ isSaved: true });
