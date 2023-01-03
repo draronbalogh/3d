@@ -9,7 +9,6 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { _CONFIG } from '../../../../_config/_config';
 import { modelConfig } from '../../../../_config/config-model';
-// const multer = require('multer');
 
 interface Model3dState {
   id: number | undefined;

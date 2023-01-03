@@ -7,5 +7,4 @@ router.get('/:id', getModels3dById);
 router.post('/', createModels3d);
 router.patch('/:id', updateModels3d);
 router.delete('/:id', delete3dModel);
-
 export default router;

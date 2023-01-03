@@ -81,8 +81,25 @@ const upload = (req: any, res: any, next: any) => {
     } else {
       //res.status(200).json({ message: ' File Uploaded ' });
       console.log('-- fields fields -- ', fields);
-      res.status(200).redirect('upload');
+      // res.status(200).redirect('upload');
+
       //console.log(req.body);
+      /*   try {
+        const response = axios.post(_CONFIG.url.getModel, { modelTitle: 'egy' }, {});
+
+        console.log('response :>> ', response);
+        res.status(200).json({ message: ' File Uploaded ' });
+      } catch (e: any) {
+        let errorStatus = '';
+        if (!e.response) {
+          // network error
+          errorStatus = 'Error: Network Error';
+        } else {
+          errorStatus = e.response.data.message;
+        }
+        console.log('Axios Reports Error: ', errorStatus);
+        console.log('Axios Error: ', e);
+      }*/
     }
     //res.json({ fields, files });
   });

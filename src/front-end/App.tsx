@@ -67,7 +67,7 @@ class App extends React.Component<unknown, State> {
                   element={
                     <form action='/upload' encType='multipart/form-data' method='post'>
                       <div>
-                        Text field title: <input type='text' name='title' />
+                        modelTitle: <input type='text' name='modelTitle' />
                       </div>
                       <div>
                         File: <input type='file' name='someExpressFiles' multiple={true} />
