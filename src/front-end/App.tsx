@@ -61,20 +61,22 @@ class App extends React.Component<unknown, State> {
               <Route path='/' element={<DbList3dModel updateId={this.updateId} updateData={this.updateData} />} />
               <Route path='/add' element={<DbAdd3dModel />} />
               <Route path='/edit/:id' element={<DbEdit3dModel data={data} />} />
-              <Route
-                path='/upload'
-                element={
-                  <form action='/api/upload' encType='multipart/form-data' method='post'>
-                    <div>
-                      Text field title: <input type='text' name='title' />
-                    </div>
-                    <div>
-                      File: <input type='file' name='someExpressFiles' multiple={true} />
-                    </div>
-                    <input type='submit' value='Upload' />
-                  </form>
-                }
-              />
+              {
+                <Route
+                  path='/upload'
+                  element={
+                    <form action='/upload' encType='multipart/form-data' method='post'>
+                      <div>
+                        Text field title: <input type='text' name='title' />
+                      </div>
+                      <div>
+                        File: <input type='file' name='someExpressFiles' multiple={true} />
+                      </div>
+                      <input type='submit' value='Upload' />
+                    </form>
+                  }
+                />
+              }
             </Routes>
           </Col>
         </Row>

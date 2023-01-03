@@ -5,6 +5,7 @@ https://dev.to/chukwunazaekpere/project-setup-for-nodejs-react-using-typescript-
 {
   "compilerOptions": {
     "target": "es2022" /*es5, es6*/ /*changed later*/,
+    "module": "commonjs",
     "lib": ["dom", "dom.iterable", "esnext"],
     "outDir": "./dist/",
     "allowJs": true,
@@ -14,7 +15,6 @@ https://dev.to/chukwunazaekpere/project-setup-for-nodejs-react-using-typescript-
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
-    "module": "commonjs",
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,

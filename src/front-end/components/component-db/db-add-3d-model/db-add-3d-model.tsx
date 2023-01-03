@@ -44,26 +44,8 @@ export class DbAdd3dModel extends React.Component<any, any> {
     e.preventDefault();
     const { data } = this.state;
     try {
-      const form = this.form.current;
-      let formData = new FormData();
-      for (const d in data) {
-        if (data.hasOwnProperty(d)) {
-          formData.append(d, data[d]);
-        }
-      }
-      console.log(...formData);
-      console.log('formData', [...formData]);
-      formData.delete('imageName');
-      // formData = { ...data };
-      const response = await axios.post(_CONFIG.url.getModel, data, {
-        /* headers: {
-          'Content-Type': 'multipart/form-data'
-        },
-        transformRequest: (data, headers) => {
-          return formData;
-        }*/
-      });
-
+      console.log('data', data);
+      const response = await axios.post(_CONFIG.url.getModel, data, {});
       this.setState({ isSaved: true });
       console.log('response :>> ', response);
     } catch (e: any) {
