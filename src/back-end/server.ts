@@ -81,7 +81,7 @@ const upload = (req: any, res: any, next: any) => {
     } else {
       //res.status(200).json({ message: ' File Uploaded ' });
       console.log('-- fields fields -- ', fields);
-      // res.status(200).redirect('upload');
+      //.redirect('upload');
 
       //console.log(req.body);
       /*   try {
@@ -101,7 +101,19 @@ const upload = (req: any, res: any, next: any) => {
         console.log('Axios Error: ', e);
       }*/
     }
-    //res.json({ fields, files });
+
+    //res.sendStatus(200);
+    /*  return res.json({
+      success: true,
+      message: 'Some success message',
+      data: "some data if there's any"
+    });*/
+    // res.json({ fields, files });
+
+    res.redirect('/upload');
+
+    //  res.redirect('update');
+    //  res.status(200).redirect('upload');
   });
 };
 app.post('/upload', urlencodedParser, upload);
