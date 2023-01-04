@@ -115,3 +115,29 @@ yarn add ts-node
 
 # sequalize data types
 https://sequelize.org/docs/v7/other-topics/other-data-types/
+
+
+
+# Express hints
+https://medium.com/@adamzerner/middleware-in-express-60d75055ba8f
+
+app.use('/', cb); 
+/* 
+ "matches everything that starts with /"
+ matches / 
+ matches /foo 
+ matches /foo/bar
+*/
+app.get('/', cb);
+/*
+ "only matches /"
+ matches /
+ doesn't match /foo
+ doesn't match /foo/bar
+*/
+
+app.use(function(req, res) {
+  // stuff
+});
+It’ll match every request.
+That function will act as middleware.
