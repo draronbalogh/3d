@@ -11,6 +11,7 @@ import { modelConfig } from '../../../../_config/config-model';
 interface Model3dState {
   id: number | undefined;
   data: any;
+  files: any;
   isSaved: boolean;
 }
 declare module 'react' {
@@ -25,7 +26,8 @@ export class DbEdit3dModel extends React.Component<any, any> {
     this.state = {
       id: Number(window.location.pathname.split('/').pop()),
       isSaved: false,
-      data: this.props.data
+      data: this.props.data,
+      files: { modelUrlFiles: [], modelImgsFiles: [], modelMaterialUrlFiles: [] }
     };
     // console.log(' this.props.data', this.props.data);
   }
@@ -38,6 +40,9 @@ export class DbEdit3dModel extends React.Component<any, any> {
   componentDidUpdate(prevProps: any, prevState: any) {
     if (JSON.stringify(this.props.data) !== JSON.stringify(prevProps.data)) {
       this.setState({ data: this.props.data });
+    }
+    if (JSON.stringify(this.props.files) !== JSON.stringify(prevProps.files)) {
+      this.setState({ files: this.props.files });
     }
   }
   findDataById = () => {
@@ -55,6 +60,44 @@ export class DbEdit3dModel extends React.Component<any, any> {
       if (e.response) console.log('Axios Error: ', e.response.data);
     }
   };
+  inputFileDataUpdater = (elm: string, e: any) => {
+    console.log('elm', elm);
+    console.log('e', e);
+    let keyName: string = '';
+    switch (elm) {
+      case 'modelUrl':
+        keyName = 'modelUrlFiles';
+        break;
+      case 'modelImgs':
+        keyName = 'modelImgsFiles';
+        break;
+      case 'modelMaterialUrl':
+        keyName = 'modelMaterialUrlFiles';
+        break;
+      default:
+        keyName = '';
+        break;
+    }
+    let files = { ...this.state.files };
+    files[keyName] = e.target.files;
+    this.setState({ files });
+    let filesTxt = '';
+    for (const i of e.target.files) filesTxt += `${i.name},`;
+    this.setState(
+      {
+        data: {
+          ...this.state.data,
+          [elm]: filesTxt.slice(0, -1) // comma separated list of files as mysql record
+        }
+      },
+      () => {
+        //   console.log('this.state.data', this.state.data);
+        console.log('this.state', this.state);
+      }
+    );
+
+    this.setState({ isSaved: false });
+  };
 
   inputDataUpdater = (elm: string, info: any) => {
     this.setState({
@@ -63,24 +106,21 @@ export class DbEdit3dModel extends React.Component<any, any> {
         [elm]: info
       }
     });
-    if (elm === 'modelUrl' || elm === 'modelImgs') {
-      let files = '';
-      for (const i of info) files += `${i.name},`;
-      this.setState({
-        data: {
-          ...this.state.data,
-          [elm]: files.slice(0, -1)
-        }
-      });
-    }
 
     this.setState({ isSaved: false });
   };
   update3dModel = async (e: any) => {
     e.preventDefault();
     try {
-      const { id } = this.state;
-      await axios.patch(_CONFIG.url.getModel + id, this.state.data);
+      const { id, data, files } = this.state;
+      const filesData = new FormData();
+      for (const file in files) {
+        for (let x = 0; x < files[file].length; x++) {
+          filesData.append('file', files[file][x]);
+        }
+      }
+      await axios.patch(_CONFIG.url.getModel + id, data);
+      await axios.post(_CONFIG.url.uploadFiles, filesData, {});
       this.setState({ isSaved: true });
     } catch (e: any) {
       if (e.response) console.log('Axios Error: ', e.response.data);
@@ -136,7 +176,7 @@ export class DbEdit3dModel extends React.Component<any, any> {
         );
       case 'file':
         //@ts-ignore
-        return <Form.Control multiple type={ctr} name='imageName' onChange={(e) => this.inputDataUpdater(elm, e.target.files)}></Form.Control>;
+        return <Form.Control multiple type={ctr} name='imageName' onChange={(e) => this.inputFileDataUpdater(elm, e)}></Form.Control>;
       case 'textarea':
         return <Form.Control as={ctr} rows={3} value={element ? element : ''} onChange={(e) => this.inputDataUpdater(elm, e.target.value)}></Form.Control>;
       default:
@@ -151,8 +191,8 @@ export class DbEdit3dModel extends React.Component<any, any> {
       <Form onSubmit={this.update3dModel}>
         {data
           ? Object.keys(data)?.map((elm: any, i: number) => {
-              let ctr = modelConfig[i].control,
-                enableForAddEdit = modelConfig[i].enableForAddEdit;
+              let ctr = modelConfig[i]?.control,
+                enableForAddEdit = modelConfig[i]?.enableForAddEdit;
               return enableForAddEdit ? (
                 <Form.Group className={ctr !== 'hidden' ? 'm-1' : 'd-none'} key={i}>
                   {ctr !== 'switch' ? <Form.Label>{this.getTitle(elm)}</Form.Label> : null}

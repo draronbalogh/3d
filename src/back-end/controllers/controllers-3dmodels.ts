@@ -25,9 +25,11 @@ export const getModels3dById = async (req: Request, res: Response) => {
 export const createModels3d = async (req: Request, res: Response) => {
   try {
     await ModelControllerTypes.create(req.body);
+    console.log('req.body :>> ', req.body);
     res.json({
       message: 'ModelControllerTypes Created'
     });
+    // res.send();
   } catch (error: any | unknown) {
     res.json({ message: error.message });
   }

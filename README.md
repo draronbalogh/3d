@@ -20,6 +20,10 @@
 
 
 # Hasznos linkek:
+Mosh Hamedani a legjobb:
+https://programmingwithmosh.com/javascript/react-file-upload-proper-server-side-nodejs-easy/
+
+
 itttt:::
 https://mfikri.com/en/blog/node-express-react-mysql
 

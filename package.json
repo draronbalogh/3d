@@ -4,7 +4,6 @@
     "private": true,
     "baseUrl": ".",
     "proxy": "http://127.0.0.1:5000",
-
     "dependencies": {
         "@testing-library/jest-dom": "^5.14.1",
         "@testing-library/react": "^13.0.0",
@@ -17,7 +16,7 @@
         "@types/jest": "^27.0.1",
         "@types/multer": "^1.4.7",
         "@types/mysql": "^2.15.21",
-        "@types/node": "^16.7.13",
+        "@types/node": "^18.11.18",
         "@types/node-sass": "^4.11.3",
         "@types/nodemon": "^1.19.2",
         "@types/react": "^18.0.26",
@@ -77,5 +76,9 @@
         "eslint-plugin-n": "^15.0.0",
         "eslint-plugin-promise": "^6.0.0",
         "eslint-plugin-react": "^7.31.10"
+    },
+    "browser": {
+        "path": false,
+        "stream": false
     }
 }

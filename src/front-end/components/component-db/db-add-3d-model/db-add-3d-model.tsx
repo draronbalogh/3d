@@ -13,6 +13,7 @@ import { modelConfig } from '../../../../_config/config-model';
 interface Model3dState {
   id: number | undefined;
   data: any;
+  files: any;
   isSaved: boolean;
 }
 export class DbAdd3dModel extends React.Component<any, any> {
@@ -21,7 +22,8 @@ export class DbAdd3dModel extends React.Component<any, any> {
     super(props);
     this.state = {
       isSaved: false,
-      data: {}
+      data: {},
+      files: { modelUrlFiles: [], modelImgsFiles: [], modelMaterialUrlFiles: [] }
     };
     this.form = React.createRef();
   }
@@ -41,12 +43,19 @@ export class DbAdd3dModel extends React.Component<any, any> {
   componentDidUpdate(prevProps: any) {}
   save3dModel = async (e: any) => {
     e.preventDefault();
-    const { data } = this.state;
+    const { data, files } = this.state;
     try {
-      console.log('data', data);
+      const filesData = new FormData();
+      for (const file in files) {
+        for (let x = 0; x < files[file].length; x++) {
+          filesData.append('file', files[file][x]);
+        }
+      }
       const response = await axios.post(_CONFIG.url.getModel, data, {});
+      const responseFiles = await axios.post(_CONFIG.url.uploadFiles, filesData, {});
       this.setState({ isSaved: true });
-      console.log('response :>> ', response);
+      // console.log('response :>> ', response);
+      //   console.log('responseFiles :>> ', responseFiles);
     } catch (e: any) {
       let errorStatus = '';
       if (!e.response) {
@@ -60,24 +69,61 @@ export class DbAdd3dModel extends React.Component<any, any> {
     }
   };
 
-  inputDataUpdater = (elm: string, info: any) => {
+  inputFileDataUpdater = (elm: string, e: any) => {
+    let keyName: string = '';
+    switch (elm) {
+      case 'modelUrl':
+        keyName = 'modelUrlFiles';
+        break;
+      case 'modelImgs':
+        keyName = 'modelImgsFiles';
+        break;
+      case 'modelMaterialUrl':
+        keyName = 'modelMaterialUrlFiles';
+        break;
+      default:
+        keyName = '';
+        break;
+    }
+    let files = { ...this.state.files };
+    files[keyName] = e.target.files;
+    this.setState({ files });
+    let filesTxt = '';
+    for (const i of e.target.files) filesTxt += `${i.name},`;
+    this.setState(
+      {
+        data: {
+          ...this.state.data,
+          [elm]: filesTxt.slice(0, -1) // comma separated list of files as mysql record
+        }
+      },
+      () => {
+        //   console.log('this.state.data', this.state.data);
+        console.log('this.state', this.state);
+      }
+    );
+
+    this.setState({ isSaved: false });
+  };
+
+  inputDataUpdater = (elm: string, e: any) => {
     this.setState({
       data: {
         ...this.state.data,
-        [elm]: info
+        [elm]: e
       }
     });
-    if (elm === 'modelUrl' || elm === 'modelImgs' || elm === 'modelSourceUrl' || elm === 'modelMaterialUrl') {
+    /*if (elm === 'modelUrl' || elm === 'modelImgs' || elm === 'modelSourceUrl' || elm === 'modelMaterialUrl') {
       let files = '';
-      for (const i of info) files += `${i.name},`;
+      for (const i of fileList) files += `${i.name},`;
       this.setState({
         data: {
           ...this.state.data,
-          [elm]: files.slice(0, -1)
+          //   [elm]: files.slice(0, -1), // comma separated list of files as mysql record
+          [elm]: fileList
         }
       });
-    }
-
+    }*/
     this.setState({ isSaved: false });
   };
 
@@ -116,7 +162,7 @@ export class DbAdd3dModel extends React.Component<any, any> {
       case 'file':
         // webkitdirectory={'false'}
         //@ts-ignore
-        return <Form.Control multiple type={ctr} name='imageName' onChange={(e) => this.inputDataUpdater(elm.name, e.target.files)}></Form.Control>;
+        return <Form.Control multiple type={ctr} name='imageName' onChange={(e) => this.inputFileDataUpdater(elm.name, e)}></Form.Control>;
       case 'textarea':
         return <Form.Control as={ctr} rows={3} value={data?.hasOwnProperty(elm.name) ? data[elm.name] : ''} onChange={(e) => this.inputDataUpdater(elm.name, e.target.value)}></Form.Control>;
       default:
