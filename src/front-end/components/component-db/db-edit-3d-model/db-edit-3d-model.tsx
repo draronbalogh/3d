@@ -72,7 +72,7 @@ export class DbEdit3dModel extends React.Component<any, any> {
       console.log('oldFilesToDel', oldFilesToDel);
       console.log('elm', elm);
       let modelUrl = oldFilesToDel['modelUrl'] ? oldFilesToDel['modelUrl'] : '';
-      let modelImgs = oldFilesToDel['modelImgs'];
+      let modelImgs = oldFilesToDel['modelImgs'] ? oldFilesToDel['modelImgs'] : '';
       let modelMaterialUrl = oldFilesToDel['modelMaterialUrl'] ? oldFilesToDel['modelMaterialUrl'] : '';
 
       let modelUrlA = modelUrl.split(',');
