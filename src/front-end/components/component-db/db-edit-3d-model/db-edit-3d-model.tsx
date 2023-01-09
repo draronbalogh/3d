@@ -14,6 +14,7 @@ interface Model3dState {
   data: any;
   files: any;
   isSaved: boolean;
+  oldFilesToDel: any;
 }
 declare module 'react' {
   interface HTMLAttributes<T> {
@@ -22,13 +23,15 @@ declare module 'react' {
   }
 }
 export class DbEdit3dModel extends React.Component<any, any> {
+  static imgArray: any[] = [];
   constructor(props: any) {
     super(props);
     this.state = {
       id: Number(window.location.pathname.split('/').pop()),
       isSaved: false,
       data: this.props.data,
-      files: { modelUrl: [], modelImgs: [], modelMaterialUrl: [] }
+      files: { modelUrl: [], modelImgs: [], modelMaterialUrl: [] },
+      oldFilesToDel: null
     };
     // console.log(' this.props.data', this.props.data);
   }
@@ -50,6 +53,7 @@ export class DbEdit3dModel extends React.Component<any, any> {
     const { data, id } = this.state;
     let obj = data.find((o: { id: any }) => o.id === id);
     this.setState({ data: obj });
+    this.setState({ oldFilesToDel: obj });
   };
   fetchModelDataById = async () => {
     console.log('fetichng');
@@ -57,56 +61,82 @@ export class DbEdit3dModel extends React.Component<any, any> {
       const { id } = this.state;
       const response = await axios.get(_CONFIG.url.getModel + id);
       this.setState({ data: response.data });
+      this.setState({ oldFilesToDel: response.data });
     } catch (e: any) {
       if (e.response) console.log('Axios Error: ', e.response.data);
     }
   };
   inputFileDataUpdater = async (elm: string, e: any) => {
     try {
-      const { data } = this.state;
+      const { oldFilesToDel } = this.state;
+      console.log('oldFilesToDel', oldFilesToDel);
+      console.log('elm', elm);
+      let modelUrl = oldFilesToDel['modelUrl'] ? oldFilesToDel['modelUrl'] : '';
+      let modelImgs = oldFilesToDel['modelImgs'];
+      let modelMaterialUrl = oldFilesToDel['modelMaterialUrl'] ? oldFilesToDel['modelMaterialUrl'] : '';
+
+      let modelUrlA = modelUrl.split(',');
+      let modelImgsA = modelImgs.split(',');
+      let modelMaterialUrlA = modelMaterialUrl.split(',');
+      console.log('modelUrlA', modelUrlA);
+      console.log('modelImgsA', modelImgsA);
+      console.log('modelmodelMaterialUrlAUrlA', modelMaterialUrlA);
+
+      let t: any[] = [];
+      if (elm === 'modelUrl') DbEdit3dModel.imgArray.push(modelUrlA);
+      if (elm === 'modelImgs') DbEdit3dModel.imgArray.push(modelImgsA);
+      if (elm === 'modelMaterialUrl') DbEdit3dModel.imgArray.push(modelMaterialUrlA);
+      console.log(' DbEdit3dModel.imgArray', DbEdit3dModel.imgArray.flat(1));
 
       // todo : a feile-okat már törli, de ki kell törölni a mysql-ből is, mert így a file eltűnik, de
       // ha mégse fejezi be, akkor a file eltűnit, de a mysql file név ott maradt..
       // vagy ha már cserélt, akkor nem mehet el az oldalról, hanem mentenie kell..
-
-      // TODO:: ez nagyon csúnya ezt még helyre kell hozni
-      let modelImgs = data['modelImgs'] ? data['modelImgs']?.split(',') : [];
-      let modelMaterialUrl = data['modelMaterialUrl'] ? data['modelMaterialUrl']?.split(',') : [];
-      let modelUrl = data['modelUrl'] ? data['modelUrl']?.split(',') : [];
-      let removable = elm === 'modelImgs' ? modelImgs : elm === 'modelMaterialUrl' ? modelMaterialUrl : modelUrl;
-      let imgArray = [...removable];
-      await axios.post(_CONFIG.url.deleteFiles, { imgArray }, {}).then((res) => {
-        let files = { ...this.state.files };
-        files[elm] = e.target.files;
-        this.setState({ files });
-        let filesTxt = '';
-        let x = 0;
-        for (const i of e.target.files) {
-          const fileName = i.name;
-          // filesTxt += `${uuid()}-${fileName},`;
-          filesTxt += `${uuid()}-${fileName
-            .normalize('NFD')
-            .replace(/[\u0300-\u036f]/g, '')
-            .toLowerCase()
-            .replace(/\s/g, '-')},`;
-        }
-        // console.log('this.sate.files :>> ', this.state);
-
-        this.setState(
-          {
-            data: {
-              ...this.state.data,
-              [elm]: filesTxt.slice(0, -1) // comma separated list of files as mysql record
-            }
-          },
-          () => {
-            //   console.log('this.state.data', this.state.data);
-            // console.log('this.state', this.state);
-          }
-        );
-
-        this.setState({ isSaved: false });
+      /*
+      let t: any[] = [];
+      if (elm === 'modelUrl') t.push(modelUrl);
+      if (elm === 'modelImgs') t.push(modelImgs);
+      if (elm === 'modelMaterialUrl') t.push(modelMaterialUrl);
+      console.log('t :>> ', t);
+      let str = '';
+      t.forEach((x) => {
+        str.concat(x);
       });
+      console.log('str :>> ', str);*/
+
+      this.setState({
+        deleteTheseFiles: DbEdit3dModel.imgArray.flat(1)
+      });
+
+      let files = { ...this.state.files };
+      files[elm] = e.target.files;
+      this.setState({ files });
+      let filesTxt = '';
+      let x = 0;
+      for (const i of e.target.files) {
+        const fileName = i.name;
+        // filesTxt += `${uuid()}-${fileName},`;
+        filesTxt += `${uuid()}-${fileName
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .toLowerCase()
+          .replace(/[^a-zA-Z0-9.]/g, '-')},`;
+      }
+      // console.log('this.sate.files :>> ', this.state);
+
+      this.setState(
+        {
+          data: {
+            ...this.state.data,
+            [elm]: filesTxt.slice(0, -1) // comma separated list of files as mysql record
+          }
+        },
+        () => {
+          //   console.log('this.state.data', this.state.data);
+          // console.log('this.state', this.state);
+        }
+      );
+
+      this.setState({ isSaved: false });
     } catch (error) {}
   };
   inputDataUpdater = (elm: string, e: any) => {
@@ -120,9 +150,28 @@ export class DbEdit3dModel extends React.Component<any, any> {
     this.setState({ isSaved: false });
   };
   update3dModel = async (e: any) => {
-    e.preventDefault();
     try {
-      const { id, data, files } = this.state;
+      e.preventDefault();
+      const { data, deleteTheseFiles } = this.state;
+      console.log('updateupdateupdateupdate deleteTheseFiles', deleteTheseFiles);
+      try {
+        DbEdit3dModel.imgArray = [];
+        await axios.post(_CONFIG.url.deleteFiles, { deleteTheseFiles }, {}); /*.then((resp: any) => {
+          this.setState({
+            deleteTheseFiles: []
+          });
+        });*/
+        //   let removable = elm === 'modelImgs' ? modelImgs : elm === 'modelMaterialUrl' ? modelMaterialUrl : modelUrl;
+        //     let imgArray = [...removable];
+      } catch (e: any) {
+        const statusCode = e.response.status; // 400
+        const statusText = e.response.statusText; // Bad Request
+        const message = e.response.data.message[0]; // id should not be empty
+        console.log(`${statusCode} - ${statusText} - ${message}`);
+      } finally {
+      }
+
+      const { id, files } = this.state;
 
       const filesData = new FormData();
       for (const file in files) {

@@ -59,9 +59,18 @@ export class DbAdd3dModel extends React.Component<any, any> {
           if (individualFile) filesData.append('file', individualFile as Blob, nameSeparatedByComma);
         });
       }
-      const response = await axios.post(_CONFIG.url.getModel, data, {});
-      const responseFiles = await axios.post(_CONFIG.url.uploadFiles, filesData, {});
-      this.setState({ isSaved: true });
+      try {
+        const res1 = await axios.post(_CONFIG.url.getModel, data, {});
+        const res2 = await axios.post(_CONFIG.url.uploadFiles, filesData, {});
+      } catch (e: any) {
+        const statusCode = e.response.status; // 400
+        const statusText = e.response.statusText; // Bad Request
+        const message = e.response.data.message[0]; // id should not be empty
+        console.log(`${statusCode} - ${statusText} - ${message}`);
+      } finally {
+        this.setState({ isSaved: true });
+      }
+
       // console.log('response :>> ', response);
       //   console.log('responseFiles :>> ', responseFiles);
     } catch (e: any) {
@@ -91,7 +100,7 @@ export class DbAdd3dModel extends React.Component<any, any> {
           .normalize('NFD')
           .replace(/[\u0300-\u036f]/g, '')
           .toLowerCase()
-          .replace(/\s/g, '-')},`;
+          .replace(/[^a-zA-Z0-9.]/g, '-')},`;
       }
       // console.log('this.sate.files :>> ', this.state);
 
@@ -178,7 +187,9 @@ export class DbAdd3dModel extends React.Component<any, any> {
   render() {
     const { isSaved } = this.state;
 
-    return (
+    return isSaved ? (
+      <Navigate to='/' />
+    ) : (
       <Form onSubmit={this.save3dModel} ref={this.form}>
         {modelConfig
           ? modelConfig.map((elm: any, i: number) => {
@@ -194,13 +205,9 @@ export class DbAdd3dModel extends React.Component<any, any> {
             })
           : null}
         <div className='field'>
-          {!isSaved ? (
-            <Button variant='primary' type='submit'>
-              Mentés
-            </Button>
-          ) : (
-            <Navigate to='/' />
-          )}
+          <Button variant='primary' type='submit'>
+            Mentés
+          </Button>
         </div>
       </Form>
     );

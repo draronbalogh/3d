@@ -35,12 +35,15 @@ export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
   };
 
   delete3dModel = async (id: number, ob: any) => {
+    console.log('obobobobobobobobobobobobob :>> ', ob);
     let modelImgs = ob['modelImgs'] ? ob['modelImgs']?.split(',') : [];
     let modelMaterialUrl = ob['modelMaterialUrl'] ? ob['modelMaterialUrl']?.split(',') : [];
     let modelUrl = ob['modelUrl'] ? ob['modelUrl']?.split(',') : [];
-    let imgArray = [...modelImgs, ...modelMaterialUrl, ...modelUrl];
-    await axios.delete(_CONFIG.url.getModel + id);
-    await axios.post(_CONFIG.url.deleteFiles, { imgArray }, {}).then((res) => {
+    let deleteTheseFiles = [...modelImgs, ...modelMaterialUrl, ...modelUrl];
+    console.log('imgArray', deleteTheseFiles);
+    await axios.post(_CONFIG.url.deleteFiles, { deleteTheseFiles }, {});
+    await axios.delete(_CONFIG.url.getModel + id).then((res) => {
+      // <Navigate to='/' />;
       window.location.href = '/';
     });
     // this.get3dModel();

@@ -62,37 +62,40 @@ const upload = (req: any, res: any, next: any) => {
 };
 
 const deleteFiles = async (req: any, res: any, next: any) => {
+  console.clear();
   console.log('sss');
-  let arr: string[] = req.body.imgArray || [];
+  let arr: string[] = req.body.deleteTheseFiles || [];
   const folder = path.join(_CONFIG.url.uploadFolder);
-  // console.log('aaaaaaaaaaaaaaaaaaa');
-  // console.log(arr.length);
-  if (arr.length) {
-    arr.forEach((filePath) => {
-      // console.log('bbbbbbbbbbbbbbbbb');
-      // console.log(fs.existsSync(folder + filePath));
-      // console.log(folder + filePath);
-      if (fs.existsSync(folder + filePath)) {
-        fs.unlink(folder + filePath, (err) => {
-          if (err) {
-            console.log('File error:', filePath);
-            //console.error(err);
-          } else {
-            console.log('File removed:', filePath);
-          }
-        });
-      }
-    });
-  }
-  res.json({ status: 200, redirect: '/' });
-  res.end();
+  console.log('aaaaaaaaaaaaaaaaaaa');
+  console.log(arr.length);
+  console.log(arr);
+
+  arr.forEach((filePath) => {
+    console.log('filePathfilePathfilePathfilePathfilePath');
+    console.log(filePath);
+    console.log(fs.existsSync(folder + filePath));
+    console.log(folder + filePath);
+    if (fs.existsSync(folder + filePath)) {
+      fs.unlink(folder + filePath, (err) => {
+        if (err) {
+          console.log('File error:', filePath);
+          //console.error(err);
+        } else {
+          console.log('File removed:', filePath);
+        }
+      });
+    }
+  });
+
+  res.json({ status: 200 });
+  //res.end();
 };
 app.use(cors());
 app.use(bodyParser.json()); // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
-app.use('/api/3dmodels', routes3d);
 app.use('/deleteFiles', deleteFiles);
 app.post('/upload', upload);
+app.use('/api/3dmodels', routes3d);
 
 /*
 
