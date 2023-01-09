@@ -6,7 +6,6 @@ import Table from 'react-bootstrap/Table';
 import { _CONFIG } from '../../../../_config/_config';
 import { modelConfig } from '../../../../_config/config-model';
 import { Navigate } from 'react-router-dom';
-
 interface Model3dProps {
   updateId: any;
   updateData: any;
@@ -35,9 +34,16 @@ export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
     this.props.updateData(resp);
   };
 
-  delete3dModel = async (id: number) => {
+  delete3dModel = async (id: number, ob: any) => {
+    let modelImgs = ob['modelImgs'] ? ob['modelImgs']?.split(',') : [];
+    let modelMaterialUrl = ob['modelMaterialUrl'] ? ob['modelMaterialUrl']?.split(',') : [];
+    let modelUrl = ob['modelUrl'] ? ob['modelUrl']?.split(',') : [];
+    let imgArray = [...modelImgs, ...modelMaterialUrl, ...modelUrl];
     await axios.delete(_CONFIG.url.getModel + id);
-    this.get3dModel();
+    await axios.post(_CONFIG.url.deleteFiles, { imgArray }, {}).then((res) => {
+      window.location.href = '/';
+    });
+    // this.get3dModel();
   };
 
   updateId = (id: number) => {
@@ -67,12 +73,13 @@ export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
 
   printEditorBtns = (id: number) => {
     const { data } = this.state;
+    let obj = data.find((o) => o.id === id);
     return (
       <td>
         <Link to={`/edit/${id}`} className='button is-small is-info'>
           Szerkesztés
         </Link>
-        <a onClick={() => this.delete3dModel(id)} className='button is-small is-danger'>
+        <a onClick={() => this.delete3dModel(id, obj)} className='button is-small is-danger'>
           Törlés
         </a>
         <Link to={`/view/${id}`} className='button is-small is-info'>

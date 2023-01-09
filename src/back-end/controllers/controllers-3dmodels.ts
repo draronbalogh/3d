@@ -1,5 +1,6 @@
 import ModelControllerTypes from '../models/models-3dmodels';
 import { Request, Response } from 'express';
+
 export const getAllModels3ds = async (req: Request, res: Response) => {
   try {
     const models = await ModelControllerTypes.findAll();

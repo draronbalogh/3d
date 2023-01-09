@@ -9,6 +9,10 @@ code {
 }
 
 td {
-    max-width: 50px;
+    overflow: hidden;
+}
+
+td:last-child {
+    max-width: 200px;
     overflow: hidden;
 }

@@ -7,6 +7,7 @@ import { isVariableDeclaration } from 'typescript';
 import { NULL } from 'node-sass';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
+import { v4 as uuid } from 'uuid';
 import { _CONFIG } from '../../../../_config/_config';
 import { modelConfig } from '../../../../_config/config-model';
 
@@ -23,7 +24,7 @@ export class DbAdd3dModel extends React.Component<any, any> {
     this.state = {
       isSaved: false,
       data: {},
-      files: { modelUrlFiles: [], modelImgsFiles: [], modelMaterialUrlFiles: [] }
+      files: { modelUrl: [], modelImgs: [], modelMaterialUrl: [] }
     };
     this.form = React.createRef();
   }
@@ -44,12 +45,19 @@ export class DbAdd3dModel extends React.Component<any, any> {
   save3dModel = async (e: any) => {
     e.preventDefault();
     const { data, files } = this.state;
+    // console.log('data :>> ', data);
+    // console.log('files :>> ', files);
     try {
       const filesData = new FormData();
+
       for (const file in files) {
-        for (let x = 0; x < files[file].length; x++) {
-          filesData.append('file', files[file][x]);
-        }
+        Object.values(files[file]).forEach((individualFile, index) => {
+          //          console.log('index :>> ', index);
+          //   console.log('file-->', file);
+          //    console.log(' data.file', data[file]);
+          const nameSeparatedByComma = data[file].split(',')[index];
+          if (individualFile) filesData.append('file', individualFile as Blob, nameSeparatedByComma);
+        });
       }
       const response = await axios.post(_CONFIG.url.getModel, data, {});
       const responseFiles = await axios.post(_CONFIG.url.uploadFiles, filesData, {});
@@ -70,40 +78,38 @@ export class DbAdd3dModel extends React.Component<any, any> {
   };
 
   inputFileDataUpdater = (elm: string, e: any) => {
-    let keyName: string = '';
-    switch (elm) {
-      case 'modelUrl':
-        keyName = 'modelUrlFiles';
-        break;
-      case 'modelImgs':
-        keyName = 'modelImgsFiles';
-        break;
-      case 'modelMaterialUrl':
-        keyName = 'modelMaterialUrlFiles';
-        break;
-      default:
-        keyName = '';
-        break;
-    }
-    let files = { ...this.state.files };
-    files[keyName] = e.target.files;
-    this.setState({ files });
-    let filesTxt = '';
-    for (const i of e.target.files) filesTxt += `${i.name},`;
-    this.setState(
-      {
-        data: {
-          ...this.state.data,
-          [elm]: filesTxt.slice(0, -1) // comma separated list of files as mysql record
-        }
-      },
-      () => {
-        //   console.log('this.state.data', this.state.data);
-        console.log('this.state', this.state);
+    try {
+      let files = { ...this.state.files };
+      files[elm] = e.target.files;
+      this.setState({ files });
+      let filesTxt = '';
+      let x = 0;
+      for (const i of e.target.files) {
+        const fileName = i.name;
+        // filesTxt += `${uuid()}-${fileName},`;
+        filesTxt += `${uuid()}-${fileName
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .toLowerCase()
+          .replace(/\s/g, '-')},`;
       }
-    );
+      // console.log('this.sate.files :>> ', this.state);
 
-    this.setState({ isSaved: false });
+      this.setState(
+        {
+          data: {
+            ...this.state.data,
+            [elm]: filesTxt.slice(0, -1) // comma separated list of files as mysql record
+          }
+        },
+        () => {
+          //   console.log('this.state.data', this.state.data);
+          // console.log('this.state', this.state);
+        }
+      );
+
+      this.setState({ isSaved: false });
+    } catch (error) {}
   };
 
   inputDataUpdater = (elm: string, e: any) => {
