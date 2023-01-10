@@ -9,6 +9,18 @@ export const getAllModels3ds = async (req: Request, res: Response) => {
     res.json({ message: error.message });
   }
 };
+export const getLastModelId = async (req: Request, res: Response) => {
+  try {
+    const id = await ModelControllerTypes.findAll({
+      limit: 1,
+      where: {},
+      order: [['createdAt', 'DESC']]
+    });
+    res.json(id);
+  } catch (error: any | unknown) {
+    res.json({ message: error.message });
+  }
+};
 
 export const getModels3dById = async (req: Request, res: Response) => {
   try {
@@ -25,12 +37,10 @@ export const getModels3dById = async (req: Request, res: Response) => {
 
 export const createModels3d = async (req: Request, res: Response) => {
   try {
-    await ModelControllerTypes.create(req.body);
-    console.log('req.body :>> ', req.body);
-    res.json({
-      message: 'ModelControllerTypes Created'
+    const a = await ModelControllerTypes.create(req.body);
+    res.status(200).json({
+      message: 'Success creating a new record'
     });
-    // res.send();
   } catch (error: any | unknown) {
     res.json({ message: error.message });
   }

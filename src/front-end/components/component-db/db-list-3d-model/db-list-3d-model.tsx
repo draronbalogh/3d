@@ -30,8 +30,8 @@ export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
   componentDidUpdate(prevProps: Model3dProps) {}
 
   get3dModel = async () => {
-    const response = await axios.get<any>(_CONFIG.url.getModel),
-      resp = response.data;
+    const response = await axios.get<any>(_CONFIG.url.getModel);
+    const resp = response.data;
     this.setState({ data: resp, isDeleted: false });
     this.props.updateData(resp);
   };

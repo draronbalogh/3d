@@ -10,7 +10,7 @@ import Form from 'react-bootstrap/Form';
 import { v4 as uuid } from 'uuid';
 import { _CONFIG } from '../../../../_config/_config';
 import { modelConfig } from '../../../../_config/config-model';
-
+import { getAllModels3ds } from '../../../../back-end/controllers/controllers-3dmodels';
 interface Model3dState {
   id: number | undefined;
   data: any;
@@ -60,21 +60,32 @@ export class DbAdd3dModel extends React.Component<any, any> {
         });
       }
       try {
-        const res1 = await axios.post(_CONFIG.url.getModel, data, {}).then((response) => {
+        let folderId = null;
+        const res1 = await axios.post(_CONFIG.url.getModel, data, {}).then((response: any) => {
           if (response.data.success === false) {
-            console.log('Error uploading to safe.moe: ', response);
+            throw new Error('Error uploading to safe', response);
           }
+          console.log('create model response', response); // returned rows
         });
-        const res2 = await axios.post(_CONFIG.url.uploadFiles, filesData, {}).then((response) => {
+        const res2 = await axios.get(_CONFIG.url.getModelId).then((response: any) => {
+          if (response.data.success === false) {
+            throw new Error('Error getting last id', response);
+          }
+          /* const id = response.data.sort(function (a: any, b: any) {
+            return a.id - b.id;
+          });
+          */
+          folderId = response.data[0].id;
+          filesData.append('modelLastId', String(folderId));
+          //filesData.append('folderId', folderId, undefined);
+        });
+        const res3 = await axios.post(_CONFIG.url.uploadFiles, filesData, {}).then((response) => {
           if (response.data.success === false) {
             console.log('Error uploading to safe.moe: ', response);
           }
         });
       } catch (e: any) {
-        const statusCode = e.response.status; // 400
-        const statusText = e.response.statusText; // Bad Request
-        const message = e.response.data.message[0]; // id should not be empty
-        console.log(`${statusCode} - ${statusText} - ${message}`);
+        console.log(e);
       } finally {
         this.setState({ isSaved: true });
       }

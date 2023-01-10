@@ -27,9 +27,11 @@ try {
 const folder = path.join(_CONFIG.url.uploadFolder);
 if (!fs.existsSync(folder)) fs.mkdirSync(folder, '0777');
 
-const upload = (req: any, res: any, next: any) => {
-  const form = new formidable.IncomingForm({
-    uploadDir: folder,
+const upload = async (req: any, res: any, next: any) => {
+  let folderId = '';
+  let subFolderPath = 'xxx';
+  const preForm = await new formidable.IncomingForm({
+    uploadDir: _CONFIG.url.uploadFolder,
     keepExtensions: true,
     allowEmptyFiles: false,
     minFileSize: 1, //byte
@@ -42,6 +44,41 @@ const upload = (req: any, res: any, next: any) => {
       return mimetype && mimetype.includes('image');
     }*/
   });
+  console.log('preFormpreFormpreFormpreForm');
+  console.log(preForm);
+  preForm.on('progress', function (bytesReceived, bytesExpected) {
+    console.log((100 * bytesReceived) / bytesExpected + '%');
+  });
+  preForm.parse(req, async (err, fields, files) => {
+    if (err) {
+      next(err);
+      return;
+    } else {
+      folderId = String(fields.modelLastId);
+      // preForm.uploadDir = uploadDir;
+      subFolderPath = path.join(_CONFIG.url.uploadFolder + folderId);
+      if (!fs.existsSync(subFolderPath)) fs.mkdirSync(subFolderPath, '0777');
+      console.log('xxxxxxxxxxxxxxxxx');
+      console.log(folderId);
+    }
+  });
+  console.log('yyyyyyyyyyyyyyyyy');
+  console.log(_CONFIG.url.uploadFolder + folderId);
+
+  /*
+  const form = await new formidable.IncomingForm({
+    uploadDir: _CONFIG.url.uploadFolder + folderId,
+    keepExtensions: true,
+    allowEmptyFiles: false,
+    minFileSize: 1, //byte
+    maxFileSize: 200 * 1024 * 1024, // 200mb
+    multiples: true,
+    filename: (name: string, ext: string, part: any, form: any) => {
+      return name + ext;
+    }
+  });
+  console.log('formformformformformformformformformformformformform :>> ');
+  console.log(form);
   // const files: any[] = [];
   // const fields: any[] = [];
 
@@ -50,17 +87,11 @@ const upload = (req: any, res: any, next: any) => {
       next(err);
       return;
     } else {
-      //console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
-      //console.log('fields', util.inspect({ fields: fields, files: files }));
-      //res.send(util.inspect({ fields: fields, files: files }));
-      //res.writeHead(200, { 'Content-Type': 'application/json' });
-      //res.end(JSON.stringify({ fields, files }, null, 2));
       res.status(200).json({ fields, files });
       // res.redirect('/uploadSuccess');
     }
-  });
+  });*/
 };
-
 const deleteFiles = async (req: any, res: any, next: any) => {
   console.clear();
   console.log('sss');
