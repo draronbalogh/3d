@@ -88,12 +88,11 @@ const deleteFiles = async (req: any, res: any, next: any) => {
   });
 
   res.json({ status: 200 });
-  //res.end();
 };
 app.use(cors());
 app.use(bodyParser.json()); // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
-app.use('/deleteFiles', deleteFiles);
+app.post('/deleteFiles', deleteFiles);
 app.post('/upload', upload);
 app.use('/api/3dmodels', routes3d);
 

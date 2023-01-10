@@ -60,8 +60,16 @@ export class DbAdd3dModel extends React.Component<any, any> {
         });
       }
       try {
-        const res1 = await axios.post(_CONFIG.url.getModel, data, {});
-        const res2 = await axios.post(_CONFIG.url.uploadFiles, filesData, {});
+        const res1 = await axios.post(_CONFIG.url.getModel, data, {}).then((response) => {
+          if (response.data.success === false) {
+            console.log('Error uploading to safe.moe: ', response);
+          }
+        });
+        const res2 = await axios.post(_CONFIG.url.uploadFiles, filesData, {}).then((response) => {
+          if (response.data.success === false) {
+            console.log('Error uploading to safe.moe: ', response);
+          }
+        });
       } catch (e: any) {
         const statusCode = e.response.status; // 400
         const statusText = e.response.statusText; // Bad Request
