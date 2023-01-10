@@ -1,7 +1,3 @@
-/*
-Full desc.:
-https://dev.to/chukwunazaekpere/project-setup-for-nodejs-react-using-typescript-running-both-servers-express-and-react-concurrently-1cfd
-*/
 {
   "compilerOptions": {
     "target": "es2022" /*es5, es6*/ /*changed later*/,

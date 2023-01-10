@@ -51,12 +51,10 @@ export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
     await axios.delete(_CONFIG.url.getModel + id).then((response) => {
       if (response.data.success === false) {
         console.log('Error uploading to safe.moe: ', response);
-        this.setState({ isDeleted: false });
       } else {
         // https://stackoverflow.com/questions/51588360/how-to-redirect-in-axios
         // <Navigate to='/' />;
-        //  window.location.href = '/';
-        this.setState({ isDeleted: true });
+        window.location.href = '/';
       }
     });
     // this.get3dModel();
@@ -67,7 +65,6 @@ export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
   };
   updateData = (updateData: unknown) => {
     this.props.updateId(updateData);
-    this.setState({ isDeleted: false });
   };
   printModelTitle = () => {
     return modelConfig.map((v: any, i: number) => {
@@ -109,21 +106,15 @@ export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
     const { isDeleted } = this.state;
     return (
       <div>
-        {isDeleted ? (
-          <Navigate to='/' replace={false} />
-        ) : (
-          <>
-            <Link to='/add' className='button is-primary mt-2'>
-              Hozzáadás
-            </Link>
-            <Table striped bordered hover size='sm'>
-              <thead>
-                <tr>{this.printModelTitle()}</tr>
-              </thead>
-              <tbody>{this.printModelDesc()}</tbody>
-            </Table>
-          </>
-        )}
+        <Link to='/add' className='button is-primary mt-2'>
+          Hozzáadás
+        </Link>
+        <Table striped bordered hover size='sm'>
+          <thead>
+            <tr>{this.printModelTitle()}</tr>
+          </thead>
+          <tbody>{this.printModelDesc()}</tbody>
+        </Table>
       </div>
     );
   }
