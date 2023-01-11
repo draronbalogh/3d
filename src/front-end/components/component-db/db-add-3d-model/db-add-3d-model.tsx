@@ -24,7 +24,8 @@ export class DbAdd3dModel extends React.Component<any, any> {
     this.state = {
       isSaved: false,
       data: {},
-      files: { modelUrl: [], modelImgs: [], modelMaterialUrl: [] }
+      files: { modelUrl: [], modelImgs: [], modelMaterialUrl: [] },
+      folderId: null
     };
     this.form = React.createRef();
   }
@@ -39,12 +40,22 @@ export class DbAdd3dModel extends React.Component<any, any> {
         data: data
       });
     });
+    const res2 = axios.get(_CONFIG.url.getModelId).then((response: any) => {
+      if (response.data.success === false) {
+        throw new Error('Error getting last id', response);
+      }
+      /* const id = response.data.sort(function (a: any, b: any) {
+            return a.id - b.id;
+          });
+          */
+      this.setState({ folderId: response.data[0].id });
+    });
   }
 
   componentDidUpdate(prevProps: any) {}
   save3dModel = async (e: any) => {
     e.preventDefault();
-    const { data, files } = this.state;
+    const { data, files, folderId } = this.state;
     // console.log('data :>> ', data);
     // console.log('files :>> ', files);
     try {
@@ -56,7 +67,7 @@ export class DbAdd3dModel extends React.Component<any, any> {
           //   console.log('file-->', file);
           //    console.log(' data.file', data[file]);
           const nameSeparatedByComma = data[file].split(',')[index];
-          if (individualFile) filesData.append('file', individualFile as Blob, nameSeparatedByComma);
+          if (individualFile) filesData.append(folderId, individualFile as Blob, nameSeparatedByComma);
         });
       }
       try {
@@ -67,18 +78,7 @@ export class DbAdd3dModel extends React.Component<any, any> {
           }
           console.log('create model response', response); // returned rows
         });
-        const res2 = await axios.get(_CONFIG.url.getModelId).then((response: any) => {
-          if (response.data.success === false) {
-            throw new Error('Error getting last id', response);
-          }
-          /* const id = response.data.sort(function (a: any, b: any) {
-            return a.id - b.id;
-          });
-          */
-          folderId = response.data[0].id;
-          filesData.append('modelLastId', String(folderId));
-          //filesData.append('folderId', folderId, undefined);
-        });
+
         const res3 = await axios.post(_CONFIG.url.uploadFiles, filesData, {}).then((response) => {
           if (response.data.success === false) {
             console.log('Error uploading to safe.moe: ', response);
@@ -173,7 +173,7 @@ export class DbAdd3dModel extends React.Component<any, any> {
 
   formBuilder = (i: number, elm: any) => {
     // console.log('elm :>> ', elm);
-    let { data } = this.state,
+    let { data, folderId } = this.state,
       ctr = modelConfig[i].control,
       category = modelConfig[i].categories;
     // console.log('elm :>> ', elm.name);
@@ -194,9 +194,10 @@ export class DbAdd3dModel extends React.Component<any, any> {
           </Form.Select>
         );
       case 'file':
+        console.log('folderId', folderId);
         // webkitdirectory={'false'}
         //@ts-ignore
-        return <Form.Control multiple type={ctr} name='imageName' onChange={(e) => this.inputFileDataUpdater(elm.name, e)}></Form.Control>;
+        return <input multiple type={ctr} name={folderId} onChange={(e) => this.inputFileDataUpdater(elm.name, e)}></input>;
       case 'textarea':
         return <Form.Control as={ctr} rows={3} value={data?.hasOwnProperty(elm.name) ? data[elm.name] : ''} onChange={(e) => this.inputDataUpdater(elm.name, e.target.value)}></Form.Control>;
       default:
@@ -204,7 +205,7 @@ export class DbAdd3dModel extends React.Component<any, any> {
     }
   };
   render() {
-    const { isSaved } = this.state;
+    const { isSaved, folderId } = this.state;
 
     return isSaved ? (
       <Navigate to='/' />

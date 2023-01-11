@@ -3,10 +3,12 @@ import db from '../_config/config-database';
 import routes3d from './routes/index';
 import cors from 'cors';
 import bodyParser from 'body-parser';
-import formidable from 'formidable';
+import formidable, { errors as formidableErrors } from 'formidable';
+import { createNecessaryDirectoriesSync } from '../assets/fileActions';
 import os from 'node:os';
 import path from 'path';
 import fs from 'node:fs';
+import fsPromises from 'node:fs/promises';
 import util from 'node:util';
 import axios, { AxiosResponse } from 'axios';
 import { fileURLToPath } from 'node:url';
@@ -24,64 +26,82 @@ try {
 } catch (error) {
   console.error('Connection error:', error);
 }
-const folder = path.join(_CONFIG.url.uploadFolder);
-if (!fs.existsSync(folder)) fs.mkdirSync(folder, '0777');
+createNecessaryDirectoriesSync(_CONFIG.url.uploadFolder);
 
 const upload = async (req: any, res: any, next: any) => {
+  console.log('uploaduploaduploaduploadupload');
+  console.log(req.params.id);
+  console.log(res.params);
+  //const { modelLastId } = req.params;
+  //const { modelLastId } = req.body;
   let folderId = '';
-  let subFolderPath = 'xxx';
-  const preForm = await new formidable.IncomingForm({
-    uploadDir: _CONFIG.url.uploadFolder,
+  const form = new formidable.IncomingForm({
+    //  uploadDir: _CONFIG.url.uploadFolder,
     keepExtensions: true,
     allowEmptyFiles: false,
-    minFileSize: 1, //byte
+    minFileSize: 100, //bytes
+    maxFiles: 20, // or Infinity
     maxFileSize: 200 * 1024 * 1024, // 200mb
-    multiples: true,
+    // multiples: true,
     filename: (name: string, ext: string, part: any, form: any) => {
+      const { originalFilename, mimetype } = part;
       return name + ext;
-    } /*
-     filter: ({ name, originalFilename, mimetype }) => {
-      return mimetype && mimetype.includes('image');
+    }
+    /*filter: ({ name, originalFilename, mimetype }) => {
+      return true;
+      // custom file filters
+      // ex.: return mimetype && mimetype.includes("image"); // keep only images
     }*/
   });
-  console.log('preFormpreFormpreFormpreForm');
-  console.log(preForm);
-  preForm.on('progress', function (bytesReceived, bytesExpected) {
+  form.on('file', () => {
+    console.log('filefilefilefile');
+    // same as fileBegin, except
+    // it is too late to change file.filepath
+    // file.hash is available if options.hash was used
+  });
+
+  form.on('progress', function (bytesReceived: any, bytesExpected: any) {
     console.log((100 * bytesReceived) / bytesExpected + '%');
   });
-  preForm.parse(req, async (err, fields, files) => {
+  form.on('field', (name, value) => {
+    folderId = value;
+    //Emitted whenever a field / value pair has been received.
+  });
+  form.on('fileBegin', (formname, file) => {
+    // accessible here
+    // formName the name in the form (<input name="thisname" type="file">) or http filename for octetstream
+    // file.originalFilename http filename or null if there was a parsing error
+    // file.newFilename generated hexoid or what options.filename returned
+    // file.filepath default pathname as per options.uploadDir and options.filename
+    // file.filepath = CUSTOM_PATH // to change the final path
+    createNecessaryDirectoriesSync(_CONFIG.url.uploadFolder + formname);
+    const cim = path.join(_CONFIG.url.uploadFolder + formname + '/' + file.originalFilename);
+
+    file.filepath = cim;
+    folderId = formname;
+  });
+  form.on('aborted', () => {
+    //Emitted when the request was aborted by the user. Right now this can be due to a 'timeout' or 'close' event on the socket. After this event is emitted, an error event will follow.
+  });
+  form.on('end', () => {
+    console.log('endendendendendendend');
+    //This is a great place for you to send your response.
+  });
+  form.on('error', (err) => {});
+
+  form.parse(req, async (err, fields, files) => {
+    //@ts-ignore
+
+    console.log('parseparseparseparseparseparse');
     if (err) {
       next(err);
       return;
     } else {
-      folderId = String(fields.modelLastId);
-      // preForm.uploadDir = uploadDir;
-      subFolderPath = path.join(_CONFIG.url.uploadFolder + folderId);
-      if (!fs.existsSync(subFolderPath)) fs.mkdirSync(subFolderPath, '0777');
-      console.log('xxxxxxxxxxxxxxxxx');
-      console.log(folderId);
     }
+    res.json({ fields, files });
   });
-  console.log('yyyyyyyyyyyyyyyyy');
-  console.log(_CONFIG.url.uploadFolder + folderId);
 
-  /*
-  const form = await new formidable.IncomingForm({
-    uploadDir: _CONFIG.url.uploadFolder + folderId,
-    keepExtensions: true,
-    allowEmptyFiles: false,
-    minFileSize: 1, //byte
-    maxFileSize: 200 * 1024 * 1024, // 200mb
-    multiples: true,
-    filename: (name: string, ext: string, part: any, form: any) => {
-      return name + ext;
-    }
-  });
-  console.log('formformformformformformformformformformformformform :>> ');
-  console.log(form);
-  // const files: any[] = [];
-  // const fields: any[] = [];
-
+  /* 
   form.parse(req, async (err, fields, files) => {
     if (err) {
       next(err);
