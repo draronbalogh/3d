@@ -116,16 +116,22 @@ const deleteFiles = async (req: any, res: any, next: any) => {
   console.clear();
   console.log('sss');
   let arr: string[] = req.body.deleteTheseFiles || [];
-  const folder = path.join(_CONFIG.url.uploadFolder);
+  let id = req.body.id;
+  let deleteFolder = req.body.deleteFolder;
+  const folder = path.join(_CONFIG.url.uploadFolder + id + '/');
   console.log('aaaaaaaaaaaaaaaaaaa');
+
+  console.log(folder);
   console.log(arr.length);
   console.log(arr);
-
+  console.log('bbbbbbbbbbb');
+  console.log(deleteFolder);
   arr.forEach((filePath) => {
     console.log('filePathfilePathfilePathfilePathfilePath');
     console.log(filePath);
     console.log(fs.existsSync(folder + filePath));
     console.log(folder + filePath);
+
     if (fs.existsSync(folder + filePath)) {
       fs.unlink(folder + filePath, (err) => {
         if (err) {
@@ -135,6 +141,15 @@ const deleteFiles = async (req: any, res: any, next: any) => {
           console.log('File removed:', filePath);
         }
       });
+    }
+    if (deleteFolder) {
+      try {
+        fs.rmdirSync(folder, { recursive: true });
+
+        console.log(`${folder} is deleted!`);
+      } catch (err) {
+        console.error(`Error while deleting ${folder}.`);
+      }
     }
   });
 

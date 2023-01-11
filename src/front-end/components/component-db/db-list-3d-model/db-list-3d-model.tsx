@@ -43,7 +43,7 @@ export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
     let modelUrl = ob['modelUrl'] ? ob['modelUrl']?.split(',') : [];
     let deleteTheseFiles = [...modelImgs, ...modelMaterialUrl, ...modelUrl];
     console.log('imgArray', deleteTheseFiles);
-    await axios.post(_CONFIG.url.deleteFiles, { deleteTheseFiles }, {}).then((response) => {
+    await axios.post(_CONFIG.url.deleteFiles, { deleteTheseFiles, id: ob['id'], deleteFolder: true }, {}).then((response) => {
       if (response.data.success === false) {
         console.log('Error uploading to safe.moe: ', response);
       }

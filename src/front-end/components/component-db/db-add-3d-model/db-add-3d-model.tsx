@@ -48,7 +48,8 @@ export class DbAdd3dModel extends React.Component<any, any> {
             return a.id - b.id;
           });
           */
-      this.setState({ folderId: response.data[0].id });
+      let currId = response.data.length ? Number(response.data[0].id) + 1 : '_must_set_id_';
+      this.setState({ folderId: currId });
     });
   }
 
@@ -194,10 +195,10 @@ export class DbAdd3dModel extends React.Component<any, any> {
           </Form.Select>
         );
       case 'file':
-        console.log('folderId', folderId);
+        // console.log('folderId', folderId);
         // webkitdirectory={'false'}
         //@ts-ignore
-        return <input multiple type={ctr} name={folderId} onChange={(e) => this.inputFileDataUpdater(elm.name, e)}></input>;
+        return <Form.Control multiple type={ctr} name={folderId} onChange={(e) => this.inputFileDataUpdater(elm.name, e)}></Form.Control>;
       case 'textarea':
         return <Form.Control as={ctr} rows={3} value={data?.hasOwnProperty(elm.name) ? data[elm.name] : ''} onChange={(e) => this.inputDataUpdater(elm.name, e.target.value)}></Form.Control>;
       default:
