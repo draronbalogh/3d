@@ -146,7 +146,7 @@ const deleteFiles = async (req: any, res: any, next: any) => {
       try {
         fs.rmdirSync(folder, { recursive: true });
 
-        console.log(`${folder} is deleted!`);
+        console.log(`${folder} is now deleted!`);
       } catch (err) {
         console.error(`Error while deleting ${folder}.`);
       }
