@@ -152,8 +152,9 @@ const deleteFiles = async (req: any, res: any, next: any) => {
       }
     }
   });
-
-  res.json({ status: 200 });
+  //res.redirect([200], 'back');
+  let newTask = Object.assign({ id: id }, req.body);
+  res.json({ status: 200, message: 'POST recieved', newTask: newTask });
 };
 app.use(cors());
 app.use(bodyParser.json()); // for parsing application/json

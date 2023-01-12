@@ -54,7 +54,8 @@ export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
       } else {
         // https://stackoverflow.com/questions/51588360/how-to-redirect-in-axios
         // <Navigate to='/' />;
-        window.location.href = '/';
+        // window.location.href = '/';
+        this.get3dModel();
       }
     });
     // this.get3dModel();
@@ -72,6 +73,7 @@ export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
     });
   };
   printModelDesc = () => {
+    // TODO::: error javítás, ha nem az utolsót törlöm, hanem egyel korábbit, akkor nem törlni a foldert.
     const { data } = this.state;
     let id: any = null;
     return data?.map((elm, i) => (
@@ -88,6 +90,7 @@ export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
   printEditorBtns = (id: number) => {
     const { data } = this.state;
     let obj = data.find((o) => o.id === id);
+
     return (
       <td>
         <Link to={`/edit/${id}`} className='button is-small is-info'>
