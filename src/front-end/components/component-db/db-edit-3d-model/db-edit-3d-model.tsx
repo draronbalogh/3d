@@ -9,6 +9,8 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { _CONFIG } from '../../../../_config/_config';
 import { modelConfig } from '../../../../_config/config-model';
+import db from '../../../../_config/config-database';
+
 interface Model3dState {
   id: number | undefined;
   data: any;

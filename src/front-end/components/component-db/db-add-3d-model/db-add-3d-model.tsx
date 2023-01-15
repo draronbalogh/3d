@@ -10,7 +10,7 @@ import Form from 'react-bootstrap/Form';
 import { v4 as uuid } from 'uuid';
 import { _CONFIG } from '../../../../_config/_config';
 import { modelConfig } from '../../../../_config/config-model';
-import { getAllModels3ds } from '../../../../back-end/controllers/controllers-3dmodels';
+import { getAllModels3ds, getLastModelId } from '../../../../back-end/controllers/controllers-3dmodels';
 interface Model3dState {
   id: number | undefined;
   data: any;
@@ -30,8 +30,9 @@ export class DbAdd3dModel extends React.Component<any, any> {
     this.form = React.createRef();
   }
 
-  componentDidMount(): void {
+  async componentDidMount() {
     let { data } = this.state;
+    let { folderId } = this.state;
     modelConfig?.forEach((elm: any, i: number) => {
       let d = data[modelConfig[i].name];
       elm.name !== 'id' && elm.control !== 'switch' ? (d = '') : null;
@@ -40,28 +41,78 @@ export class DbAdd3dModel extends React.Component<any, any> {
         data: data
       });
     });
-    const res2 = axios.get(_CONFIG.url.getModelId).then((response: any) => {
+    let id = null;
+    let aid = null;
+    const res0 = await axios.get(_CONFIG.url.getLastId).then((response: any) => {
       if (response.data.success === false) {
-        throw new Error('Error getting last id', response);
+        throw new Error('Error getLastId', response);
       }
-      /* const id = response.data.sort(function (a: any, b: any) {
-            return a.id - b.id;
-          });
-          */
-      let currId = response.data.length ? Number(response.data[0].id) + 1 : '_must_set_id_';
-      this.setState({ folderId: currId });
+
+      if (response.data.length) {
+        console.log('response.data0000', response.data[0].id);
+        console.log('van hossz');
+        aid = response.data[0].id;
+        this.setState({ folderId: aid });
+      }
+
+      //this.setState({ folderId: id });
     });
+    console.log('aidaid', aid);
+    if (!aid) {
+      console.log('nincs aid', aid);
+      await axios.get(_CONFIG.url.getEmptyTablesLastId).then((response: any) => {
+        if (response.data.success === false) {
+          throw new Error('Error getEmptyTablesLastId last id', response);
+        }
+        console.log('response.aidaiddata2222222222', response.data);
+        id = Number(response.data) + 1;
+        folderId = id;
+        this.setState({ folderId: id });
+      });
+    }
+    /*  const res2 = axios.get(_CONFIG.url.getEmptyTablesLastId).then((response: any) => {
+      if (response.data.success === false) {
+        throw new Error('Error getEmptyTablesLastId last id', response);
+         console.log('response.data', response.data);
+      this.setState({ folderId: Number(response.data) + 1 });
+    });
+    */
   }
 
   componentDidUpdate(prevProps: any) {}
   save3dModel = async (e: any) => {
     e.preventDefault();
-    const { data, files, folderId } = this.state;
+    const { data, files } = this.state;
+    let { folderId } = this.state;
     // console.log('data :>> ', data);
     // console.log('files :>> ', files);
     try {
-      const filesData = new FormData();
+      let id = null;
+      let aid = null;
+      const res0 = await axios.get(_CONFIG.url.getLastId).then((response: any) => {
+        if (response.data.success === false) {
+          throw new Error('Error getLastId', response);
+        }
+        console.log('response.data0000', response);
+        if (response.data.length) {
+          aid = response.data[0].id;
+          this.setState({ folderId: aid });
+        }
 
+        //this.setState({ folderId: id });
+      });
+      if (!aid) {
+        await axios.get(_CONFIG.url.getEmptyTablesLastId).then((response: any) => {
+          if (response.data.success === false) {
+            throw new Error('Error getEmptyTablesLastId last id', response);
+          }
+          console.log('response.data2222222222', response.data);
+          id = Number(response.data) + 1;
+          folderId = id;
+          this.setState({ folderId: id });
+        });
+      }
+      const filesData = new FormData();
       for (const file in files) {
         Object.values(files[file]).forEach((individualFile, index) => {
           //          console.log('index :>> ', index);
@@ -72,12 +123,11 @@ export class DbAdd3dModel extends React.Component<any, any> {
         });
       }
       try {
-        let folderId = null;
         const res1 = await axios.post(_CONFIG.url.getModel, data, {}).then((response: any) => {
           if (response.data.success === false) {
             throw new Error('Error uploading to safe', response);
           }
-          console.log('create model response', response); // returned rows
+          console.log('res1 response', response); // returned rows
         });
 
         const res3 = await axios.post(_CONFIG.url.uploadFiles, filesData, {}).then((response) => {
@@ -198,7 +248,8 @@ export class DbAdd3dModel extends React.Component<any, any> {
         // console.log('folderId', folderId);
         // webkitdirectory={'false'}
         //@ts-ignore
-        return <Form.Control multiple type={ctr} name={folderId} onChange={(e) => this.inputFileDataUpdater(elm.name, e)}></Form.Control>;
+        console.log('folderId :>> ', folderId);
+        return <Form.Control multiple type={ctr} name={folderId ? folderId : ''} onChange={(e) => this.inputFileDataUpdater(elm.name, e)}></Form.Control>;
       case 'textarea':
         return <Form.Control as={ctr} rows={3} value={data?.hasOwnProperty(elm.name) ? data[elm.name] : ''} onChange={(e) => this.inputDataUpdater(elm.name, e.target.value)}></Form.Control>;
       default:

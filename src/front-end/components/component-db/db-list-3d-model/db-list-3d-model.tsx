@@ -82,24 +82,21 @@ export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
           if (vv === 'id') id = elm[vv];
           return <td key={ii}>{elm[vv]}</td>;
         })}
-        {this.printEditorBtns(id)}
+        {this.printEditorBtns(elm)}
       </tr>
     ));
   };
 
-  printEditorBtns = (id: number) => {
-    const { data } = this.state;
-    let obj = data.find((o) => o.id === id);
-
+  printEditorBtns = (elm: any) => {
     return (
       <td>
-        <Link to={`/edit/${id}`} className='button is-small is-info'>
+        <Link to={`/edit/${elm.id}`} className='button is-small is-info'>
           Szerkesztés
         </Link>
-        <a onClick={() => this.delete3dModel(id, obj)} className='button is-small is-danger'>
+        <a onClick={() => this.delete3dModel(elm.id, elm)} className='button is-small is-danger'>
           Törlés
         </a>
-        <Link to={`/view/${id}`} className='button is-small is-info'>
+        <Link to={`/view/${elm.id}`} className='button is-small is-info'>
           Megjelenítés
         </Link>
       </td>

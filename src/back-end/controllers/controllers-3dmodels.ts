@@ -1,5 +1,8 @@
 import ModelControllerTypes from '../models/models-3dmodels';
 import { Request, Response } from 'express';
+import { QueryTypes } from 'sequelize';
+// Option 3: Passing parameters separately (other dialects)
+import db from '../../_config/config-database';
 
 export const getAllModels3ds = async (req: Request, res: Response) => {
   try {
@@ -9,6 +12,19 @@ export const getAllModels3ds = async (req: Request, res: Response) => {
     res.json({ message: error.message });
   }
 };
+export const getEmptyTablesLastId = async (req: Request, res: Response) => {
+  try {
+    // let id = await db.query('SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA = "3d" AND TABLE_NAME = "models"');
+    // let { AUTO_INCREMENT } = id;
+    let id = await db.query('SELECT `AUTO_INCREMENT` FROM information_schema.TABLES WHERE TABLE_SCHEMA = "3d" AND TABLE_NAME = "models"');
+    //@ts-ignore
+
+    res.json(id[0][0].AUTO_INCREMENT); //id[0][0].AUTO_INCREMENT
+  } catch (error: any | unknown) {
+    res.json({ message: error.message });
+  }
+};
+
 export const getLastModelId = async (req: Request, res: Response) => {
   try {
     const id = await ModelControllerTypes.findAll({
