@@ -8,9 +8,11 @@ import { NULL } from 'node-sass';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { v4 as uuid } from 'uuid';
+import { nanoid } from 'nanoid';
 import { _CONFIG } from '../../../../_config/_config';
 import { modelConfig } from '../../../../_config/config-model';
 import { getAllModels3ds, getLastModelId } from '../../../../back-end/controllers/controllers-3dmodels';
+import { removeHunChars } from '../../../../assets/es6-methods';
 interface Model3dState {
   id: number | undefined;
   data: any;
@@ -25,14 +27,14 @@ export class DbAdd3dModel extends React.Component<any, any> {
       isSaved: false,
       data: {},
       files: { modelUrl: [], modelImgs: [], modelMaterialUrl: [] },
-      folderId: null
+      folderName: null,
+      folderId: nanoid(8).toLocaleLowerCase()
     };
     this.form = React.createRef();
   }
 
   async componentDidMount() {
     let { data } = this.state;
-    let { folderId } = this.state;
     modelConfig?.forEach((elm: any, i: number) => {
       let d = data[modelConfig[i].name];
       elm.name !== 'id' && elm.control !== 'switch' ? (d = '') : null;
@@ -41,77 +43,15 @@ export class DbAdd3dModel extends React.Component<any, any> {
         data: data
       });
     });
-    let id = null;
-    let aid = null;
-    const res0 = await axios.get(_CONFIG.url.getLastId).then((response: any) => {
-      if (response.data.success === false) {
-        throw new Error('Error getLastId', response);
-      }
-
-      if (response.data.length) {
-        console.log('response.data0000', response.data[0].id);
-        console.log('van hossz');
-        aid = response.data[0].id;
-        this.setState({ folderId: aid });
-      }
-
-      //this.setState({ folderId: id });
-    });
-    console.log('aidaid', aid);
-    if (!aid) {
-      console.log('nincs aid', aid);
-      await axios.get(_CONFIG.url.getEmptyTablesLastId).then((response: any) => {
-        if (response.data.success === false) {
-          throw new Error('Error getEmptyTablesLastId last id', response);
-        }
-        console.log('response.aidaiddata2222222222', response.data);
-        id = Number(response.data) + 1;
-        folderId = id;
-        this.setState({ folderId: id });
-      });
-    }
-    /*  const res2 = axios.get(_CONFIG.url.getEmptyTablesLastId).then((response: any) => {
-      if (response.data.success === false) {
-        throw new Error('Error getEmptyTablesLastId last id', response);
-         console.log('response.data', response.data);
-      this.setState({ folderId: Number(response.data) + 1 });
-    });
-    */
   }
-
   componentDidUpdate(prevProps: any) {}
   save3dModel = async (e: any) => {
     e.preventDefault();
     const { data, files } = this.state;
-    let { folderId } = this.state;
-    // console.log('data :>> ', data);
-    // console.log('files :>> ', files);
+    let { folderId, folderName } = this.state;
+    let fullFolderName = folderName + folderId;
+    console.log('fullFolderName', fullFolderName);
     try {
-      let id = null;
-      let aid = null;
-      const res0 = await axios.get(_CONFIG.url.getLastId).then((response: any) => {
-        if (response.data.success === false) {
-          throw new Error('Error getLastId', response);
-        }
-        console.log('response.data0000', response);
-        if (response.data.length) {
-          aid = response.data[0].id;
-          this.setState({ folderId: aid });
-        }
-
-        //this.setState({ folderId: id });
-      });
-      if (!aid) {
-        await axios.get(_CONFIG.url.getEmptyTablesLastId).then((response: any) => {
-          if (response.data.success === false) {
-            throw new Error('Error getEmptyTablesLastId last id', response);
-          }
-          console.log('response.data2222222222', response.data);
-          id = Number(response.data) + 1;
-          folderId = id;
-          this.setState({ folderId: id });
-        });
-      }
       const filesData = new FormData();
       for (const file in files) {
         Object.values(files[file]).forEach((individualFile, index) => {
@@ -119,7 +59,7 @@ export class DbAdd3dModel extends React.Component<any, any> {
           //   console.log('file-->', file);
           //    console.log(' data.file', data[file]);
           const nameSeparatedByComma = data[file].split(',')[index];
-          if (individualFile) filesData.append(folderId, individualFile as Blob, nameSeparatedByComma);
+          if (individualFile) filesData.append(fullFolderName, individualFile as Blob, nameSeparatedByComma);
         });
       }
       try {
@@ -192,24 +132,19 @@ export class DbAdd3dModel extends React.Component<any, any> {
   };
 
   inputDataUpdater = (elm: string, e: any) => {
+    const { folderId } = this.state;
+    console.log('folderId', folderId);
     this.setState({
       data: {
         ...this.state.data,
         [elm]: e
       }
     });
-    /*if (elm === 'modelUrl' || elm === 'modelImgs' || elm === 'modelSourceUrl' || elm === 'modelMaterialUrl') {
-      let files = '';
-      for (const i of fileList) files += `${i.name},`;
-      this.setState({
-        data: {
-          ...this.state.data,
-          //   [elm]: files.slice(0, -1), // comma separated list of files as mysql record
-          [elm]: fileList
-        }
-      });
-    }*/
-    this.setState({ isSaved: false });
+
+    if (elm === 'modelTitle') {
+      let folderName = removeHunChars(e) + '_';
+      this.setState({ folderId, folderName, isSaved: false });
+    }
   };
 
   switcher = (elm: any, trgVal: any) => {
@@ -248,7 +183,7 @@ export class DbAdd3dModel extends React.Component<any, any> {
         // console.log('folderId', folderId);
         // webkitdirectory={'false'}
         //@ts-ignore
-        console.log('folderId :>> ', folderId);
+
         return <Form.Control multiple type={ctr} name={folderId ? folderId : ''} onChange={(e) => this.inputFileDataUpdater(elm.name, e)}></Form.Control>;
       case 'textarea':
         return <Form.Control as={ctr} rows={3} value={data?.hasOwnProperty(elm.name) ? data[elm.name] : ''} onChange={(e) => this.inputDataUpdater(elm.name, e.target.value)}></Form.Control>;

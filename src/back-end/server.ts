@@ -4,7 +4,7 @@ import routes3d from './routes/index';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import formidable, { errors as formidableErrors } from 'formidable';
-import { createNecessaryDirectoriesSync } from '../assets/fileActions';
+import { createNecessaryDirectoriesSync } from '../assets/file-methods';
 import os from 'node:os';
 import path from 'path';
 import fs from 'node:fs';
@@ -41,7 +41,7 @@ const upload = async (req: any, res: any, next: any) => {
     allowEmptyFiles: false,
     minFileSize: 100, //bytes
     maxFiles: 20, // or Infinity
-    maxFileSize: 200 * 1024 * 1024, // 200mb
+    maxFileSize: 2100 * 1024 * 1024, // 200mb
     // multiples: true,
     filename: (name: string, ext: string, part: any, form: any) => {
       const { originalFilename, mimetype } = part;

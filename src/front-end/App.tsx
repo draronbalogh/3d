@@ -77,6 +77,7 @@ class App extends React.Component<unknown, State> {
                   }
                 />
               }
+              <Route path='*' element={<p>Path not resolved</p>} />
             </Routes>
           </Col>
         </Row>

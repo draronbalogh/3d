@@ -85,12 +85,16 @@ https://www.newline.co/fullstack-react/articles/using-create-react-app-with-a-se
 
 
 # port terminal
-yarn add kill-port
-use:
+yarn add kill-port -- telepítése
+
+use it like:
 netstat -ano | findstr :3000
+netstat -ano | findstr :5000
+
+ahol fut:
 tskill typeyourPIDhere   // change tskill for taskkill in git bash
 
-netstat -ano | findstr :5000
+
 
 
 # mysql workbanch

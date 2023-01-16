@@ -33,7 +33,8 @@ export class DbEdit3dModel extends React.Component<any, any> {
       isSaved: false,
       data: this.props.data,
       files: { modelUrl: [], modelImgs: [], modelMaterialUrl: [] },
-      oldFilesToDel: null
+      oldFilesToDel: null,
+      folderId: null
     };
     // console.log(' this.props.data', this.props.data);
   }
