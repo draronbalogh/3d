@@ -2,7 +2,7 @@ export const modelConfig = [
   { name: 'id', label: 'Id', control: 'number', inputType: 'input', enableForAddEdit: false, isRequired: false, visibility: true },
   { name: 'createdAt', label: 'Létrehozva', control: 'input', inputType: 'text', enableForAddEdit: false, isRequired: false, visibility: true },
   { name: 'updatedAt', label: 'Frissítve', control: 'input', inputType: 'text', enableForAddEdit: false, isRequired: false, visibility: true },
-  { name: 'modelUuid', label: 'Egyedi azonosító', control: 'input', inputType: 'text', enableForAddEdit: false, isRequired: false, visibility: true },
+  { name: 'modelUuid', label: 'Egyedi azonosító', control: 'input', inputType: 'text', enableForAddEdit: true, isRequired: false, visibility: true },
   { name: 'modelUploaderUid', label: 'Feltöltő aznosítója', control: 'input', inputType: 'text', enableForAddEdit: false, isRequired: false, visibility: true },
   { name: 'modelTitle', label: 'Cím', control: 'input', inputType: 'text', enableForAddEdit: true, isRequired: true, visibility: true },
   { name: 'modelDescription', label: 'Leírás', control: 'textarea', inputType: 'text', value: '', enableForAddEdit: true, isRequired: false, visibility: true },

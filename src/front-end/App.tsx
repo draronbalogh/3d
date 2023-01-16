@@ -61,8 +61,7 @@ class App extends React.Component<unknown, State> {
               <Route path='/' element={<DbList3dModel updateId={this.updateId} updateData={this.updateData} />} />
               <Route path='/add' element={<DbAdd3dModel />} />
               <Route path='/edit/:id' element={<DbEdit3dModel data={data} />} />
-              {
-                <Route
+              {/*  <Route
                   path='/upload'
                   element={
                     <form action='/upload' encType='multipart/form-data' method='post'>
@@ -75,8 +74,7 @@ class App extends React.Component<unknown, State> {
                       <input type='submit' value='Upload' />
                     </form>
                   }
-                />
-              }
+                />*/}
               <Route path='*' element={<p>Path not resolved</p>} />
             </Routes>
           </Col>

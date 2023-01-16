@@ -62,6 +62,7 @@ export class DbAdd3dModel extends React.Component<any, any> {
           if (individualFile) filesData.append(fullFolderName, individualFile as Blob, nameSeparatedByComma);
         });
       }
+
       try {
         const res1 = await axios.post(_CONFIG.url.getModel, data, {}).then((response: any) => {
           if (response.data.success === false) {
@@ -132,19 +133,21 @@ export class DbAdd3dModel extends React.Component<any, any> {
   };
 
   inputDataUpdater = (elm: string, e: any) => {
-    const { folderId } = this.state;
-    console.log('folderId', folderId);
+    //    console.log('elm', elm, e);
+    const { folderId, folderName } = this.state;
+
+    //modelUuid
+
     this.setState({
       data: {
         ...this.state.data,
         [elm]: e
       }
     });
+    // TODO:: ha kitölti valaki a sima inputot, akkor a modeluidd -t ki kéne automata tölteni
+    if (elm === 'modelTitle') this.setState({ modelUuid: removeHunChars(e) });
 
-    if (elm === 'modelTitle') {
-      let folderName = removeHunChars(e) + '_';
-      this.setState({ folderId, folderName, isSaved: false });
-    }
+    this.setState({ isSaved: false });
   };
 
   switcher = (elm: any, trgVal: any) => {
@@ -159,7 +162,7 @@ export class DbAdd3dModel extends React.Component<any, any> {
 
   formBuilder = (i: number, elm: any) => {
     // console.log('elm :>> ', elm);
-    let { data, folderId } = this.state,
+    let { data, folderId, folderName } = this.state,
       ctr = modelConfig[i].control,
       category = modelConfig[i].categories;
     // console.log('elm :>> ', elm.name);

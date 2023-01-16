@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /**
@@ -29,14 +33,10 @@ export const validNumbers = (a: number, b: number) => typeof a === 'number' && t
  */
 export const removeHunChars = (e: string) => {
   try {
-    let a: string | undefined = e.replace(/\s\s+/g, '');
-    a = removeAccents(a);
-    e = e
-      .toLowerCase()
-      .replace(/[^a-z0-9\s]/gi, '')
-      .replace(/[_\s]/g, '-');
-    e = e.replace(/-|_/g, '_').replace(/__/g, '');
-    return e;
+    let a: any = removeAccents(e).replace(/[^a-zA-Z0-9 ]/g, '');
+    a = a.toLowerCase().replace(/[_\s]/g, '-');
+    a = a.replace(/-|_/g, '_').replace(/__/g, '');
+    return a;
   } catch (err) {
     console.log('fetchData err:', err);
   }
@@ -57,7 +57,7 @@ export const getCurrentTimeAndDate = () => {
   }
 };
 
-export const removeAccents = (str: string) => {
+export const removeAccents = (str: any) => {
   try {
     const convMap: Record<string, string> = {
       á: 'a',
