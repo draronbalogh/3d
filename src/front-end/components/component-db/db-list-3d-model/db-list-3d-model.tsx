@@ -36,14 +36,14 @@ export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
     this.props.updateData(resp);
   };
 
-  delete3dModel = async (id: number, ob: any) => {
+  delete3dModel = async (id: number, modelUuid: string, ob: any) => {
     console.log('obobobobobobobobobobobobob :>> ', ob);
     let modelImgs = ob['modelImgs'] ? ob['modelImgs']?.split(',') : [];
     let modelMaterialUrl = ob['modelMaterialUrl'] ? ob['modelMaterialUrl']?.split(',') : [];
     let modelUrl = ob['modelUrl'] ? ob['modelUrl']?.split(',') : [];
     let deleteTheseFiles = [...modelImgs, ...modelMaterialUrl, ...modelUrl];
     console.log('imgArray', deleteTheseFiles);
-    await axios.post(_CONFIG.url.deleteFiles, { deleteTheseFiles, id: ob['id'], deleteFolder: true }, {}).then((response) => {
+    await axios.post(_CONFIG.url.deleteFiles, { deleteTheseFiles, id: ob['id'], modelUuid: ob['modelUuid'], deleteFolder: true }, {}).then((response) => {
       if (response.data.success === false) {
         console.log('Error uploading to safe.moe: ', response);
       }
@@ -88,12 +88,16 @@ export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
   };
 
   printEditorBtns = (elm: any) => {
+    {
+      console.log('elm', elm);
+    }
     return (
       <td>
         <Link to={`/edit/${elm.id}`} className='button is-small is-info'>
           Szerkesztés
         </Link>
-        <a onClick={() => this.delete3dModel(elm.id, elm)} className='button is-small is-danger'>
+
+        <a onClick={() => this.delete3dModel(elm.id, elm.modelUuid, elm)} className='button is-small is-danger'>
           Törlés
         </a>
         <Link to={`/view/${elm.id}`} className='button is-small is-info'>

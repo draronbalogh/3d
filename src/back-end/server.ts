@@ -117,9 +117,11 @@ const deleteFiles = async (req: any, res: any, next: any) => {
   console.log('sss');
   let arr: string[] = req.body.deleteTheseFiles || [];
   let id = req.body.id;
+  let modelUuid = req.body.modelUuid;
   let deleteFolder = req.body.deleteFolder;
-  const folder = path.join(_CONFIG.url.uploadFolder + id + '/');
-  console.log('aaaaaaaaaaaaaaaaaaa');
+  const folder = path.join(_CONFIG.url.uploadFolder + modelUuid + '/');
+  console.log('uuuu');
+  console.log(modelUuid);
 
   console.log(folder);
   console.log(arr.length);

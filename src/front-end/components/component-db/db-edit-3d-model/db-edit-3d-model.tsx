@@ -154,13 +154,14 @@ export class DbEdit3dModel extends React.Component<any, any> {
   };
   update3dModel = async (e: any) => {
     const { data, deleteTheseFiles, id } = this.state;
+    const { modelUuid } = data;
     try {
       e.preventDefault();
 
       console.log('updateupdateupdateupdate deleteTheseFiles', deleteTheseFiles);
       try {
         DbEdit3dModel.imgArray = [];
-        await axios.post(_CONFIG.url.deleteFiles, { deleteTheseFiles, id, deleteFolder: false }, {}); /*.then((resp: any) => {
+        await axios.post(_CONFIG.url.deleteFiles, { deleteTheseFiles, id, modelUuid, deleteFolder: false }, {}); /*.then((resp: any) => {
           this.setState({
             deleteTheseFiles: []
           });
@@ -184,10 +185,10 @@ export class DbEdit3dModel extends React.Component<any, any> {
           //   console.log('file-->', file);
           //    console.log(' data.file', data[file]);
           const nameSeparatedByComma = data[file].split(',')[index];
-          if (individualFile) filesData.append(id, individualFile as Blob, nameSeparatedByComma);
+          if (individualFile) filesData.append(modelUuid, individualFile as Blob, nameSeparatedByComma);
         });
       }
-      await axios.patch(_CONFIG.url.getModel + id, data);
+      await axios.patch(_CONFIG.url.getModel + modelUuid, data);
       await axios.post(_CONFIG.url.uploadFiles, filesData, {});
       this.setState({ isSaved: true });
     } catch (e: any) {
