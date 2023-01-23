@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import Accordion from 'react-bootstrap/Accordion';
-import axios, { AxiosResponse } from 'axios';
+import axios, { AxiosResponse, formToJSON } from 'axios';
 import { Navigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { isVariableDeclaration } from 'typescript';
@@ -28,7 +28,7 @@ export class DbAdd3dModel extends React.Component<any, any> {
       data: {},
       files: { modelUrl: [], modelImgs: [], modelMaterialUrl: [] },
       folderName: null,
-      folderId: nanoid(8).toLocaleLowerCase()
+      folderId: nanoid(10).toLocaleLowerCase()
     };
     this.form = React.createRef();
   }
@@ -49,8 +49,10 @@ export class DbAdd3dModel extends React.Component<any, any> {
     e.preventDefault();
     const { data, files } = this.state;
     let { folderId, folderName } = this.state;
-    let fullFolderName = folderName + folderId;
-    console.log('fullFolderName', fullFolderName);
+    console.log('folderId', folderId);
+    console.log('folderName', folderName);
+
+    console.log('fullFolderName', folderName);
     try {
       const filesData = new FormData();
       for (const file in files) {
@@ -59,7 +61,7 @@ export class DbAdd3dModel extends React.Component<any, any> {
           //   console.log('file-->', file);
           //    console.log(' data.file', data[file]);
           const nameSeparatedByComma = data[file].split(',')[index];
-          if (individualFile) filesData.append(fullFolderName, individualFile as Blob, nameSeparatedByComma);
+          if (individualFile) filesData.append(folderName, individualFile as Blob, nameSeparatedByComma);
         });
       }
 
@@ -133,10 +135,7 @@ export class DbAdd3dModel extends React.Component<any, any> {
   };
 
   inputDataUpdater = (elm: string, e: any) => {
-    //    console.log('elm', elm, e);
-    const { folderId, folderName } = this.state;
-
-    //modelUuid
+    const { folderId, folderName, modelUuid } = this.state;
 
     this.setState({
       data: {
@@ -144,9 +143,22 @@ export class DbAdd3dModel extends React.Component<any, any> {
         [elm]: e
       }
     });
-    // TODO:: ha kitölti valaki a sima inputot, akkor a modeluidd -t ki kéne automata tölteni
-    if (elm === 'modelTitle') this.setState({ modelUuid: removeHunChars(e) });
-
+    if (elm === 'modelTitle')
+      this.setState({ modelUuid: removeHunChars(e) }, () => {
+        const { modelUuid } = this.state;
+        this.setState(
+          {
+            data: {
+              ...this.state.data,
+              modelUuid: modelUuid + '-' + folderId
+            },
+            folderName: modelUuid + '-' + folderId
+          },
+          () => {
+            // console.log('this.state.data :>> ', this.state.data);
+          }
+        );
+      });
     this.setState({ isSaved: false });
   };
 
@@ -161,12 +173,9 @@ export class DbAdd3dModel extends React.Component<any, any> {
   };
 
   formBuilder = (i: number, elm: any) => {
-    // console.log('elm :>> ', elm);
     let { data, folderId, folderName } = this.state,
       ctr = modelConfig[i].control,
       category = modelConfig[i].categories;
-    // console.log('elm :>> ', elm.name);
-    // console.log('ctr', ctr);
     switch (ctr) {
       case 'switch':
         return <Form.Check type={'switch'} id={`ctr${i}`} label={elm.label} defaultChecked={elm.name === 'modelVisibility' ? true : false} onChange={(e) => this.switcher(elm.name, e.target.checked)} />;
@@ -183,20 +192,15 @@ export class DbAdd3dModel extends React.Component<any, any> {
           </Form.Select>
         );
       case 'file':
-        // console.log('folderId', folderId);
-        // webkitdirectory={'false'}
-        //@ts-ignore
-
         return <Form.Control multiple type={ctr} name={folderId ? folderId : ''} onChange={(e) => this.inputFileDataUpdater(elm.name, e)}></Form.Control>;
       case 'textarea':
         return <Form.Control as={ctr} rows={3} value={data?.hasOwnProperty(elm.name) ? data[elm.name] : ''} onChange={(e) => this.inputDataUpdater(elm.name, e.target.value)}></Form.Control>;
       default:
-        return <Form.Control type={ctr} value={data?.hasOwnProperty(elm.name) ? data[elm.name] : ''} onChange={(e) => this.inputDataUpdater(elm.name, e.target.value)} required={elm.isRequired}></Form.Control>;
+        return <Form.Control disabled={elm.name === 'modelUuid' ? true : false} type={ctr} value={data?.hasOwnProperty(elm.name) ? data[elm.name] : ''} onChange={(e) => this.inputDataUpdater(elm.name, e.target.value)} required={elm.isRequired}></Form.Control>;
     }
   };
   render() {
     const { isSaved, folderId } = this.state;
-
     return isSaved ? (
       <Navigate to='/' />
     ) : (

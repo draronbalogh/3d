@@ -33,9 +33,15 @@ export const validNumbers = (a: number, b: number) => typeof a === 'number' && t
  */
 export const removeHunChars = (e: string) => {
   try {
-    let a: any = removeAccents(e).replace(/[^a-zA-Z0-9 ]/g, '');
-    a = a.toLowerCase().replace(/[_\s]/g, '-');
-    a = a.replace(/-|_/g, '_').replace(/__/g, '');
+    // regex replace multiple spaces with one
+    let a: string = removeAccents(
+      e
+        .toLocaleLowerCase()
+        .replace(/[^a-zA-Z0-9 áéíóöőúüű_]/g, '')
+        .replace(/-+/g, '-')
+        .replace(/\s+/g, ' ')
+    );
+    a = a.replace(/[_ \s]/g, '-').replace(/--/g, '-');
     return a;
   } catch (err) {
     console.log('fetchData err:', err);
