@@ -65,18 +65,27 @@ export class DbAdd3dModel extends React.Component<any, any> {
           }
         });
 
-        const res3 = await axios.post(_CONFIG.url.uploadFiles, filesData, {}).then((response) => {
-          if (response.data.success === false) {
-            console.log('Error uploading to safe.moe: ', response);
-          }
-        });
+        const res3 = await axios
+          .post(_CONFIG.url.uploadFiles, filesData, {
+            onUploadProgress: (data) => {
+              //Set the progress value to show the progress bar
+              console.log('data', data);
+            }
+          })
+          .then((response) => {
+            if (response.data.success === false) {
+              console.log('Error uploading to safe.moe: ', response);
+            }
+          });
       } catch (e: any) {
         console.log(e);
+        console.error(e.response.data);
       } finally {
         this.setState({ isSaved: true });
       }
     } catch (e: any) {
       let errorStatus = '';
+      console.error(e.response.data);
       if (!e.response) {
         // network error
         errorStatus = 'Error: Network Error';

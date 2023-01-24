@@ -5,7 +5,7 @@ import cors from 'cors';
 import bodyParser from 'body-parser';
 import formidable, { errors as formidableErrors } from 'formidable';
 import { createNecessaryDirectoriesSync } from '../assets/file-methods';
-import path from 'path';
+import path, { parse } from 'path';
 import fs from 'node:fs';
 import { _CONFIG } from '../_config/_config';
 const app = express();
@@ -30,17 +30,20 @@ const upload = async (req: any, res: any, next: any) => {
     allowEmptyFiles: false,
     minFileSize: 100, //bytes
     maxFiles: 20, // or Infinity
-    maxFileSize: 2100 * 1024 * 1024, // 200mb
-    // multiples: true,
+    maxFileSize: 1000 * 1024 * 1024, // 200mb*/
+    multiples: true,
     filename: (name: string, ext: string, part: any, form: any) => {
-      const { originalFilename, mimetype } = part;
       return name + ext;
+    },
+    filter: function ({ name, originalFilename, mimetype }) {
+      if (mimetype) {
+        if (mimetype.includes('octet-stream') || mimetype.includes('application') || mimetype.includes('application/octet-stream') || mimetype.includes('image')) {
+          console.log('octet-stream');
+          return true;
+        }
+      }
+      return false;
     }
-    /*filter: ({ name, originalFilename, mimetype }) => {
-      return true;
-      // custom file filters
-      // ex.: return mimetype && mimetype.includes("image"); // keep only images
-    }*/
   });
   form.on('file', () => {
     // same as fileBegin, except
@@ -49,7 +52,10 @@ const upload = async (req: any, res: any, next: any) => {
   });
 
   form.on('progress', function (bytesReceived: any, bytesExpected: any) {
-    console.log((100 * bytesReceived) / bytesExpected + '%');
+    let x = Math.round((100 * bytesReceived) / bytesExpected) + '%';
+    // console.log('x');
+    // console.log(x);
+    //return parse(x);
   });
   form.on('field', (name, value) => {
     folderId = value;
@@ -82,7 +88,9 @@ const upload = async (req: any, res: any, next: any) => {
       return;
     } else {
     }
-    res.json({ fields, files });
+    // TODO::
+    /*Your return res.status(200).send({ "message": "Successfully uploadded the files" }) is too soon, it should be in the callback.*/
+    res.json({ status: 200, fields, files });
   });
 };
 const deleteFiles = async (req: any, res: any, next: any) => {
@@ -116,6 +124,7 @@ const deleteFiles = async (req: any, res: any, next: any) => {
   res.json({ status: 200, message: 'POST recieved', newTask: newTask });
 };
 app.use(cors());
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.post('/deleteFiles', deleteFiles);
