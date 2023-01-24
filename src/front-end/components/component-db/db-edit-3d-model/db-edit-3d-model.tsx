@@ -10,7 +10,7 @@ import Form from 'react-bootstrap/Form';
 import { _CONFIG } from '../../../../_config/_config';
 import { modelConfig } from '../../../../_config/config-model';
 import db from '../../../../_config/config-database';
-
+import { removeHunChars } from '../../../../assets/es6-methods';
 interface Model3dState {
   id: number | undefined;
   data: any;
@@ -36,7 +36,7 @@ export class DbEdit3dModel extends React.Component<any, any> {
       oldFilesToDel: null,
       folderId: null
     };
-    // console.log(' this.props.data', this.props.data);
+    console.log(' this.props.data', this.props.data);
   }
 
   componentDidMount(): void {
@@ -47,6 +47,7 @@ export class DbEdit3dModel extends React.Component<any, any> {
   componentDidUpdate(prevProps: any, prevState: any) {
     if (JSON.stringify(this.props.data) !== JSON.stringify(prevProps.data)) {
       this.setState({ data: this.props.data });
+      DbEdit3dModel.imgArray = [];
     }
     if (JSON.stringify(this.props.files) !== JSON.stringify(prevProps.files)) {
       this.setState({ files: this.props.files });
@@ -54,7 +55,9 @@ export class DbEdit3dModel extends React.Component<any, any> {
   }
   findDataById = () => {
     const { data, id } = this.state;
+    console.log('id :>> ', data);
     let obj = data.find((o: { id: any }) => o.id === id);
+    console.log('obj', obj);
     this.setState({ data: obj });
     this.setState({ oldFilesToDel: obj });
   };
@@ -70,6 +73,7 @@ export class DbEdit3dModel extends React.Component<any, any> {
     }
   };
   inputFileDataUpdater = async (elm: string, e: any) => {
+    // DbEdit3dModel.imgArray = [];
     try {
       const { oldFilesToDel } = this.state;
       console.log('oldFilesToDel', oldFilesToDel);
@@ -83,7 +87,7 @@ export class DbEdit3dModel extends React.Component<any, any> {
       let modelMaterialUrlA = modelMaterialUrl.split(',');
       console.log('modelUrlA', modelUrlA);
       console.log('modelImgsA', modelImgsA);
-      console.log('modelmodelMaterialUrlAUrlA', modelMaterialUrlA);
+      console.log('modelMaterialUrlA', modelMaterialUrlA);
 
       let t: any[] = [];
       if (elm === 'modelUrl') DbEdit3dModel.imgArray.push(modelUrlA);
@@ -111,21 +115,25 @@ export class DbEdit3dModel extends React.Component<any, any> {
       });
 
       let files = { ...this.state.files };
+      console.log('files :>> ', files);
       files[elm] = e.target.files;
+      console.log(' e.target.files', e.target.files);
+      console.log('files', files);
       this.setState({ files });
       let filesTxt = '';
       let x = 0;
       for (const i of e.target.files) {
         const fileName = i.name;
+        console.log('fileName :>> ', fileName);
         // filesTxt += `${uuid()}-${fileName},`;
         filesTxt += `${uuid()}-${fileName
           .normalize('NFD')
-          .replace(/[\u0300-\u036f]/g, '')
+          .replace(/[\u0300-\u036f]/g, '') // TODO:: remove hungarian characters  -->removeHunChars()
           .toLowerCase()
           .replace(/[^a-zA-Z0-9.]/g, '-')},`;
       }
-      // console.log('this.sate.files :>> ', this.state);
-
+      console.log('filesTxt :>> ', filesTxt);
+      console.log(elm);
       this.setState(
         {
           data: {
@@ -134,7 +142,7 @@ export class DbEdit3dModel extends React.Component<any, any> {
           }
         },
         () => {
-          //   console.log('this.state.data', this.state.data);
+          console.log('this.state.data', this.state.data);
           // console.log('this.state', this.state);
         }
       );
@@ -188,7 +196,7 @@ export class DbEdit3dModel extends React.Component<any, any> {
           if (individualFile) filesData.append(modelUuid, individualFile as Blob, nameSeparatedByComma);
         });
       }
-      await axios.patch(_CONFIG.url.getModel + modelUuid, data);
+      await axios.patch(_CONFIG.url.getModel + id, data);
       await axios.post(_CONFIG.url.uploadFiles, filesData, {});
       this.setState({ isSaved: true });
     } catch (e: any) {
@@ -249,7 +257,7 @@ export class DbEdit3dModel extends React.Component<any, any> {
       case 'textarea':
         return <Form.Control as={ctr} rows={3} value={element ? element : ''} onChange={(e) => this.inputDataUpdater(elm, e.target.value)}></Form.Control>;
       default:
-        return <Form.Control type={ctr} value={element ? element : ''} onChange={(e) => this.inputDataUpdater(elm, e.target.value)} required={isRequired}></Form.Control>;
+        return <Form.Control disabled={elm === 'modelTitle' || elm === 'modelUuid' ? true : false} type={ctr} value={element ? element : ''} onChange={(e) => this.inputDataUpdater(elm, e.target.value)} required={isRequired}></Form.Control>;
     }
   };
 

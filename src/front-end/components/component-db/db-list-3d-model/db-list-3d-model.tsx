@@ -77,13 +77,15 @@ export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
     const { data } = this.state;
     let id: any = null;
     return data?.map((elm, i) => (
-      <tr key={i}>
-        {Object.keys(elm).map((vv: string, ii: any) => {
-          if (vv === 'id') id = elm[vv];
-          return <td key={ii}>{elm[vv]}</td>;
-        })}
-        {this.printEditorBtns(elm)}
-      </tr>
+      <tbody key={Math.random()}>
+        <tr key={i}>
+          {Object.keys(elm).map((vv: string, ii: any) => {
+            if (vv === 'id') id = elm[vv];
+            return <td key={ii}>{elm[vv]}</td>;
+          })}
+        </tr>
+        <tr key={i + 1}>{this.printEditorBtns(elm)}</tr>
+      </tbody>
     ));
   };
 
@@ -95,11 +97,10 @@ export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
       <td>
         <Link to={`/edit/${elm.id}`} className='button is-small is-info'>
           Szerkesztés
-        </Link>
-
+        </Link>{' '}
         <a onClick={() => this.delete3dModel(elm.id, elm.modelUuid, elm)} className='button is-small is-danger'>
           Törlés
-        </a>
+        </a>{' '}
         <Link to={`/view/${elm.id}`} className='button is-small is-info'>
           Megjelenítés
         </Link>
@@ -117,7 +118,7 @@ export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
           <thead>
             <tr>{this.printModelTitle()}</tr>
           </thead>
-          <tbody>{this.printModelDesc()}</tbody>
+          {this.printModelDesc()}
         </Table>
       </div>
     );
