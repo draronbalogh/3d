@@ -36,7 +36,6 @@ export class DbEdit3dModel extends React.Component<any, any> {
       oldFilesToDel: null,
       folderId: null
     };
-    console.log(' this.props.data', this.props.data);
   }
 
   componentDidMount(): void {
@@ -55,14 +54,11 @@ export class DbEdit3dModel extends React.Component<any, any> {
   }
   findDataById = () => {
     const { data, id } = this.state;
-    console.log('id :>> ', data);
     let obj = data.find((o: { id: any }) => o.id === id);
-    console.log('obj', obj);
     this.setState({ data: obj });
     this.setState({ oldFilesToDel: obj });
   };
   fetchModelDataById = async () => {
-    console.log('fetichng');
     try {
       const { id } = this.state;
       const response = await axios.get(_CONFIG.url.getModel + id);
@@ -76,8 +72,6 @@ export class DbEdit3dModel extends React.Component<any, any> {
     // DbEdit3dModel.imgArray = [];
     try {
       const { oldFilesToDel } = this.state;
-      console.log('oldFilesToDel', oldFilesToDel);
-      console.log('elm', elm);
       let modelUrl = oldFilesToDel['modelUrl'] ? oldFilesToDel['modelUrl'] : '';
       let modelImgs = oldFilesToDel['modelImgs'] ? oldFilesToDel['modelImgs'] : '';
       let modelMaterialUrl = oldFilesToDel['modelMaterialUrl'] ? oldFilesToDel['modelMaterialUrl'] : '';
@@ -85,55 +79,32 @@ export class DbEdit3dModel extends React.Component<any, any> {
       let modelUrlA = modelUrl.split(',');
       let modelImgsA = modelImgs.split(',');
       let modelMaterialUrlA = modelMaterialUrl.split(',');
-      console.log('modelUrlA', modelUrlA);
-      console.log('modelImgsA', modelImgsA);
-      console.log('modelMaterialUrlA', modelMaterialUrlA);
 
       let t: any[] = [];
       if (elm === 'modelUrl') DbEdit3dModel.imgArray.push(modelUrlA);
       if (elm === 'modelImgs') DbEdit3dModel.imgArray.push(modelImgsA);
       if (elm === 'modelMaterialUrl') DbEdit3dModel.imgArray.push(modelMaterialUrlA);
-      console.log(' DbEdit3dModel.imgArray', DbEdit3dModel.imgArray.flat(1));
-
-      // todo : a feile-okat már törli, de ki kell törölni a mysql-ből is, mert így a file eltűnik, de
-      // ha mégse fejezi be, akkor a file eltűnit, de a mysql file név ott maradt..
-      // vagy ha már cserélt, akkor nem mehet el az oldalról, hanem mentenie kell..
-      /*
-      let t: any[] = [];
-      if (elm === 'modelUrl') t.push(modelUrl);
-      if (elm === 'modelImgs') t.push(modelImgs);
-      if (elm === 'modelMaterialUrl') t.push(modelMaterialUrl);
-      console.log('t :>> ', t);
-      let str = '';
-      t.forEach((x) => {
-        str.concat(x);
-      });
-      console.log('str :>> ', str);*/
-
       this.setState({
         deleteTheseFiles: DbEdit3dModel.imgArray.flat(1)
       });
 
       let files = { ...this.state.files };
-      console.log('files :>> ', files);
+
       files[elm] = e.target.files;
-      console.log(' e.target.files', e.target.files);
-      console.log('files', files);
+
       this.setState({ files });
       let filesTxt = '';
       let x = 0;
       for (const i of e.target.files) {
         const fileName = i.name;
-        console.log('fileName :>> ', fileName);
-        // filesTxt += `${uuid()}-${fileName},`;
+
         filesTxt += `${uuid()}-${fileName
           .normalize('NFD')
           .replace(/[\u0300-\u036f]/g, '') // TODO:: remove hungarian characters  -->removeHunChars()
           .toLowerCase()
           .replace(/[^a-zA-Z0-9.]/g, '-')},`;
       }
-      console.log('filesTxt :>> ', filesTxt);
-      console.log(elm);
+
       this.setState(
         {
           data: {
@@ -141,10 +112,7 @@ export class DbEdit3dModel extends React.Component<any, any> {
             [elm]: filesTxt.slice(0, -1) // comma separated list of files as mysql record
           }
         },
-        () => {
-          console.log('this.state.data', this.state.data);
-          // console.log('this.state', this.state);
-        }
+        () => {}
       );
 
       this.setState({ isSaved: false });
@@ -166,7 +134,6 @@ export class DbEdit3dModel extends React.Component<any, any> {
     try {
       e.preventDefault();
 
-      console.log('updateupdateupdateupdate deleteTheseFiles', deleteTheseFiles);
       try {
         DbEdit3dModel.imgArray = [];
         await axios.post(_CONFIG.url.deleteFiles, { deleteTheseFiles, id, modelUuid, deleteFolder: false }, {}); /*.then((resp: any) => {
@@ -180,7 +147,6 @@ export class DbEdit3dModel extends React.Component<any, any> {
         const statusCode = e.response.status; // 400
         const statusText = e.response.statusText; // Bad Request
         const message = e.response.data.message[0]; // id should not be empty
-        console.log(`${statusCode} - ${statusText} - ${message}`);
       } finally {
       }
 
@@ -189,9 +155,6 @@ export class DbEdit3dModel extends React.Component<any, any> {
       const filesData = new FormData();
       for (const file in files) {
         Object.values(files[file]).forEach((individualFile, index) => {
-          //          console.log('index :>> ', index);
-          //   console.log('file-->', file);
-          //    console.log(' data.file', data[file]);
           const nameSeparatedByComma = data[file].split(',')[index];
           if (individualFile) filesData.append(modelUuid, individualFile as Blob, nameSeparatedByComma);
         });
@@ -220,7 +183,6 @@ export class DbEdit3dModel extends React.Component<any, any> {
     return trgVal;
   };
   newFunction = (category: any) => {
-    //console.log('category', category);
     return Array.isArray(category)
       ? category.map((element: any, x: number) => (
           <option key={x} value={element}>
@@ -243,12 +205,7 @@ export class DbEdit3dModel extends React.Component<any, any> {
       case 'select':
         return (
           <Form.Select onChange={(e) => this.inputDataUpdater(elm, e.target.value)} value={element ? element : ''}>
-            <>
-              {
-                // TODO:: itt kéne valami setTimeout
-              }
-              {this.newFunction(category)}
-            </>
+            <>{this.newFunction(category)}</>
           </Form.Select>
         );
       case 'file':
@@ -263,7 +220,7 @@ export class DbEdit3dModel extends React.Component<any, any> {
 
   render() {
     const { data, isSaved } = this.state;
-    // console.log('data :>> ', typeof data);
+
     return (
       <Form onSubmit={this.update3dModel}>
         {data

@@ -49,17 +49,10 @@ export class DbAdd3dModel extends React.Component<any, any> {
     e.preventDefault();
     const { data, files } = this.state;
     let { folderId, folderName } = this.state;
-    console.log('folderId', folderId);
-    console.log('folderName', folderName);
-
-    console.log('fullFolderName', folderName);
     try {
       const filesData = new FormData();
       for (const file in files) {
         Object.values(files[file]).forEach((individualFile, index) => {
-          //          console.log('index :>> ', index);
-          //   console.log('file-->', file);
-          //    console.log(' data.file', data[file]);
           const nameSeparatedByComma = data[file].split(',')[index];
           if (individualFile) filesData.append(folderName, individualFile as Blob, nameSeparatedByComma);
         });
@@ -70,7 +63,6 @@ export class DbAdd3dModel extends React.Component<any, any> {
           if (response.data.success === false) {
             throw new Error('Error uploading to safe', response);
           }
-          console.log('res1 response', response); // returned rows
         });
 
         const res3 = await axios.post(_CONFIG.url.uploadFiles, filesData, {}).then((response) => {
@@ -83,9 +75,6 @@ export class DbAdd3dModel extends React.Component<any, any> {
       } finally {
         this.setState({ isSaved: true });
       }
-
-      // console.log('response :>> ', response);
-      //   console.log('responseFiles :>> ', responseFiles);
     } catch (e: any) {
       let errorStatus = '';
       if (!e.response) {
@@ -115,7 +104,6 @@ export class DbAdd3dModel extends React.Component<any, any> {
           .toLowerCase()
           .replace(/[^a-zA-Z0-9.]/g, '-')},`;
       }
-      // console.log('this.sate.files :>> ', this.state);
 
       this.setState(
         {
@@ -124,10 +112,7 @@ export class DbAdd3dModel extends React.Component<any, any> {
             [elm]: filesTxt.slice(0, -1) // comma separated list of files as mysql record
           }
         },
-        () => {
-          //   console.log('this.state.data', this.state.data);
-          // console.log('this.state', this.state);
-        }
+        () => {}
       );
 
       this.setState({ isSaved: false });
@@ -154,9 +139,7 @@ export class DbAdd3dModel extends React.Component<any, any> {
             },
             folderName: modelUuid + '-' + folderId
           },
-          () => {
-            // console.log('this.state.data :>> ', this.state.data);
-          }
+          () => {}
         );
       });
     this.setState({ isSaved: false });

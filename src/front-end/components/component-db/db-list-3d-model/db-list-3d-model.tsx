@@ -37,12 +37,10 @@ export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
   };
 
   delete3dModel = async (id: number, modelUuid: string, ob: any) => {
-    console.log('obobobobobobobobobobobobob :>> ', ob);
     let modelImgs = ob['modelImgs'] ? ob['modelImgs']?.split(',') : [];
     let modelMaterialUrl = ob['modelMaterialUrl'] ? ob['modelMaterialUrl']?.split(',') : [];
     let modelUrl = ob['modelUrl'] ? ob['modelUrl']?.split(',') : [];
     let deleteTheseFiles = [...modelImgs, ...modelMaterialUrl, ...modelUrl];
-    console.log('imgArray', deleteTheseFiles);
     await axios.post(_CONFIG.url.deleteFiles, { deleteTheseFiles, id: ob['id'], modelUuid: ob['modelUuid'], deleteFolder: true }, {}).then((response) => {
       if (response.data.success === false) {
         console.log('Error uploading to safe.moe: ', response);
@@ -90,9 +88,6 @@ export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
   };
 
   printEditorBtns = (elm: any) => {
-    {
-      console.log('elm', elm);
-    }
     return (
       <td>
         <Link to={`/edit/${elm.id}`} className='button is-small is-info'>
