@@ -1,6 +1,10 @@
 import ModelControllerTypes from '../models/models-3dmodels';
 import { Request, Response } from 'express';
 import { QueryTypes } from 'sequelize';
+import { _CONFIG } from '../../_config/_config';
+import formidable, { errors as formidableErrors } from 'formidable';
+import { createNecessaryDirectoriesSync } from '../../assets/file-methods';
+import path, { parse } from 'path';
 // Option 3: Passing parameters separately (other dialects)
 import db from '../../_config/config-database';
 
@@ -39,8 +43,7 @@ export const getModels3dById = async (req: Request, res: Response) => {
     res.json({ message: error.message });
   }
 };
-
-export const createModels3d = async (req: Request, res: Response) => {
+export const createModels3d = async (req: Request, res: Response, next: any) => {
   try {
     const a = await ModelControllerTypes.create(req.body);
     res.status(200).json({

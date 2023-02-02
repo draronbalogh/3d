@@ -67,6 +67,12 @@ export class DbAdd3dModel extends React.Component<any, any> {
 
         const res3 = await axios
           .post(_CONFIG.url.uploadFiles, filesData, {
+            headers: {
+              // 'application/json' is the modern content-type for JSON, but some
+              // older servers may use 'text/json'.
+              // See: http://bit.ly/text-json
+              'content-type': 'multipart/form-data'
+            },
             onUploadProgress: (data) => {
               //Set the progress value to show the progress bar
               console.log('data', data);

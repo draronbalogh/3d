@@ -32,21 +32,28 @@ const upload = async (req: any, res: any, next: any) => {
     minFileSize: 1, //bytes
     maxFiles: 100, // or Infinity
     maxFields: 0,
-    maxFileSize: 50000 * 1024 * 1024, // 200 mb
-    maxFieldsSize: 50000 * 1024 * 1024,
+    maxFileSize: 5000 * 1024 * 1024, // 200 mb
+    maxFieldsSize: 5000 * 1024 * 1024,
     multiples: true,
     enabledPlugins: ['octetstream', 'querystring', 'multipart', 'json'],
     encoding: 'utf-8',
     hashAlgorithm: false,
-
+    // fileWriteStreamHandler: null,
     filename: (name: string, ext: string, part: any, form: any) => {
       return name + ext;
     },
-    filter: () => {
+    filter: function ({ name, originalFilename, mimetype }) {
+      /* if (mimetype) {
+         if (mimetype.includes('octet-stream') || mimetype.includes('application') || mimetype.includes('application/octet-stream') || mimetype.includes('image')) {
+           console.log('octet-stream');
+           return true;
+         }
+       }
+       return false;
+     }*/
       return true;
     }
   });
-
   form.on('file', () => {
     // same as fileBegin, except
     // it is too late to change file.filepath
@@ -54,8 +61,8 @@ const upload = async (req: any, res: any, next: any) => {
   });
 
   form.on('progress', function (bytesReceived: any, bytesExpected: any) {
-    // let x = Math.round((100 * bytesReceived) / bytesExpected) + '%';
-    // console.log('upload', x);
+    let x = Math.round((100 * bytesReceived) / bytesExpected) + '%';
+    console.log('upload', x);
     //return parse(x);
   });
   form.on('field', (name, value) => {
@@ -63,7 +70,7 @@ const upload = async (req: any, res: any, next: any) => {
     //Emitted whenever a field / value pair has been received.
   });
   form.on('fileBegin', (formname, file) => {
-    // isMultipart = true;
+    isMultipart = true;
     // accessible here
     // formName the name in the form (<input name="thisname" type="file">) or http filename for octetstream
     // file.originalFilename http filename or null if there was a parsing error
@@ -77,7 +84,7 @@ const upload = async (req: any, res: any, next: any) => {
     folderId = formname;
   });
   form.on('aborted', () => {
-    console.log('e1 pl. timeout miatt lehetséges');
+    console.log('e1');
 
     //Emitted when the request was aborted by the user. Right now this can be due to a 'timeout' or 'close' event on the socket. After this event is emitted, an error event will follow.
   });
@@ -88,11 +95,11 @@ const upload = async (req: any, res: any, next: any) => {
     console.log('e2');
     console.log(err);
   });
+
   form.parse(req, async (err, fields, files) => {
-    console.log('err', err);
+    console.log('fields', fields);
     console.log('files', files);
     if (err) {
-      console.log('nextre');
       next(err);
       // res.writeHead(err.httpCode || 400, { 'Content-Type': 'text/plain' });
       // res.end(String(err));
@@ -107,8 +114,7 @@ const upload = async (req: any, res: any, next: any) => {
     // vagy
     // await res.json({ status: 200, fields, files });
     try {
-      console.log('res.json a form');
-      await res.json({ fields, files });
+      await res.json({ status: 200, fields, files });
     } catch (error) {
       console.log('error multiple ', error);
     }
@@ -144,16 +150,14 @@ const deleteFiles = async (req: any, res: any, next: any) => {
   let newTask = Object.assign({ id: id }, req.body);
   res.json({ status: 200, message: 'POST recieved', newTask: newTask });
 };
-
 app.use(cors());
+
 app.use(bodyParser.json({ limit: '1000mb' }));
 app.use(bodyParser.urlencoded({ extended: true, limit: '1000mb', parameterLimit: 100000 }));
 app.use(bodyParser.raw({ limit: '1000mb' }));
-app.post('/upload', upload);
-/*app.use(function (err: any, req: any, res: any, next: any) {
-  console.error('aaaaaaaaa', err);
-  res.status(500).send('Something broke!');
-});*/
+
 app.post('/deleteFiles', deleteFiles);
 app.use('/api/3dmodels', routes3d);
+app.post('/upload', upload);
+
 app.listen(5000, () => console.log('Server running at port 5000'));
