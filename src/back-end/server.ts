@@ -24,6 +24,7 @@ let isMultipart = false;
 createNecessaryDirectoriesSync(_CONFIG.url.uploadFolder);
 
 const upload = async (req: any, res: any, next: any) => {
+  console.log('//////////////////////////////////////////////// new upload /////////////////////////////');
   let folderId = '';
   const form = new formidable.IncomingForm({
     //  uploadDir: _CONFIG.url.uploadFolder,
@@ -54,8 +55,8 @@ const upload = async (req: any, res: any, next: any) => {
   });
 
   form.on('progress', function (bytesReceived: any, bytesExpected: any) {
-    // let x = Math.round((100 * bytesReceived) / bytesExpected) + '%';
-    // console.log('upload', x);
+    let x = Math.round((100 * bytesReceived) / bytesExpected) + '%';
+    console.log('upload', x);
     //return parse(x);
   });
   form.on('field', (name, value) => {
@@ -63,6 +64,8 @@ const upload = async (req: any, res: any, next: any) => {
     //Emitted whenever a field / value pair has been received.
   });
   form.on('fileBegin', (formname, file) => {
+    console.log(formname + '/' + file.originalFilename);
+
     // isMultipart = true;
     // accessible here
     // formName the name in the form (<input name="thisname" type="file">) or http filename for octetstream
@@ -70,9 +73,9 @@ const upload = async (req: any, res: any, next: any) => {
     // file.newFilename generated hexoid or what options.filename returned
     // file.filepath default pathname as per options.uploadDir and options.filename
     // file.filepath = CUSTOM_PATH // to change the final path
+
     createNecessaryDirectoriesSync(_CONFIG.url.uploadFolder + formname);
     const cim = path.join(_CONFIG.url.uploadFolder + formname + '/' + file.originalFilename);
-
     file.filepath = cim;
     folderId = formname;
   });
@@ -85,18 +88,175 @@ const upload = async (req: any, res: any, next: any) => {
     //This is a great place for you to send your response.
   });
   form.on('error', (err) => {
-    console.log('e2');
-    console.log(err);
+    console.log('eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee2');
+    // console.log(err);
+    if (err.code === formidableErrors.maxFieldsExceeded) {
+      console.log('e3');
+      return res.status(400).json({
+        status: 'Failed',
+        message: 'Too many fields',
+        error: err
+      });
+    }
+
+    if (err.code === formidableErrors.aborted) {
+      console.log('aborted');
+      return res.status(400).json({
+        status: 'Failed',
+        message: 'File upload aborted',
+        error: err
+      });
+    }
+    if (err.code === formidableErrors.missingContentType) {
+      console.log('missingContentType');
+      return res.status(400).json({
+        status: 'Failed',
+        message: 'Missing content type',
+        error: err
+      });
+    }
+    if (err.code === formidableErrors.malformedMultipart) {
+      console.log('malformedMultipart');
+      return res.status(400).json({
+        status: 'Failed',
+        message: 'Malformed multipart',
+        error: err
+      });
+    }
+    if (err.code === formidableErrors.missingMultipartBoundary) {
+      console.log('missingMultipartBoundary');
+      return res.status(400).json({
+        status: 'Failed',
+        message: 'Missing multipart boundary',
+        error: err
+      });
+    }
+    if (err.code === formidableErrors.unknownTransferEncoding) {
+      console.log('unknownTransferEncoding');
+      return res.status(400).json({
+        status: 'Failed',
+        message: 'Unknown transfer encoding',
+        error: err
+      });
+    }
+    if (err.code === formidableErrors.missingPlugin) {
+      console.log('missingPlugin');
+      return res.status(400).json({
+        status: 'Failed',
+        message: 'Missing plugin',
+        error: err
+      });
+    }
+    if (err.code === formidableErrors.pluginFunction) {
+      console.log('pluginFunction');
+      return res.status(400).json({
+        status: 'Failed',
+        message: 'Plugin function',
+        error: err
+      });
+    }
+    if (err.code === formidableErrors.noParser) {
+      console.log('noParser');
+      return res.status(400).json({
+        status: 'Failed',
+        message: 'No parser',
+        error: err
+      });
+    }
+
+    if (err.code === formidableErrors.uninitializedParser) {
+      console.log('uninitializedParser');
+      return res.status(400).json({
+        status: 'Failed',
+        message: 'Uninitialized parser',
+        error: err
+      });
+    }
+
+    if (err.code === formidableErrors.filenameNotString) {
+      console.log('filenameNotString');
+      return res.status(400).json({
+        status: 'Failed',
+        message: 'Filename not string',
+        error: err
+      });
+    }
+    if (err.code === formidableErrors.maxFieldsSizeExceeded) {
+      console.log('maxFieldsSizeExceeded');
+      return res.status(400).json({
+        status: 'Failed',
+        message: 'Max fields size exceeded',
+        error: err
+      });
+    }
+    if (err.code === formidableErrors.maxFieldsExceeded) {
+      console.log('maxFieldsExceeded');
+      return res.status(400).json({
+        status: 'Failed',
+        message: 'Max fields exceeded',
+        error: err
+      });
+    }
+    if (err.code === formidableErrors.smallerThanMinFileSize) {
+      console.log('smallerThanMinFileSize');
+      return res.status(400).json({
+        status: 'Failed',
+        message: 'Smaller than min file size',
+        error: err
+      });
+    }
+    if (err.code === formidableErrors.biggerThanMaxFileSize) {
+      console.log('biggerThanMaxFileSize');
+      return res.status(400).json({
+        status: 'Failed',
+        message: 'Bigger than max file size',
+        error: err
+      });
+    }
+    if (err.code === formidableErrors.noEmptyFiles) {
+      console.log('noEmptyFiles');
+      return res.status(400).json({
+        status: 'Failed',
+        message: 'No empty files',
+        error: err
+      });
+    }
+    if (err.code === formidableErrors.missingContentType) {
+      console.log('missingContentType');
+      return res.status(400).json({
+        status: 'Failed',
+        message: 'Missing content type',
+        error: err
+      });
+    }
+
+    if (err.code === formidableErrors.malformedMultipart) {
+      console.log('malformedMultipart');
+      return res.status(400).json({
+        status: 'Failed',
+        message: 'Malformed multipart',
+        error: err
+      });
+    }
+
+    if (err.code === formidableErrors.missingMultipartBoundary) {
+      console.log('missingMultipartBoundary');
+      return res.status(400).json({
+        status: 'Failed',
+        message: 'Missing multipart boundary',
+        error: err
+      });
+    }
   });
   form.parse(req, async (err, fields, files) => {
-    console.log('err', err);
-    console.log('files', files);
     if (err) {
-      console.log('nextre');
-      next(err);
       // res.writeHead(err.httpCode || 400, { 'Content-Type': 'text/plain' });
       // res.end(String(err));
-      // return;
+      /*   return res.status(400).json({
+        status: 'Failed',
+        message: 'File upload failed',
+        error: err
+      });*/
     }
     //vagy
     // res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -107,8 +267,8 @@ const upload = async (req: any, res: any, next: any) => {
     // vagy
     // await res.json({ status: 200, fields, files });
     try {
-      console.log('res.json a form');
-      await res.json({ fields, files });
+      console.log('res.json a formformformform');
+      return res.status(200).json({ stauts: 'success', fields, files });
     } catch (error) {
       console.log('error multiple ', error);
     }

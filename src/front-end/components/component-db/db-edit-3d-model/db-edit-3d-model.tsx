@@ -15,7 +15,9 @@ interface Model3dState {
   id: number | undefined;
   data: any;
   files: any;
+  isUploading: boolean;
   isSaved: boolean;
+  isThankYou: boolean;
   oldFilesToDel: any;
 }
 declare module 'react' {
@@ -31,6 +33,8 @@ export class DbEdit3dModel extends React.Component<any, any> {
     this.state = {
       id: Number(window.location.pathname.split('/').pop()),
       isSaved: false,
+      isThankYou: false,
+      isUploading: false,
       data: this.props.data,
       files: { modelUrl: [], modelImgs: [], modelMaterialUrl: [] },
       oldFilesToDel: null,
@@ -135,6 +139,7 @@ export class DbEdit3dModel extends React.Component<any, any> {
       e.preventDefault();
 
       try {
+        this.setState({ isUploading: true });
         DbEdit3dModel.imgArray = [];
         await axios.post(_CONFIG.url.deleteFiles, { deleteTheseFiles, id, modelUuid, deleteFolder: false }, {}); /*.then((resp: any) => {
           this.setState({
@@ -160,8 +165,31 @@ export class DbEdit3dModel extends React.Component<any, any> {
         });
       }
       await axios.patch(_CONFIG.url.getModel + id, data);
-      await axios.post(_CONFIG.url.uploadFiles, filesData, {});
-      this.setState({ isSaved: true });
+      await axios
+        .post(_CONFIG.url.uploadFiles, filesData, {
+          headers: {
+            // 'application/json' is the modern content-type for JSON, but some
+            // older servers may use 'text/json'.
+            // See: http://bit.ly/text-json
+            'content-type': 'multipart/form-data'
+          },
+          onUploadProgress: (data) => {
+            //Set the progress value to show the progress bar
+            console.log('data', data);
+          }
+        })
+        .then((response) => {
+          if (response.data.success === false) {
+            console.log('Error uploading to safe.moe: ', response);
+          } else {
+            setTimeout(() => {
+              this.setState({ isUploading: false, isThankYou: true });
+            }, 2000);
+            setTimeout(() => {
+              this.setState({ isThankYou: false, isSaved: true });
+            }, 4000);
+          }
+        });
     } catch (e: any) {
       if (e.response) console.log('Axios Error: ', e.response.data);
     }
@@ -219,9 +247,15 @@ export class DbEdit3dModel extends React.Component<any, any> {
   };
 
   render() {
-    const { data, isSaved } = this.state;
+    const { data, isSaved, isThankYou, isUploading } = this.state;
 
-    return (
+    return isThankYou ? (
+      <div>köszi</div>
+    ) : isSaved ? (
+      <Navigate to='/' />
+    ) : isUploading ? (
+      <div>loading...</div>
+    ) : (
       <Form onSubmit={this.update3dModel}>
         {data
           ? Object.keys(data)?.map((elm: any, i: number) => {

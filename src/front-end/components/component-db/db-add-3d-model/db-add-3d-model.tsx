@@ -13,11 +13,17 @@ import { _CONFIG } from '../../../../_config/_config';
 import { modelConfig } from '../../../../_config/config-model';
 import { getAllModels3ds, getLastModelId } from '../../../../back-end/controllers/controllers-3dmodels';
 import { removeHunChars } from '../../../../assets/es6-methods';
+import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
+import ProgressBar from 'react-bootstrap/ProgressBar';
+import 'react-circular-progressbar/dist/styles.css';
 interface Model3dState {
   id: number | undefined;
   data: any;
   files: any;
+  isUploading: boolean;
   isSaved: boolean;
+  isThankYou: boolean;
+  uploadingData: any;
 }
 export class DbAdd3dModel extends React.Component<any, any> {
   form: React.RefObject<any>;
@@ -25,6 +31,9 @@ export class DbAdd3dModel extends React.Component<any, any> {
     super(props);
     this.state = {
       isSaved: false,
+      isThankYou: false,
+      isUploading: false,
+      uploadingData: null,
       data: {},
       files: { modelUrl: [], modelImgs: [], modelMaterialUrl: [] },
       folderName: null,
@@ -59,11 +68,14 @@ export class DbAdd3dModel extends React.Component<any, any> {
       }
 
       try {
-        const res1 = await axios.post(_CONFIG.url.getModel, data, {}).then((response: any) => {
+        this.setState({ isUploading: true });
+        const res1 = await axios.post(_CONFIG.url.createModel, data, {}).then((response: any) => {
           if (response.data.success === false) {
             throw new Error('Error uploading to safe', response);
           }
         });
+
+        // TODO: only if there is a file to upload
 
         const res3 = await axios
           .post(_CONFIG.url.uploadFiles, filesData, {
@@ -75,19 +87,26 @@ export class DbAdd3dModel extends React.Component<any, any> {
             },
             onUploadProgress: (data) => {
               //Set the progress value to show the progress bar
+              this.setState({ uploadingData: data });
               console.log('data', data);
             }
           })
           .then((response) => {
             if (response.data.success === false) {
               console.log('Error uploading to safe.moe: ', response);
+            } else {
+              setTimeout(() => {
+                this.setState({ isUploading: false, isThankYou: true });
+              }, 2000);
+              setTimeout(() => {
+                this.setState({ isThankYou: false, isSaved: true });
+              }, 4000);
             }
           });
       } catch (e: any) {
         console.log(e);
         console.error(e.response.data);
       } finally {
-        this.setState({ isSaved: true });
       }
     } catch (e: any) {
       let errorStatus = '';
@@ -198,9 +217,46 @@ export class DbAdd3dModel extends React.Component<any, any> {
     }
   };
   render() {
-    const { isSaved, folderId } = this.state;
-    return isSaved ? (
+    const { isSaved, isThankYou, isUploading, uploadingData, folderId } = this.state;
+    return isThankYou ? (
+      <div>köszi</div>
+    ) : isSaved ? (
       <Navigate to='/' />
+    ) : isUploading ? (
+      <div>
+        <div style={{ width: 100, height: 100 }}>
+          <CircularProgressbar
+            styles={buildStyles({
+              rotation: 0, //1 / 2 + 1 / 8
+              textSize: '16px',
+              pathTransitionDuration: 0.35,
+              strokeLinecap: 'butt',
+              pathColor: `rgba(62, 152, 199`,
+              textColor: '#3e98c7',
+              trailColor: '#eee',
+              backgroundColor: '#3e98c7'
+            })}
+            circleRatio={1} //0.75
+            value={uploadingData ? uploadingData.progress : 0}
+            maxValue={1}
+            text={`${uploadingData ? (uploadingData.progress * 100).toFixed(0) : 0}%`}
+          />
+        </div>
+        {uploadingData
+          ? Object.keys(uploadingData).map((elm: any, i: number) => {
+              console.log(elm, uploadingData[elm]);
+              // validate if uploadingData[elm]) is not object
+              if (typeof uploadingData[elm] !== 'object') {
+                return (
+                  <div key={i}>
+                    {elm} : {uploadingData[elm]}
+                  </div>
+                );
+              }
+            })
+          : null}
+        <ProgressBar label={`${uploadingData ? Number((uploadingData.progress * 100).toFixed(0)) : 0}%`} now={uploadingData ? Number((uploadingData.progress * 100).toFixed(0)) : 0} />
+      </div>
     ) : (
       <Form onSubmit={this.save3dModel} ref={this.form}>
         {modelConfig

@@ -46,9 +46,7 @@ export const getModels3dById = async (req: Request, res: Response) => {
 export const createModels3d = async (req: Request, res: Response, next: any) => {
   try {
     const a = await ModelControllerTypes.create(req.body);
-    res.status(200).json({
-      message: 'Success creating a new record'
-    });
+    await res.status(200).json('Record created');
   } catch (error: any | unknown) {
     res.json({ message: error.message });
   }

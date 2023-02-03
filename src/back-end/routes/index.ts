@@ -6,7 +6,7 @@ const router = express.Router();
 router.get('/', getAllModels3ds);
 router.get('/getLastId', getLastModelId);
 router.get('/:id', getModels3dById);
-router.post('/', createModels3d);
+router.post('/create', createModels3d);
 router.patch('/:id', updateModels3d);
 router.delete('/:id', delete3dModel);
 export default router;
