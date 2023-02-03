@@ -11,6 +11,10 @@ import { _CONFIG } from '../../../../_config/_config';
 import { modelConfig } from '../../../../_config/config-model';
 import db from '../../../../_config/config-database';
 import { removeHunChars } from '../../../../assets/es6-methods';
+import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
+import ProgressBar from 'react-bootstrap/ProgressBar';
+import 'react-circular-progressbar/dist/styles.css';
+import { ProgressViewer } from '../db-shared/progress-viewer/progress-viewer-component';
 interface Model3dState {
   id: number | undefined;
   data: any;
@@ -138,60 +142,67 @@ export class DbEdit3dModel extends React.Component<any, any> {
     try {
       e.preventDefault();
 
-      try {
-        this.setState({ isUploading: true });
-        DbEdit3dModel.imgArray = [];
-        await axios.post(_CONFIG.url.deleteFiles, { deleteTheseFiles, id, modelUuid, deleteFolder: false }, {}); /*.then((resp: any) => {
+      let isThereAnyFile = false;
+
+      DbEdit3dModel.imgArray = [];
+      await axios.post(_CONFIG.url.deleteFiles, { deleteTheseFiles, id, modelUuid, deleteFolder: false }, {}); /*.then((resp: any) => {
           this.setState({
             deleteTheseFiles: []
           });
         });*/
-        //   let removable = elm === 'modelImgs' ? modelImgs : elm === 'modelMaterialUrl' ? modelMaterialUrl : modelUrl;
-        //     let imgArray = [...removable];
-      } catch (e: any) {
-        const statusCode = e.response.status; // 400
-        const statusText = e.response.statusText; // Bad Request
-        const message = e.response.data.message[0]; // id should not be empty
-      } finally {
-      }
+      //   let removable = elm === 'modelImgs' ? modelImgs : elm === 'modelMaterialUrl' ? modelMaterialUrl : modelUrl;
+      //     let imgArray = [...removable];
+      await axios.patch(_CONFIG.url.getModel + id, data);
 
       const { files } = this.state;
-
       const filesData = new FormData();
       for (const file in files) {
+        if (files[file].length > 0) {
+          isThereAnyFile = true;
+        }
         Object.values(files[file]).forEach((individualFile, index) => {
           const nameSeparatedByComma = data[file].split(',')[index];
           if (individualFile) filesData.append(modelUuid, individualFile as Blob, nameSeparatedByComma);
         });
       }
-      await axios.patch(_CONFIG.url.getModel + id, data);
-      await axios
-        .post(_CONFIG.url.uploadFiles, filesData, {
-          headers: {
-            // 'application/json' is the modern content-type for JSON, but some
-            // older servers may use 'text/json'.
-            // See: http://bit.ly/text-json
-            'content-type': 'multipart/form-data'
-          },
-          onUploadProgress: (data) => {
-            //Set the progress value to show the progress bar
-            console.log('data', data);
-          }
-        })
-        .then((response) => {
-          if (response.data.success === false) {
-            console.log('Error uploading to safe.moe: ', response);
-          } else {
-            setTimeout(() => {
-              this.setState({ isUploading: false, isThankYou: true });
-            }, 2000);
-            setTimeout(() => {
-              this.setState({ isThankYou: false, isSaved: true });
-            }, 4000);
-          }
-        });
+      if (isThereAnyFile) {
+        this.setState({ isUploading: true });
+        await axios
+          .post(_CONFIG.url.uploadFiles, filesData, {
+            headers: {
+              // 'application/json' is the modern content-type for JSON, but some
+              // older servers may use 'text/json'.
+              // See: http://bit.ly/text-json
+              'content-type': 'multipart/form-data'
+            },
+            onUploadProgress: (data) => {
+              //Set the progress value to show the progress bar
+              //Set the progress value to show the progress bar
+              this.setState({ uploadingData: data });
+              console.log('data', data);
+            }
+          })
+          .then((response) => {
+            if (response.data.success === false) {
+              console.log('Error uploading to safe.moe: ', response);
+            } else {
+              setTimeout(() => {
+                this.setState({ isUploading: false, isThankYou: true });
+              }, 1500);
+              setTimeout(() => {
+                this.setState({ isThankYou: false, isSaved: true });
+              }, 2250);
+            }
+          });
+        isThereAnyFile = false;
+      } else {
+        this.setState({ isUploading: false, isThankYou: false, isSaved: true });
+      }
     } catch (e: any) {
       if (e.response) console.log('Axios Error: ', e.response.data);
+      const statusCode = e.response.status; // 400
+      const statusText = e.response.statusText; // Bad Request
+      const message = e.response.data.message[0]; // id should not be empty
     }
   };
 
@@ -247,14 +258,13 @@ export class DbEdit3dModel extends React.Component<any, any> {
   };
 
   render() {
-    const { data, isSaved, isThankYou, isUploading } = this.state;
-
+    const { isSaved, isThankYou, isUploading, uploadingData, folderId, data } = this.state;
     return isThankYou ? (
       <div>köszi</div>
     ) : isSaved ? (
       <Navigate to='/' />
     ) : isUploading ? (
-      <div>loading...</div>
+      <ProgressViewer uploadingData={uploadingData} />
     ) : (
       <Form onSubmit={this.update3dModel}>
         {data
@@ -270,13 +280,9 @@ export class DbEdit3dModel extends React.Component<any, any> {
             })
           : null}
         <div className='field'>
-          {!isSaved ? (
-            <Button variant='primary' type='submit'>
-              Mentés
-            </Button>
-          ) : (
-            <Navigate to='/' />
-          )}
+          <Button variant='primary' type='submit'>
+            Mentés
+          </Button>
         </div>
       </Form>
     );

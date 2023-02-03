@@ -4,6 +4,8 @@
 - axios try catch 
 - form design
 - 3d layout 2 zindex
+- react-table
+- login to admin
  
 /*
  * Materialok --> cinema3D-nél tex
