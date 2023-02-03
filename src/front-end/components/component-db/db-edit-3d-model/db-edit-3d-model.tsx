@@ -142,7 +142,7 @@ export class DbEdit3dModel extends React.Component<any, any> {
     try {
       e.preventDefault();
 
-      let isThereAnyFile = false;
+      let isThereAnyValidFile = false;
 
       DbEdit3dModel.imgArray = [];
       await axios.post(_CONFIG.url.deleteFiles, { deleteTheseFiles, id, modelUuid, deleteFolder: false }, {}); /*.then((resp: any) => {
@@ -158,14 +158,14 @@ export class DbEdit3dModel extends React.Component<any, any> {
       const filesData = new FormData();
       for (const file in files) {
         if (files[file].length > 0) {
-          isThereAnyFile = true;
+          isThereAnyValidFile = true;
         }
         Object.values(files[file]).forEach((individualFile, index) => {
           const nameSeparatedByComma = data[file].split(',')[index];
           if (individualFile) filesData.append(modelUuid, individualFile as Blob, nameSeparatedByComma);
         });
       }
-      if (isThereAnyFile) {
+      if (isThereAnyValidFile) {
         this.setState({ isUploading: true });
         await axios
           .post(_CONFIG.url.uploadFiles, filesData, {
@@ -194,7 +194,7 @@ export class DbEdit3dModel extends React.Component<any, any> {
               }, 2250);
             }
           });
-        isThereAnyFile = false;
+        isThereAnyValidFile = false;
       } else {
         this.setState({ isUploading: false, isThankYou: false, isSaved: true });
       }

@@ -17,6 +17,7 @@ import { removeHunChars } from '../../../../assets/es6-methods';
 import ProgressBar from 'react-bootstrap/ProgressBar';
 import { ProgressViewer } from '../db-shared/progress-viewer/progress-viewer-component';
 import 'react-circular-progressbar/dist/styles.css';
+import { Files } from 'formidable';
 interface Model3dState {
   id: number | undefined;
   data: any;
@@ -60,25 +61,33 @@ export class DbAdd3dModel extends React.Component<any, any> {
     const { data, files } = this.state;
     let { folderId, folderName } = this.state;
     try {
-      let isThereAnyFile = false;
+      let isThereAnyValidFile = true;
 
-      await axios.post(_CONFIG.url.createModel, data, {}).then((response: any) => {
-        if (response.data.success === false) {
-          throw new Error('Error uploading to safe', response);
-        }
-      });
       const filesData = new FormData();
       for (const file in files) {
-        if (files[file].length > 0) {
-          isThereAnyFile = true;
-        }
-        Object.values(files[file]).forEach((individualFile, index) => {
+        /*  if (files[file].length > 0) {
+          isThereAnyValidFile = true;
+        }*/
+        Object.values(files[file]).forEach((individualFile: any, index) => {
+          let currentFileType = null;
+          if (individualFile.name) {
+            currentFileType = individualFile.name.split('.').pop();
+          }
+          if (currentFileType && !_CONFIG.validTypes.includes(currentFileType)) {
+            isThereAnyValidFile = false;
+            console.log('invalid thins :>> ');
+          }
           const nameSeparatedByComma = data[file].split(',')[index];
           if (individualFile) filesData.append(folderName, individualFile as Blob, nameSeparatedByComma);
         });
       }
-      if (isThereAnyFile) {
-        console.log('isThereAnyFile :>> ', isThereAnyFile);
+      if (isThereAnyValidFile) {
+        await axios.post(_CONFIG.url.createModel, data, {}).then((response: any) => {
+          if (response.data.success === false) {
+            throw new Error('Error uploading to safe', response);
+          }
+        });
+        console.log('isThereAnyValidFile :>> ', isThereAnyValidFile);
         this.setState({ isUploading: true });
         // TODO: only if there is a file to upload
         // only if it is valid
@@ -111,7 +120,7 @@ export class DbAdd3dModel extends React.Component<any, any> {
       } else {
         this.setState({ isUploading: false, isThankYou: false, isSaved: true });
       }
-      isThereAnyFile = false;
+      isThereAnyValidFile = false;
     } catch (e: any) {
       let errorStatus = '';
       console.error(e.response.data);
