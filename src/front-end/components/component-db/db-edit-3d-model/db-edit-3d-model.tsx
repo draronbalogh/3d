@@ -249,7 +249,7 @@ export class DbEdit3dModel extends React.Component<any, any> {
         );
       case 'file':
         //@ts-ignore
-        return <Form.Control multiple type={ctr} name='imageName' onChange={(e) => this.inputFileDataUpdater(elm, e)}></Form.Control>;
+        return <Form.Control multiple type={ctr} name='imageName' onChange={(e) => this.inputFileDataUpdater(elm, e)} accept={_CONFIG.forntendValildTypes}></Form.Control>;
       case 'textarea':
         return <Form.Control as={ctr} rows={3} value={element ? element : ''} onChange={(e) => this.inputDataUpdater(elm, e.target.value)}></Form.Control>;
       default:

@@ -18,6 +18,7 @@ import ProgressBar from 'react-bootstrap/ProgressBar';
 import { ProgressViewer } from '../db-shared/progress-viewer/progress-viewer-component';
 import 'react-circular-progressbar/dist/styles.css';
 import { Files } from 'formidable';
+
 interface Model3dState {
   id: number | undefined;
   data: any;
@@ -75,7 +76,7 @@ export class DbAdd3dModel extends React.Component<any, any> {
           }
           if (currentFileType && !_CONFIG.validTypes.includes(currentFileType)) {
             isThereAnyValidFile = false;
-            console.log('invalid thins :>> ');
+            console.log('invalid currentFileType :>> ', currentFileType);
           }
           const nameSeparatedByComma = data[file].split(',')[index];
           if (individualFile) filesData.append(folderName, individualFile as Blob, nameSeparatedByComma);
@@ -222,7 +223,7 @@ export class DbAdd3dModel extends React.Component<any, any> {
           </Form.Select>
         );
       case 'file':
-        return <Form.Control multiple type={ctr} name={folderId ? folderId : ''} onChange={(e) => this.inputFileDataUpdater(elm.name, e)}></Form.Control>;
+        return <Form.Control multiple type={ctr} name={folderId ? folderId : ''} onChange={(e) => this.inputFileDataUpdater(elm.name, e)} accept={_CONFIG.forntendValildTypes}></Form.Control>;
       case 'textarea':
         return <Form.Control as={ctr} rows={3} value={data?.hasOwnProperty(elm.name) ? data[elm.name] : ''} onChange={(e) => this.inputDataUpdater(elm.name, e.target.value)}></Form.Control>;
       default:
