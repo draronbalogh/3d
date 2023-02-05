@@ -13,11 +13,11 @@ import Col from 'react-bootstrap/Col';
 ///////////////////////////////////////////////////////////   SCSS
 import './App.scss';
 ///////////////////////////////////////////////////////////   INTERFACE
-
 interface State {
   updateIdNum: number | undefined;
   updateData: unknown;
   data: unknown;
+  isDarkMode: boolean;
 }
 //////////////////////////////////////////////////////////////////////////////////////    CLASS SETUP
 /**
@@ -26,13 +26,16 @@ interface State {
  */
 class App extends React.Component<unknown, State> {
   //public data: any;
+  public storedTheme = localStorage.getItem('theme');
   constructor(props: unknown) {
     super(props);
     this.state = {
       updateIdNum: undefined,
       updateData: undefined,
-      data: []
+      data: [],
+      isDarkMode: true
     };
+    this.getPreferredTheme();
   }
 
   updateId = (id: number) => {
@@ -44,12 +47,42 @@ class App extends React.Component<unknown, State> {
     this.setState({ data: updateData });
   };
 
+  setIsDarkMode = () => {
+    const { isDarkMode } = this.state;
+
+    this.changeTheme(isDarkMode ? 'dark' : 'light');
+  };
+
+  changeTheme = (theme: string) => {
+    if (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      document.documentElement.setAttribute('data-bs-theme', 'dark');
+
+      document.querySelectorAll('[data-bs-theme-value]').forEach((toggle) => {
+        toggle.addEventListener('click', () => {
+          const theme = toggle.getAttribute('data-bs-theme-value');
+          localStorage.setItem('theme', String(theme));
+        });
+      });
+    } else {
+      //theme === 'dark' ? this.setState({ isDarkMode: true }) : this.setState({ isDarkMode: false });
+      document.documentElement.setAttribute('data-bs-theme', theme);
+    }
+  };
+
+  getPreferredTheme = () => {
+    if (this.storedTheme) {
+      return this.storedTheme;
+    }
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  };
+
   render() {
-    const { data } = this.state;
+    const { data, isDarkMode } = this.state;
     return (
       <Container fluid className={'3dRegform'}>
         <Row>
           <Col xs={12}>
+            <button onClick={this.setIsDarkMode}>{isDarkMode ? 'világos' : 'sötét'}</button>
             <Routes>
               <Route path='/view/:id' element={<View3dModel data={data} />} />
             </Routes>

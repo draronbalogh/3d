@@ -84,7 +84,7 @@ export const removeAccents = (str: any) => {
     console.log('fetchData err:', err);
   }
 };
-
+/*
 export const getAbcKeys = (c1: string, c2: string) => {
   try {
     const a = 'abcdefghijklmnopqrstuvwxyz'.split('');
@@ -93,3 +93,4 @@ export const getAbcKeys = (c1: string, c2: string) => {
     console.log('fetchData err:', err);
   }
 };
+*/
