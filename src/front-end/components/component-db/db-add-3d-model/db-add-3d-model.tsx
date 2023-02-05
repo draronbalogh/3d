@@ -13,11 +13,11 @@ import { _CONFIG } from '../../../../_config/_config';
 import { modelConfig } from '../../../../_config/config-model';
 import { getAllModels3ds, getLastModelId } from '../../../../back-end/controllers/controllers-3dmodels';
 import { removeHunChars } from '../../../../assets/es6-methods';
-
 import ProgressBar from 'react-bootstrap/ProgressBar';
 import { ProgressViewer } from '../db-shared/progress-viewer/progress-viewer-component';
 import 'react-circular-progressbar/dist/styles.css';
 import { Files } from 'formidable';
+import { cloneDeep } from 'sequelize/types/utils';
 
 interface Model3dState {
   id: number | undefined;
@@ -62,48 +62,33 @@ export class DbAdd3dModel extends React.Component<any, any> {
     const { data, files } = this.state;
     let { folderId, folderName } = this.state;
     try {
-      let isThereAnyValidFile = true;
-
+      let isThereAnyValidFile = false;
       const filesData = new FormData();
       for (const file in files) {
-        /*  if (files[file].length > 0) {
-          isThereAnyValidFile = true;
-        }*/
         Object.values(files[file]).forEach((individualFile: any, index) => {
           let currentFileType = null;
-          if (individualFile.name) {
-            currentFileType = individualFile.name.split('.').pop();
+          if (individualFile.name) currentFileType = individualFile.name.split('.').pop();
+          if (currentFileType && _CONFIG.validTypes.includes(currentFileType)) {
+            isThereAnyValidFile = true;
+            const nameSeparatedByComma = data[file].split(',')[index];
+            if (individualFile) filesData.append(folderName, individualFile as Blob, nameSeparatedByComma);
           }
-          if (currentFileType && !_CONFIG.validTypes.includes(currentFileType)) {
-            isThereAnyValidFile = false;
-            console.log('invalid currentFileType :>> ', currentFileType);
-          }
-          const nameSeparatedByComma = data[file].split(',')[index];
-          if (individualFile) filesData.append(folderName, individualFile as Blob, nameSeparatedByComma);
         });
       }
+      await axios.post(_CONFIG.url.createModel, data, {}).then((response: any) => {
+        if (response.data.success === false) {
+          throw new Error('Error uploading to safe', response);
+        }
+      });
       if (isThereAnyValidFile) {
-        await axios.post(_CONFIG.url.createModel, data, {}).then((response: any) => {
-          if (response.data.success === false) {
-            throw new Error('Error uploading to safe', response);
-          }
-        });
-        console.log('isThereAnyValidFile :>> ', isThereAnyValidFile);
         this.setState({ isUploading: true });
-        // TODO: only if there is a file to upload
-        // only if it is valid
-
-        // loop files and check if each key has some value
-
         await axios
           .post(_CONFIG.url.uploadFiles, filesData, {
             headers: {
               'content-type': 'multipart/form-data'
             },
             onUploadProgress: (data) => {
-              //Set the progress value to show the progress bar
               this.setState({ uploadingData: data });
-              console.log('data', data);
             }
           })
           .then((response) => {
@@ -126,7 +111,6 @@ export class DbAdd3dModel extends React.Component<any, any> {
       let errorStatus = '';
       console.error(e.response.data);
       if (!e.response) {
-        // network error
         errorStatus = 'Error: Network Error';
       } else {
         errorStatus = e.response.data.message;
@@ -145,7 +129,6 @@ export class DbAdd3dModel extends React.Component<any, any> {
       let x = 0;
       for (const i of e.target.files) {
         const fileName = i.name;
-        // filesTxt += `${uuid()}-${fileName},`;
         filesTxt += `${uuid()}-${fileName
           .normalize('NFD')
           .replace(/[\u0300-\u036f]/g, '')

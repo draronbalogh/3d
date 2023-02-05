@@ -179,7 +179,6 @@ export class DbEdit3dModel extends React.Component<any, any> {
               //Set the progress value to show the progress bar
               //Set the progress value to show the progress bar
               this.setState({ uploadingData: data });
-              console.log('data', data);
             }
           })
           .then((response) => {

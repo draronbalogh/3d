@@ -25,7 +25,6 @@ export const ProgressViewer = (props: any) => {
       </div>
       {uploadingData
         ? Object.keys(uploadingData).map((elm: any, i: number) => {
-            console.log(elm, uploadingData[elm]);
             // validate if uploadingData[elm]) is not object
             if (typeof uploadingData[elm] !== 'object') {
               return (
