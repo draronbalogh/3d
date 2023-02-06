@@ -26,7 +26,7 @@ interface State {
  */
 class App extends React.Component<unknown, State> {
   //public data: any;
-  public storedTheme = localStorage.getItem('theme');
+  public storedIsDarkMode = localStorage.getItem('storedIsDarkMode');
   constructor(props: unknown) {
     super(props);
     this.state = {
@@ -36,7 +36,26 @@ class App extends React.Component<unknown, State> {
       isDarkMode: false
     };
     this.getPreferredTheme();
-    console.log('a', this.getPreferredTheme());
+  }
+
+  getPreferredTheme = () => {
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? '3dDark' : 'light';
+  };
+
+  componentDidMount() {
+    if (this.storedIsDarkMode !== null) {
+      console.log('storedIsDarkMode is >>', this.storedIsDarkMode);
+      if (this.storedIsDarkMode === '3dDark') {
+        this.setState({ isDarkMode: true });
+      } else {
+        this.setState({ isDarkMode: false });
+      }
+      this.changeTheme();
+    } else {
+      console.log('storedIsDarkMode is null');
+      this.setState({ isDarkMode: false });
+      localStorage.setItem('storedIsDarkMode', 'light');
+    }
   }
 
   updateId = (id: number) => {
@@ -48,15 +67,13 @@ class App extends React.Component<unknown, State> {
     this.setState({ data: updateData });
   };
 
-  setIsDarkMode = () => {
+  changeTheme = () => {
     const { isDarkMode } = this.state;
-    this.changeTheme(isDarkMode ? 'light' : 'dark');
-  };
-
-  changeTheme = (theme: string) => {
+    const theme: string = isDarkMode ? '3dDark' : 'light';
     if (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      document.documentElement.setAttribute('data-bs-theme', 'dark');
+      document.documentElement.setAttribute('data-bs-theme', '3dDark');
       this.setState({ isDarkMode: true });
+      localStorage.setItem('storedIsDarkMode', '3dDark');
       document.querySelectorAll('[data-bs-theme-value]').forEach((toggle) => {
         toggle.addEventListener('click', () => {
           const theme = toggle.getAttribute('data-bs-theme-value');
@@ -64,16 +81,11 @@ class App extends React.Component<unknown, State> {
         });
       });
     } else {
-      this.setState({ isDarkMode: theme === 'dark' });
+      console.log('theme', theme);
       document.documentElement.setAttribute('data-bs-theme', theme);
+      localStorage.setItem('storedIsDarkMode', theme);
+      this.setState({ isDarkMode: !isDarkMode });
     }
-  };
-
-  getPreferredTheme = () => {
-    if (this.storedTheme) {
-      return this.storedTheme;
-    }
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
   };
 
   render() {
@@ -82,7 +94,7 @@ class App extends React.Component<unknown, State> {
       <Container fluid className={'3dRegform'}>
         <Row>
           <Col xs={12}>
-            <button onClick={this.setIsDarkMode}>{isDarkMode ? 'világos' : 'sötét'}</button>
+            <button onClick={this.changeTheme}>{isDarkMode ? 'sötét' : 'világos'}</button>
             <Routes>
               <Route path='/view/:id' element={<View3dModel data={data} />} />
             </Routes>

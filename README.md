@@ -1,10 +1,11 @@
 
 # todo
-- form validation
+- dark mode 
+- form validation, is file too large? 
 - axios try catch 
+- react-table
 - form design
 - 3d layout 2 zindex
-- react-table
 - login to admin
  
 /*
