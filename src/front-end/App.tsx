@@ -33,9 +33,10 @@ class App extends React.Component<unknown, State> {
       updateIdNum: undefined,
       updateData: undefined,
       data: [],
-      isDarkMode: true
+      isDarkMode: false
     };
     this.getPreferredTheme();
+    console.log('a', this.getPreferredTheme());
   }
 
   updateId = (id: number) => {
@@ -49,14 +50,13 @@ class App extends React.Component<unknown, State> {
 
   setIsDarkMode = () => {
     const { isDarkMode } = this.state;
-
-    this.changeTheme(isDarkMode ? 'dark' : 'light');
+    this.changeTheme(isDarkMode ? 'light' : 'dark');
   };
 
   changeTheme = (theme: string) => {
     if (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
       document.documentElement.setAttribute('data-bs-theme', 'dark');
-
+      this.setState({ isDarkMode: true });
       document.querySelectorAll('[data-bs-theme-value]').forEach((toggle) => {
         toggle.addEventListener('click', () => {
           const theme = toggle.getAttribute('data-bs-theme-value');
@@ -64,7 +64,7 @@ class App extends React.Component<unknown, State> {
         });
       });
     } else {
-      //theme === 'dark' ? this.setState({ isDarkMode: true }) : this.setState({ isDarkMode: false });
+      this.setState({ isDarkMode: theme === 'dark' });
       document.documentElement.setAttribute('data-bs-theme', theme);
     }
   };
