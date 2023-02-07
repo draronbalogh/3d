@@ -12,7 +12,8 @@ export const _CONFIG = {
   routes: {
     upload: '/upload',
     deleteFiles: '/deleteFiles',
-    routes3d: '/api/3dmodels'
+    routes3d: '/api/3dmodels',
+    error: 'Hibás URL cím, vagy nem létező oldal!'
   },
   theme: {
     domTrg: 'data-bs-theme',
@@ -74,7 +75,15 @@ export const _CONFIG = {
       },
       file: {
         unlink: 'Error unlinking file',
-        folder: 'Error while deleting the folder'
+        folder: 'Error while deleting the folder',
+        uploading: 'Error while uploading files',
+        tooBig: 'File too Big, please select a file less than...',
+        tooSmall: 'File too small, please select a file bigger than...'
+      },
+      fetch: {
+        axios: 'Axios Error',
+        postingData: 'Error while posting / storing data to database',
+        saving: 'Error while saving data to database / uploading files'
       }
     }
   }

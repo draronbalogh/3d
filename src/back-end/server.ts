@@ -66,7 +66,7 @@ const upload = async (req: any, res: any, next: any) => {
    * Reports the progress of the incoming form.
    */
   form.on('progress', function (bytesReceived: any, bytesExpected: any) {
-    let perc = Math.round((100 * bytesReceived) / bytesExpected) + '%';
+    const perc = Math.round((100 * bytesReceived) / bytesExpected) + '%';
     // console.log('upload', perc);
     return perc;
   });
@@ -153,12 +153,11 @@ const upload = async (req: any, res: any, next: any) => {
  * @param next
  */
 const deleteFiles = async (req: any, res: any, next: any) => {
-  console.clear();
-  let arr: string[] = req.body.deleteTheseFiles || [];
-  let id = req.body.id;
-  let modelUuid = req.body.modelUuid;
-  let deleteFolder = req.body.deleteFolder;
-  const folder = path.join(_CONFIG.url.uploadFolder + modelUuid + '/');
+  const arr: string[] = req.body.deleteTheseFiles || [],
+    id = req.body.id,
+    modelUuid = req.body.modelUuid,
+    deleteFolder = req.body.deleteFolder,
+    folder = path.join(_CONFIG.url.uploadFolder + modelUuid + '/');
   arr.forEach((filePath) => {
     if (fs.existsSync(folder + filePath)) {
       fs.unlink(folder + filePath, (err) => {
@@ -177,7 +176,7 @@ const deleteFiles = async (req: any, res: any, next: any) => {
       }
     }
   });
-  let newTask = Object.assign({ id: id }, req.body);
+  const newTask = Object.assign({ id: id }, req.body);
   res.json({ status: 200, message: _CONFIG.msg.txt.file.deleteOk, newTask: newTask });
 };
 
@@ -194,6 +193,7 @@ app.listen(PORT3D, () => console.log(_CONFIG.msg.txt.server.started));
 
 ///////////////////////////////////////////////////////////   RUN APP
 try {
+  console.clear();
   console.log(_CONFIG.msg.txt.db.startDb);
   connectToDb();
   createNecessaryDirectoriesSync(_CONFIG.url.uploadFolder);

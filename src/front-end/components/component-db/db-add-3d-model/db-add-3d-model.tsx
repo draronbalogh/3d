@@ -50,9 +50,7 @@ export class DbAdd3dModel extends React.Component<any, any> {
       let d = data[modelConfig[i].name];
       elm.name !== 'id' && elm.control !== 'switch' ? (d = '') : null;
       if (elm.name === 'modelViewCount' || elm.name === 'modelViewCount') d = 1;
-      this.setState({
-        data: data
-      });
+      this.setState({ data: data });
     });
   }
 
@@ -74,10 +72,9 @@ export class DbAdd3dModel extends React.Component<any, any> {
    */
   save3dModel = async (e: any) => {
     e.preventDefault();
-    const { data, files } = this.state;
-    let { folderName } = this.state;
+    const { data, files, folderName } = this.state;
+    let isThereAnyValidFile: boolean = false;
     try {
-      let isThereAnyValidFile = false;
       const filesData = new FormData();
       for (const file in files) {
         Object.values(files[file]).forEach((individualFile: any, index) => {
@@ -92,23 +89,21 @@ export class DbAdd3dModel extends React.Component<any, any> {
       }
       await axios.post(_CONFIG.url.createModel, data, {}).then((response: any) => {
         if (response.data.success === false) {
-          throw new Error('Error uploading to safe', response);
+          throw new Error(_CONFIG.msg.error.fetch.postingData, response);
         }
       });
       if (isThereAnyValidFile) {
         this.setState({ isUploading: true });
         await axios
           .post(_CONFIG.url.uploadFiles, filesData, {
-            headers: {
-              'content-type': 'multipart/form-data'
-            },
+            headers: { 'content-type': 'multipart/form-data' },
             onUploadProgress: (data) => {
               this.setState({ uploadingData: data });
             }
           })
           .then((response) => {
             if (response.data.success === false) {
-              console.log('Error uploading to safe.moe: ', response);
+              console.log(_CONFIG.msg.error.file.uploading, response);
             } else {
               setTimeout(() => {
                 this.setState({ isUploading: false, isThankYou: true });
@@ -130,8 +125,7 @@ export class DbAdd3dModel extends React.Component<any, any> {
       } else {
         errorStatus = e.response.data.message;
       }
-      console.log('Axios Reports Error: ', errorStatus);
-      console.log('Axios Error: ', e);
+      console.log(_CONFIG.msg.error.fetch.saving, errorStatus, e);
     }
   };
 
@@ -153,10 +147,10 @@ export class DbAdd3dModel extends React.Component<any, any> {
           const file = Math.round(fsize);
           // The size of the file.
           if (file >= _CONFIG.validation.file.maxFileSize) {
-            alert('File too Big, please select a file less than...');
+            alert(_CONFIG.msg.error.file.tooBig);
             return;
           } else if (file < _CONFIG.validation.file.minFileSize) {
-            alert('File too small, please select a file greater than...');
+            alert(_CONFIG.msg.error.file.tooSmall);
             return;
           } else {
           }
@@ -235,6 +229,13 @@ export class DbAdd3dModel extends React.Component<any, any> {
   };
 
   ///////////////////////////////////////////////////////////   RENDER METHODS
+  /**
+   * Form builder
+   * @param i number
+   * @param elm any
+   * @returns
+   * @description Build form from modelConfig
+   */
   formBuilder = (i: number, elm: any) => {
     let { data, folderId } = this.state,
       ctr = modelConfig[i].control,

@@ -68,7 +68,7 @@ export class DbEdit3dModel extends React.Component<any, any> {
    */
   findDataById = () => {
     const { data, id } = this.state;
-    let obj = data.find((o: { id: any }) => o.id === id);
+    const obj = data.find((o: { id: any }) => o.id === id);
     this.setState({ data: obj });
     this.setState({ oldFilesToDel: obj });
   };
@@ -106,10 +106,10 @@ export class DbEdit3dModel extends React.Component<any, any> {
       if (elm === 'modelImgs') DbEdit3dModel.imgArray.push(modelImgsA);
       if (elm === 'modelMaterialUrl') DbEdit3dModel.imgArray.push(modelMaterialUrlA);
       this.setState({ deleteTheseFiles: DbEdit3dModel.imgArray.flat(1) });
-      let files = { ...this.state.files };
+      let files = { ...this.state.files },
+        filesTxt = '';
       files[elm] = e.target.files;
       this.setState({ files });
-      let filesTxt = '';
       for (const i of e.target.files) {
         const fileName = i.name;
         filesTxt += `${uuid()}-${fileName
@@ -140,10 +140,9 @@ export class DbEdit3dModel extends React.Component<any, any> {
       data: {
         ...this.state.data,
         [elm]: e
-      }
+      },
+      isSaved: false
     });
-
-    this.setState({ isSaved: false });
   };
 
   /**

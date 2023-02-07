@@ -75,7 +75,6 @@ class App extends React.Component<unknown, State> {
     this.setState({ isDarkMode: !isDarkMode }, () => {
       const theme: string = isDarkMode ? _CONFIG.theme.dark : _CONFIG.theme.light;
       if (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        // document.documentElement.setAttribute('data-bs-theme', '3dDark');
         document.documentElement.setAttribute(_CONFIG.theme.domTrg, _CONFIG.theme.dark);
         this.setState({ isDarkMode: true });
         localStorage.setItem(_CONFIG.theme.storedBg, _CONFIG.theme.dark);
@@ -109,21 +108,7 @@ class App extends React.Component<unknown, State> {
               <Route path='/add' element={<DbAdd3dModel />} />
               <Route path='/edit/:id' element={<DbEdit3dModel data={data} />} />
               <Route path='/view/:id' element={<View3dModel data={data} />} />
-              {/*  <Route
-                  path='/upload'
-                  element={
-                    <form action='/upload' encType='multipart/form-data' method='post'>
-                      <div>
-                        modelTitle: <input type='text' name='modelTitle' />
-                      </div>
-                      <div>
-                        File: <input type='file' name='someExpressFiles' multiple={true} />
-                      </div>
-                      <input type='submit' value='Upload' />
-                    </form>
-                  }
-                />*/}
-              <Route path='*' element={<p>Path not resolved</p>} />
+              <Route path='*' element={<code>{_CONFIG.routes.error}</code>} />
             </Routes>
           </Col>
         </Row>

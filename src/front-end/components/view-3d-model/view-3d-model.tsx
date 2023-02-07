@@ -37,7 +37,7 @@ export class View3dModel extends React.Component<CompProps, CompState> {
    */
   findDataById = () => {
     const { data, id } = this.state;
-    let obj = data.find((o: { id: any }) => o.id === id);
+    const obj = data.find((o: { id: any }) => o.id === id);
     this.setState({ data: obj });
   };
 
@@ -50,7 +50,7 @@ export class View3dModel extends React.Component<CompProps, CompState> {
       const response = await axios.get(_CONFIG.url.getModel + id);
       this.setState({ data: response.data });
     } catch (e: any) {
-      if (e.response) console.log('Axios Error: ', e.response.data);
+      if (e.response) console.log(_CONFIG.msg.error.fetch.axios, e.response.data);
     }
   };
 
@@ -80,7 +80,7 @@ export class View3dModel extends React.Component<CompProps, CompState> {
 
   //////////////////////////////////////////////////////////////////////////////////////    RENDER
   render() {
-    const { id, data } = this.state;
+    const { id } = this.state;
     return (
       <table>
         <thead>

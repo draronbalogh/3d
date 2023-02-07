@@ -45,12 +45,12 @@ export const getLastModelId = async (req: Request, res: Response) => {
  */
 export const getModels3dById = async (req: Request, res: Response) => {
   try {
-    const product = await ModelControllerTypes.findAll({
+    const modells = await ModelControllerTypes.findAll({
       where: {
         id: req.params.id
       }
     });
-    res.json(product[0]);
+    res.json(modells[0]);
   } catch (error: any | unknown) {
     res.json({ message: error.message });
   }

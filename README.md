@@ -1,12 +1,17 @@
 
 # todo
-- form validation, is file too large? 
+- form validation, is file too large?
+- cont and let define types for varriables 
 - axios try catch 
+- export all config type data to config file
+
+# sendondary todo
 - react-table
+- login to admin
 - form design
 - 3d layout 2 zindex
-- login to admin
- 
+
+
 /*
  * Materialok --> cinema3D-nél tex
  */
