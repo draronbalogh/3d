@@ -2,7 +2,7 @@
 ///////////////////////////////////////////////////////////   REACT
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-///////////////////////////////////////////////////////////   CONFiG
+///////////////////////////////////////////////////////////   CONFIG
 import { _CONFIG } from '../_config/_config';
 ///////////////////////////////////////////////////////////   LIBS
 import { View3dModel, DbList3dModel, DbAdd3dModel, DbEdit3dModel } from './components';
@@ -12,8 +12,6 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 ///////////////////////////////////////////////////////////   SCSS
 import './App.scss';
-import { JSDocNonNullableType } from 'typescript';
-import { constants } from 'buffer';
 ///////////////////////////////////////////////////////////   INTERFACE
 interface State {
   updateIdNum: number | undefined;
@@ -39,6 +37,7 @@ class App extends React.Component<unknown, State> {
     };
   }
 
+  ///////////////////////////////////////////////////////////   LIFECYCLE METHODS
   componentDidMount() {
     if (this.storedBgStyle !== null) {
       if (this.storedBgStyle === _CONFIG.theme.dark) {
@@ -51,14 +50,26 @@ class App extends React.Component<unknown, State> {
     }
   }
 
+  ///////////////////////////////////////////////////////////   CLASS METHODS
+  /**
+   * Update id
+   * @param id
+   */
   updateId = (id: number) => {
     this.setState({ updateIdNum: id });
   };
 
+  /**
+   * Update data
+   * @param updateData
+   */
   updateData = (updateData: unknown) => {
     this.setState({ data: updateData });
   };
 
+  /**
+   * Change theme
+   */
   changeTheme = () => {
     const { isDarkMode } = this.state;
     this.setState({ isDarkMode: !isDarkMode }, () => {
@@ -80,6 +91,7 @@ class App extends React.Component<unknown, State> {
     });
   };
 
+  //////////////////////////////////////////////////////////////////////////////////////    RENDER
   render() {
     const { data, isDarkMode } = this.state;
     return (
@@ -87,9 +99,6 @@ class App extends React.Component<unknown, State> {
         <Row>
           <Col xs={12}>
             <button onClick={this.changeTheme}>{isDarkMode ? 'sötét' : 'világos'}</button>
-            <Routes>
-              <Route path='/view/:id' element={<View3dModel data={data} />} />
-            </Routes>
           </Col>
         </Row>
         <Row>
@@ -98,6 +107,7 @@ class App extends React.Component<unknown, State> {
               <Route path='/' element={<DbList3dModel updateId={this.updateId} updateData={this.updateData} />} />
               <Route path='/add' element={<DbAdd3dModel />} />
               <Route path='/edit/:id' element={<DbEdit3dModel data={data} />} />
+              <Route path='/view/:id' element={<View3dModel data={data} />} />
               {/*  <Route
                   path='/upload'
                   element={

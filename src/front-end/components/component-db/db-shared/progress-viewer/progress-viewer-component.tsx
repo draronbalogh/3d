@@ -1,6 +1,8 @@
+//////////////////////////////////////////////////////////////////////////////////////   IMPORT
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import ProgressBar from 'react-bootstrap/ProgressBar';
 import 'react-circular-progressbar/dist/styles.css';
+//////////////////////////////////////////////////////////////////////////////////////   COMPONENT
 export const ProgressViewer = (props: any) => {
   let uploadingData = props.uploadingData;
   return (
@@ -25,7 +27,6 @@ export const ProgressViewer = (props: any) => {
       </div>
       {uploadingData
         ? Object.keys(uploadingData).map((elm: any, i: number) => {
-            // validate if uploadingData[elm]) is not object
             if (typeof uploadingData[elm] !== 'object') {
               return (
                 <div key={i}>

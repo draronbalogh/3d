@@ -11,6 +11,7 @@ view-3d-model/
 server.ts
 # others
 bootstrap-dark.js
+es6-methods.ts
 
 # build
 dist/

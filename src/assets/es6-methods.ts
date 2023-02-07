@@ -1,9 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
 /**
  * huDate()
  * @returns date in hungarian format
@@ -48,6 +42,10 @@ export const removeHunChars = (e: string) => {
   }
 };
 
+/**
+ * Get current time and date
+ * @returns
+ */
 export const getCurrentTimeAndDate = () => {
   try {
     const today = new Date();
@@ -63,6 +61,11 @@ export const getCurrentTimeAndDate = () => {
   }
 };
 
+/**
+ * Remove hungatian accents from string
+ * @param str
+ * @returns
+ */
 export const removeAccents = (str: any) => {
   try {
     const convMap: Record<string, string> = {
@@ -84,7 +87,13 @@ export const removeAccents = (str: any) => {
     console.log('fetchData err:', err);
   }
 };
-/*
+
+/**
+ * Get ABC keys
+ * @param c1 string
+ * @param c2 string
+ * @returns
+ */
 export const getAbcKeys = (c1: string, c2: string) => {
   try {
     const a = 'abcdefghijklmnopqrstuvwxyz'.split('');
@@ -93,4 +102,3 @@ export const getAbcKeys = (c1: string, c2: string) => {
     console.log('fetchData err:', err);
   }
 };
-*/

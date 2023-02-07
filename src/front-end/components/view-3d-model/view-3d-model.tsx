@@ -1,9 +1,12 @@
+//////////////////////////////////////////////////////////////////////////////////////   IMPORT
+///////////////////////////////////////////////////////////   REACT
 import React from 'react';
-import Accordion from 'react-bootstrap/Accordion';
-import axios, { AxiosResponse } from 'axios';
-import { Link } from 'react-router-dom';
+///////////////////////////////////////////////////////////   CONFIG
 import { _CONFIG } from '../../../_config/_config';
 import { modelConfig } from '../../../_config/config-model';
+///////////////////////////////////////////////////////////   LIBS
+import axios from 'axios';
+///////////////////////////////////////////////////////////   INTERFACE
 interface CompProps {
   data: any;
 }
@@ -11,6 +14,7 @@ interface CompState {
   data: any;
   id: number | any;
 }
+//////////////////////////////////////////////////////////////////////////////////////    CLASS SETUP
 export class View3dModel extends React.Component<CompProps, CompState> {
   constructor(props: CompProps) {
     super(props);
@@ -20,16 +24,26 @@ export class View3dModel extends React.Component<CompProps, CompState> {
     };
   }
 
+  ///////////////////////////////////////////////////////////   LIFECYCLE METHODS
   componentDidMount() {
     const { data } = this.state;
     if (data.length >= 1) this.findDataById();
     if (!data.length) this.fetchModelDataById();
   }
+
+  ///////////////////////////////////////////////////////////   CLASS METHODS
+  /**
+   * Find data by id
+   */
   findDataById = () => {
     const { data, id } = this.state;
     let obj = data.find((o: { id: any }) => o.id === id);
     this.setState({ data: obj });
   };
+
+  /**
+   * Fetch data by id
+   */
   fetchModelDataById = async () => {
     try {
       const { id } = this.state;
@@ -40,6 +54,11 @@ export class View3dModel extends React.Component<CompProps, CompState> {
     }
   };
 
+  ///////////////////////////////////////////////////////////   RENDER METHODS
+  /**
+   * Print model description
+   * @returns data or null
+   */
   printModelDesc = () => {
     const { data } = this.state;
     return data
@@ -48,15 +67,20 @@ export class View3dModel extends React.Component<CompProps, CompState> {
         })
       : null;
   };
+
+  /**
+   * Get title
+   * @returns label list of table cells
+   */
   getTitle = () => {
     return Object.entries(modelConfig).map(([key, value]) => {
       return <td key={key}>{value.label}</td>;
     });
   };
 
+  //////////////////////////////////////////////////////////////////////////////////////    RENDER
   render() {
     const { id, data } = this.state;
-
     return (
       <table>
         <thead>
@@ -65,7 +89,6 @@ export class View3dModel extends React.Component<CompProps, CompState> {
           </tr>
           <tr>{this.getTitle()}</tr>
         </thead>
-
         <tbody>
           <tr>{this.printModelDesc()}</tr>
         </tbody>

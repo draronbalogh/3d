@@ -1,24 +1,22 @@
+//////////////////////////////////////////////////////////////////////////////////////   IMPORT
+///////////////////////////////////////////////////////////   REACT
 import React, { useRef } from 'react';
-import Accordion from 'react-bootstrap/Accordion';
-import axios, { AxiosResponse, formToJSON } from 'axios';
 import { Navigate } from 'react-router-dom';
-import { Link } from 'react-router-dom';
-import { isVariableDeclaration } from 'typescript';
-import { NULL } from 'node-sass';
-import Button from 'react-bootstrap/Button';
-import Form from 'react-bootstrap/Form';
-import { v4 as uuid } from 'uuid';
-import { nanoid } from 'nanoid';
+///////////////////////////////////////////////////////////   CONFIG
 import { _CONFIG } from '../../../../_config/_config';
 import { modelConfig } from '../../../../_config/config-model';
-import { getAllModels3ds, getLastModelId } from '../../../../back-end/controllers/controllers-3dmodels';
+///////////////////////////////////////////////////////////   LIBS
+import axios from 'axios';
+import { v4 as uuid } from 'uuid';
+import { nanoid } from 'nanoid';
 import { removeHunChars } from '../../../../assets/es6-methods';
-import ProgressBar from 'react-bootstrap/ProgressBar';
+///////////////////////////////////////////////////////////   DOM
+import Form from 'react-bootstrap/Form';
+import Button from 'react-bootstrap/Button';
 import { ProgressViewer } from '../db-shared/progress-viewer/progress-viewer-component';
+///////////////////////////////////////////////////////////   SCSS
 import 'react-circular-progressbar/dist/styles.css';
-import { Files } from 'formidable';
-import { cloneDeep } from 'sequelize/types/utils';
-
+///////////////////////////////////////////////////////////   INTERFACE
 interface Model3dState {
   id: number | undefined;
   data: any;
@@ -28,6 +26,7 @@ interface Model3dState {
   isThankYou: boolean;
   uploadingData: any;
 }
+//////////////////////////////////////////////////////////////////////////////////////    CLASS SETUP
 export class DbAdd3dModel extends React.Component<any, any> {
   form: React.RefObject<any>;
   constructor(props: any) {
@@ -44,7 +43,7 @@ export class DbAdd3dModel extends React.Component<any, any> {
     };
     this.form = React.createRef();
   }
-
+  ///////////////////////////////////////////////////////////   LIFECYCLE METHODS
   async componentDidMount() {
     let { data } = this.state;
     modelConfig?.forEach((elm: any, i: number) => {
@@ -56,11 +55,27 @@ export class DbAdd3dModel extends React.Component<any, any> {
       });
     });
   }
-  componentDidUpdate(prevProps: any) {}
+
+  ///////////////////////////////////////////////////////////   CLASS METHODS
+  /**
+   * Save 3d model
+   * @param e
+   * @returns
+   * @private
+   * @memberof DbAdd3dModel
+   * @description
+   * 1. Check if there is any valid file
+   * 2. Create folder
+   * 3. Upload files
+   * 4. Save data
+   * 5. Redirect to thank you page
+   * 6. Reset state
+   * 7. Reset form
+   */
   save3dModel = async (e: any) => {
     e.preventDefault();
     const { data, files } = this.state;
-    let { folderId, folderName } = this.state;
+    let { folderName } = this.state;
     try {
       let isThereAnyValidFile = false;
       const filesData = new FormData();
@@ -120,22 +135,29 @@ export class DbAdd3dModel extends React.Component<any, any> {
     }
   };
 
+  /**
+   * Input file data updater
+   * @param elm string
+   * @param e any
+   * @returns void
+   * @memberof DbAdd3dModel
+   * @description
+   * Update state with uuuid file names
+   */
   inputFileDataUpdater = (elm: string, e: any) => {
     try {
       let files = { ...this.state.files };
       files[elm] = e.target.files;
       this.setState({ files });
       let filesTxt = '';
-      let x = 0;
       for (const i of e.target.files) {
         const fileName = i.name;
         filesTxt += `${uuid()}-${fileName
           .normalize('NFD')
-          .replace(/[\u0300-\u036f]/g, '')
+          .replace(/[\u0300-\u036f]/g, '') // TODO:: remove hungarian characters  -->removeHunChars()
           .toLowerCase()
           .replace(/[^a-zA-Z0-9.]/g, '-')},`;
       }
-
       this.setState(
         {
           data: {
@@ -150,9 +172,15 @@ export class DbAdd3dModel extends React.Component<any, any> {
     } catch (error) {}
   };
 
+  /**
+   * Input data updater
+   * @param elm string
+   * @param e any
+   * @returns void
+   * @memberof DbAdd3dModel
+   */
   inputDataUpdater = (elm: string, e: any) => {
-    const { folderId, folderName, modelUuid } = this.state;
-
+    const { folderId } = this.state;
     this.setState({
       data: {
         ...this.state.data,
@@ -162,20 +190,24 @@ export class DbAdd3dModel extends React.Component<any, any> {
     if (elm === 'modelTitle')
       this.setState({ modelUuid: removeHunChars(e) }, () => {
         const { modelUuid } = this.state;
-        this.setState(
-          {
-            data: {
-              ...this.state.data,
-              modelUuid: modelUuid + '-' + folderId
-            },
-            folderName: modelUuid + '-' + folderId
+        this.setState({
+          data: {
+            ...this.state.data,
+            modelUuid: modelUuid + '-' + folderId
           },
-          () => {}
-        );
+          folderName: modelUuid + '-' + folderId
+        });
       });
     this.setState({ isSaved: false });
   };
 
+  /**
+   * Switcher
+   * @param elm any
+   * @param trgVal any
+   * @returns
+   * @memberof DbAdd3dModel
+   */
   switcher = (elm: any, trgVal: any) => {
     this.setState({
       data: {
@@ -186,8 +218,9 @@ export class DbAdd3dModel extends React.Component<any, any> {
     return trgVal;
   };
 
+  ///////////////////////////////////////////////////////////   RENDER METHODS
   formBuilder = (i: number, elm: any) => {
-    let { data, folderId, folderName } = this.state,
+    let { data, folderId } = this.state,
       ctr = modelConfig[i].control,
       category = modelConfig[i].categories;
     switch (ctr) {
@@ -213,8 +246,10 @@ export class DbAdd3dModel extends React.Component<any, any> {
         return <Form.Control disabled={elm.name === 'modelUuid' ? true : false} type={ctr} value={data?.hasOwnProperty(elm.name) ? data[elm.name] : ''} onChange={(e) => this.inputDataUpdater(elm.name, e.target.value)} required={elm.isRequired}></Form.Control>;
     }
   };
+
+  //////////////////////////////////////////////////////////////////////////////////////    RENDER
   render() {
-    const { isSaved, isThankYou, isUploading, uploadingData, folderId } = this.state;
+    const { isSaved, isThankYou, isUploading, uploadingData } = this.state;
     return isThankYou ? (
       <div>köszi</div>
     ) : isSaved ? (
@@ -227,7 +262,6 @@ export class DbAdd3dModel extends React.Component<any, any> {
           ? modelConfig.map((elm: any, i: number) => {
               let ctr = modelConfig[i].control,
                 enableForAddEdit = modelConfig[i].enableForAddEdit;
-
               return enableForAddEdit ? (
                 <Form.Group className={ctr !== 'hidden' ? 'm-1' : 'd-nonennnn'} key={i}>
                   {ctr !== 'switch' ? <Form.Label>{elm.label}</Form.Label> : null}

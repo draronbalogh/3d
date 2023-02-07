@@ -1,20 +1,20 @@
+//////////////////////////////////////////////////////////////////////////////////////   IMPORT
+///////////////////////////////////////////////////////////   REACT
 import React from 'react';
-import Accordion from 'react-bootstrap/Accordion';
-import axios, { AxiosResponse } from 'axios';
 import { Navigate } from 'react-router-dom';
-import { Link } from 'react-router-dom';
-import { isVariableDeclaration, NumericLiteral } from 'typescript';
-import { v4 as uuid } from 'uuid';
-import Button from 'react-bootstrap/Button';
-import Form from 'react-bootstrap/Form';
+///////////////////////////////////////////////////////////   CONFIG
 import { _CONFIG } from '../../../../_config/_config';
 import { modelConfig } from '../../../../_config/config-model';
-import db from '../../../../_config/config-database';
-import { removeHunChars } from '../../../../assets/es6-methods';
-import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
-import ProgressBar from 'react-bootstrap/ProgressBar';
-import 'react-circular-progressbar/dist/styles.css';
+///////////////////////////////////////////////////////////   LIBS
+import axios, { AxiosResponse } from 'axios';
+import { v4 as uuid } from 'uuid';
+///////////////////////////////////////////////////////////   DOM
+import Button from 'react-bootstrap/Button';
+import Form from 'react-bootstrap/Form';
 import { ProgressViewer } from '../db-shared/progress-viewer/progress-viewer-component';
+///////////////////////////////////////////////////////////   SCSS
+import 'react-circular-progressbar/dist/styles.css';
+///////////////////////////////////////////////////////////   INTERFACE
 interface Model3dState {
   id: number | undefined;
   data: any;
@@ -30,6 +30,7 @@ declare module 'react' {
     webkitdirectory?: string;
   }
 }
+//////////////////////////////////////////////////////////////////////////////////////    CLASS SETUP
 export class DbEdit3dModel extends React.Component<any, any> {
   static imgArray: any[] = [];
   constructor(props: any) {
@@ -45,7 +46,7 @@ export class DbEdit3dModel extends React.Component<any, any> {
       folderId: null
     };
   }
-
+  ///////////////////////////////////////////////////////////   LIFECYCLE METHODS
   componentDidMount(): void {
     const { data } = this.state;
     if (data.length >= 1) this.findDataById();
@@ -60,12 +61,21 @@ export class DbEdit3dModel extends React.Component<any, any> {
       this.setState({ files: this.props.files });
     }
   }
+
+  ///////////////////////////////////////////////////////////   CLASS METHODS
+  /**
+   * Find data by id
+   */
   findDataById = () => {
     const { data, id } = this.state;
     let obj = data.find((o: { id: any }) => o.id === id);
     this.setState({ data: obj });
     this.setState({ oldFilesToDel: obj });
   };
+
+  /**
+   * Fetch 3D model data by id
+   */
   fetchModelDataById = async () => {
     try {
       const { id } = this.state;
@@ -76,56 +86,55 @@ export class DbEdit3dModel extends React.Component<any, any> {
       if (e.response) console.log('Axios Error: ', e.response.data);
     }
   };
+
+  /**
+   * Input file data updater
+   * @param elm string
+   * @param e any
+   */
   inputFileDataUpdater = async (elm: string, e: any) => {
-    // DbEdit3dModel.imgArray = [];
     try {
       const { oldFilesToDel } = this.state;
-      let modelUrl = oldFilesToDel['modelUrl'] ? oldFilesToDel['modelUrl'] : '';
-      let modelImgs = oldFilesToDel['modelImgs'] ? oldFilesToDel['modelImgs'] : '';
-      let modelMaterialUrl = oldFilesToDel['modelMaterialUrl'] ? oldFilesToDel['modelMaterialUrl'] : '';
+      let modelUrl = oldFilesToDel['modelUrl'] ? oldFilesToDel['modelUrl'] : '',
+        modelImgs = oldFilesToDel['modelImgs'] ? oldFilesToDel['modelImgs'] : '',
+        modelMaterialUrl = oldFilesToDel['modelMaterialUrl'] ? oldFilesToDel['modelMaterialUrl'] : '',
+        modelUrlA = modelUrl.split(','),
+        modelImgsA = modelImgs.split(','),
+        modelMaterialUrlA = modelMaterialUrl.split(',');
 
-      let modelUrlA = modelUrl.split(',');
-      let modelImgsA = modelImgs.split(',');
-      let modelMaterialUrlA = modelMaterialUrl.split(',');
-
-      let t: any[] = [];
       if (elm === 'modelUrl') DbEdit3dModel.imgArray.push(modelUrlA);
       if (elm === 'modelImgs') DbEdit3dModel.imgArray.push(modelImgsA);
       if (elm === 'modelMaterialUrl') DbEdit3dModel.imgArray.push(modelMaterialUrlA);
-      this.setState({
-        deleteTheseFiles: DbEdit3dModel.imgArray.flat(1)
-      });
-
+      this.setState({ deleteTheseFiles: DbEdit3dModel.imgArray.flat(1) });
       let files = { ...this.state.files };
-
       files[elm] = e.target.files;
-
       this.setState({ files });
       let filesTxt = '';
-      let x = 0;
       for (const i of e.target.files) {
         const fileName = i.name;
-
         filesTxt += `${uuid()}-${fileName
           .normalize('NFD')
           .replace(/[\u0300-\u036f]/g, '') // TODO:: remove hungarian characters  -->removeHunChars()
           .toLowerCase()
           .replace(/[^a-zA-Z0-9.]/g, '-')},`;
       }
-
-      this.setState(
-        {
-          data: {
-            ...this.state.data,
-            [elm]: filesTxt.slice(0, -1) // comma separated list of files as mysql record
-          }
+      this.setState({
+        data: {
+          ...this.state.data,
+          [elm]: filesTxt.slice(0, -1) // comma separated list of files as mysql record
         },
-        () => {}
-      );
-
-      this.setState({ isSaved: false });
-    } catch (error) {}
+        isSaved: false
+      });
+    } catch (error) {
+      console.log(error);
+    }
   };
+
+  /**
+   * Input data updater
+   * @param elm string
+   * @param e any
+   */
   inputDataUpdater = (elm: string, e: any) => {
     this.setState({
       data: {
@@ -136,14 +145,17 @@ export class DbEdit3dModel extends React.Component<any, any> {
 
     this.setState({ isSaved: false });
   };
+
+  /**
+   * Update 3D model
+   * @param e any
+   */
   update3dModel = async (e: any) => {
     const { data, deleteTheseFiles, id } = this.state;
     const { modelUuid } = data;
     try {
       e.preventDefault();
-
       let isThereAnyValidFile = false;
-
       DbEdit3dModel.imgArray = [];
       await axios.post(_CONFIG.url.deleteFiles, { deleteTheseFiles, id, modelUuid, deleteFolder: false }, {}); /*.then((resp: any) => {
           this.setState({
@@ -170,14 +182,9 @@ export class DbEdit3dModel extends React.Component<any, any> {
         await axios
           .post(_CONFIG.url.uploadFiles, filesData, {
             headers: {
-              // 'application/json' is the modern content-type for JSON, but some
-              // older servers may use 'text/json'.
-              // See: http://bit.ly/text-json
               'content-type': 'multipart/form-data'
             },
             onUploadProgress: (data) => {
-              //Set the progress value to show the progress bar
-              //Set the progress value to show the progress bar
               this.setState({ uploadingData: data });
             }
           })
@@ -205,12 +212,23 @@ export class DbEdit3dModel extends React.Component<any, any> {
     }
   };
 
+  /**
+   * Get title from modelConfig
+   * @param elm string
+   * @returns
+   */
   getTitle = (elm: any) => {
     return Object.entries(modelConfig).map(([key, value]) => {
       if (value.name === elm) return value.label;
     });
   };
 
+  /**
+   * Switcher
+   * @param elm any
+   * @param trgVal any
+   * @returns
+   */
   switcher = (elm: any, trgVal: any) => {
     this.setState({
       data: {
@@ -220,7 +238,15 @@ export class DbEdit3dModel extends React.Component<any, any> {
     });
     return trgVal;
   };
-  newFunction = (category: any) => {
+
+  ///////////////////////////////////////////////////////////   RENDER METHODS
+
+  /**
+   * Print all options from modelConfig
+   * @param category any
+   * @returns
+   */
+  printAllOptions = (category: any) => {
     return Array.isArray(category)
       ? category.map((element: any, x: number) => (
           <option key={x} value={element}>
@@ -229,6 +255,15 @@ export class DbEdit3dModel extends React.Component<any, any> {
         ))
       : null;
   };
+
+  /**
+   * Form builder
+   * @param i number
+   * @param elm string
+   * @returns
+   * @description This function is used to build the form
+   * @todo This function is too long, it needs to be refactored
+   */
   formBuilder = (i: number, elm: string) => {
     let { data } = this.state,
       element = data[elm],
@@ -243,7 +278,7 @@ export class DbEdit3dModel extends React.Component<any, any> {
       case 'select':
         return (
           <Form.Select onChange={(e) => this.inputDataUpdater(elm, e.target.value)} value={element ? element : ''}>
-            <>{this.newFunction(category)}</>
+            <>{this.printAllOptions(category)}</>
           </Form.Select>
         );
       case 'file':
@@ -256,8 +291,9 @@ export class DbEdit3dModel extends React.Component<any, any> {
     }
   };
 
+  //////////////////////////////////////////////////////////////////////////////////////    RENDER
   render() {
-    const { isSaved, isThankYou, isUploading, uploadingData, folderId, data } = this.state;
+    const { isSaved, isThankYou, isUploading, uploadingData, data } = this.state;
     return isThankYou ? (
       <div>köszi</div>
     ) : isSaved ? (

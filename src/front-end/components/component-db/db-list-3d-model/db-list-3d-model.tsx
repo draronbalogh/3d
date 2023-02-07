@@ -1,11 +1,15 @@
+//////////////////////////////////////////////////////////////////////////////////////   IMPORT
+///////////////////////////////////////////////////////////   REACT
 import React from 'react';
-import Accordion from 'react-bootstrap/Accordion';
-import axios, { AxiosResponse } from 'axios';
 import { Link } from 'react-router-dom';
-import Table from 'react-bootstrap/Table';
+////////////////////////////////////////////////////////////   CONFIG
 import { _CONFIG } from '../../../../_config/_config';
 import { modelConfig } from '../../../../_config/config-model';
-import { Navigate } from 'react-router-dom';
+///////////////////////////////////////////////////////////   LIBS
+import axios, { AxiosResponse } from 'axios';
+///////////////////////////////////////////////////////////   DOM
+import Table from 'react-bootstrap/Table';
+///////////////////////////////////////////////////////////   INTERFACE
 interface Model3dProps {
   updateId: any;
   updateData: any;
@@ -14,6 +18,7 @@ interface Model3dState {
   data: any[];
   isDeleted: boolean;
 }
+//////////////////////////////////////////////////////////////////////////////////////    CLASS SETUP
 export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
   constructor(props: Model3dProps) {
     super(props);
@@ -22,13 +27,15 @@ export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
       isDeleted: false
     };
   }
-
+  ///////////////////////////////////////////////////////////   LIFECYCLE METHODS
   componentDidMount() {
     this.get3dModel();
   }
 
-  componentDidUpdate(prevProps: Model3dProps) {}
-
+  ///////////////////////////////////////////////////////////   CLASS METHODS
+  /**
+   * Get 3d model data from database
+   */
   get3dModel = async () => {
     const response = await axios.get<any>(_CONFIG.url.getModel);
     const resp = response.data;
@@ -36,6 +43,12 @@ export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
     this.props.updateData(resp);
   };
 
+  /**
+   * Delete 3d model data from database and also delete files from server
+   * @param id number
+   * @param modelUuid string
+   * @param ob object
+   */
   delete3dModel = async (id: number, modelUuid: string, ob: any) => {
     let modelImgs = ob['modelImgs'] ? ob['modelImgs']?.split(',') : [];
     let modelMaterialUrl = ob['modelMaterialUrl'] ? ob['modelMaterialUrl']?.split(',') : [];
@@ -50,26 +63,43 @@ export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
       if (response.data.success === false) {
         console.log('Error uploading to safe.moe: ', response);
       } else {
-        // https://stackoverflow.com/questions/51588360/how-to-redirect-in-axios
-        // <Navigate to='/' />;
-        // window.location.href = '/';
         this.get3dModel();
       }
     });
-    // this.get3dModel();
   };
 
+  /**
+   * Update id in parent component
+   * @param id number
+   */
   updateId = (id: number) => {
     this.props.updateId(id);
   };
+
+  /**
+   * Update data
+   * @param updateData
+   */
   updateData = (updateData: unknown) => {
     this.props.updateId(updateData);
   };
+
+  ///////////////////////////////////////////////////////////   RENDER METHODS
+
+  /**
+   * Print model title
+   * @returns th elements
+   */
   printModelTitle = () => {
     return modelConfig.map((v: any, i: number) => {
       return <th key={i}>{v.label}</th>;
     });
   };
+
+  /**
+   * Print model description
+   * @returns
+   */
   printModelDesc = () => {
     // TODO::: error javítás, ha nem az utolsót törlöm, hanem egyel korábbit, akkor nem törlni a foldert.
     const { data } = this.state;
@@ -87,6 +117,11 @@ export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
     ));
   };
 
+  /**
+   * Priont editor buttons
+   * @param elm object
+   * @returns
+   */
   printEditorBtns = (elm: any) => {
     return (
       <td>
@@ -102,6 +137,8 @@ export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
       </td>
     );
   };
+
+  //////////////////////////////////////////////////////////////////////////////////////    RENDER
   render() {
     const { isDeleted } = this.state;
     return (

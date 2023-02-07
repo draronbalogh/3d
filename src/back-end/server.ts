@@ -1,33 +1,38 @@
+//////////////////////////////////////////////////////////////////////////////////////   IMPORT
+///////////////////////////////////////////////////////////   EXPRESS
 import express from 'express';
-import db from '../_config/config-database';
-import routes3d from './routes/index';
 import cors from 'cors';
 import bodyParser from 'body-parser';
-import formidable, { errors as formidableErrors } from 'formidable';
-import { createNecessaryDirectoriesSync } from '../assets/file-methods';
 import path, { parse } from 'path';
 import fs from 'node:fs';
+///////////////////////////////////////////////////////////   CONFIG
 import { _CONFIG } from '../_config/_config';
-import { config } from 'process';
-const app = express();
-const etst = async () => {
+///////////////////////////////////////////////////////////   LIBS
+import formidable, { errors as formidableErrors } from 'formidable';
+///////////////////////////////////////////////////////////   COMPS
+import routes3d from './routes/index';
+import db from '../_config/config-database';
+import { createNecessaryDirectoriesSync } from '../assets/file-methods';
+
+///////////////////////////////////////////////////////////   FUNCTIONS
+/**
+ * Start server
+ * @description Start server and connect to database
+ */
+const connectToDb = async () => {
   await db.authenticate();
   console.log('Database connected...');
 };
-
-try {
-  console.log('start db...');
-  etst();
-} catch (error) {
-  console.error('Connection error:', error);
-}
-let isMultipart = false;
-createNecessaryDirectoriesSync(_CONFIG.url.uploadFolder);
-
+/**
+ * Upload file
+ * @param req
+ * @param res
+ * @param next
+ */
 const upload = async (req: any, res: any, next: any) => {
-  console.log('/////////////////////// new upload ////////////////////////');
-  let folderId = '';
-  let isValid = false;
+  let folderId = '',
+    isValid = false;
+  ////////////////////////////////////////////   FORM CONFIG
   const form = new formidable.IncomingForm({
     //  uploadDir: _CONFIG.url.uploadFolder,
     keepExtensions: true,
@@ -52,11 +57,12 @@ const upload = async (req: any, res: any, next: any) => {
       return isValid;
     }
   });
-
+  ////////////////////////////////////////////   EVENT LISTENERS
   form.on('file', () => {});
   form.on('progress', function (bytesReceived: any, bytesExpected: any) {
-    let x = Math.round((100 * bytesReceived) / bytesExpected) + '%';
-    console.log('upload', x);
+    let perc = Math.round((100 * bytesReceived) / bytesExpected) + '%';
+    // console.log('upload', perc);
+    return perc;
   });
   form.on('field', (name, value) => {
     folderId = value;
@@ -74,6 +80,7 @@ const upload = async (req: any, res: any, next: any) => {
   form.on('error', (err) => {
     console.log(err);
   });
+  ////////////////////////////////////////////   FORM PARSE
   form.parse(req, async (err, fields, files) => {
     if (err) {
       next(err);
@@ -92,6 +99,13 @@ const upload = async (req: any, res: any, next: any) => {
     }
   });
 };
+
+/**
+ * Delete files
+ * @param req
+ * @param res
+ * @param next
+ */
 const deleteFiles = async (req: any, res: any, next: any) => {
   console.clear();
   let arr: string[] = req.body.deleteTheseFiles || [];
@@ -122,6 +136,8 @@ const deleteFiles = async (req: any, res: any, next: any) => {
   res.json({ status: 200, message: 'POST recieved', newTask: newTask });
 };
 
+///////////////////////////////////////////////////////////   APP CONFIG
+const app = express();
 app.use(cors());
 app.use(bodyParser.json({ limit: '1000mb' }));
 app.use(bodyParser.urlencoded({ extended: true, limit: '1000mb', parameterLimit: 100000 }));
@@ -130,3 +146,12 @@ app.post('/upload', upload);
 app.post('/deleteFiles', deleteFiles);
 app.use('/api/3dmodels', routes3d);
 app.listen(5000, () => console.log('Server running at port 5000'));
+
+///////////////////////////////////////////////////////////   RUN APP
+try {
+  console.log('Start database connection...');
+  connectToDb();
+  createNecessaryDirectoriesSync(_CONFIG.url.uploadFolder);
+} catch (error) {
+  console.error('Connection error:', error);
+}
