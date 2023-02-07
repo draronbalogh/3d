@@ -91,7 +91,7 @@ yarn add kill-port -- telepítése
 
 use it like:
 netstat -ano | findstr :3000
-netstat -ano | findstr :5000
+netstat -ano | findstr :5000 // vagy PORT3D in config
 
 ahol fut:
 tskill typeyourPIDhere   // change tskill for taskkill in git bash

@@ -6,7 +6,7 @@ import bodyParser from 'body-parser';
 import path, { parse } from 'path';
 import fs from 'node:fs';
 ///////////////////////////////////////////////////////////   CONFIG
-import { _CONFIG } from '../_config/_config';
+import { _CONFIG, PORT3D } from '../_config/_config';
 ///////////////////////////////////////////////////////////   LIBS
 import formidable, { errors as formidableErrors } from 'formidable';
 ///////////////////////////////////////////////////////////   COMPS
@@ -21,7 +21,7 @@ import { createNecessaryDirectoriesSync } from '../assets/file-methods';
  */
 const connectToDb = async () => {
   await db.authenticate();
-  console.log('Database connected...');
+  console.log(_CONFIG.msg.txt.db.success);
 };
 /**
  * Upload file
@@ -34,17 +34,18 @@ const upload = async (req: any, res: any, next: any) => {
     isValid = false;
   ////////////////////////////////////////////   FORM CONFIG
   const form = new formidable.IncomingForm({
-    //  uploadDir: _CONFIG.url.uploadFolder,
-    keepExtensions: true,
-    allowEmptyFiles: false,
-    minFileSize: 1,
-    maxFiles: 100,
-    maxFields: 0,
-    maxFileSize: 10000 * 1024 * 1024,
-    maxFieldsSize: 10000 * 1024 * 1024,
-    multiples: true,
+    uploadDir: _CONFIG.url.uploadFolder,
+    keepExtensions: _CONFIG.validation.file.keepExtensions,
+    allowEmptyFiles: _CONFIG.validation.file.allowEmptyFiles,
+    maxFiles: _CONFIG.validation.file.maxFiles,
+    minFileSize: _CONFIG.validation.file.minFileSize,
+    maxFileSize: _CONFIG.validation.file.maxFileSize,
+    maxTotalFileSize: _CONFIG.validation.file.maxTotalFileSize,
+    maxFields: _CONFIG.validation.file.maxFields,
+    maxFieldsSize: _CONFIG.validation.file.maxFieldsSize,
     enabledPlugins: ['octetstream', 'querystring', 'multipart', 'json'],
-    encoding: 'utf-8',
+    encoding: 'utf-8', // encoding for incoming form fields
+    multiples: true,
     hashAlgorithm: false,
     filename: (name: string, ext: string, part: any, form: any) => {
       return name + ext;
@@ -52,50 +53,95 @@ const upload = async (req: any, res: any, next: any) => {
     filter: ({ name, originalFilename, mimetype }) => {
       if (originalFilename) {
         const currentFileType = originalFilename.split('.').pop();
-        if (currentFileType && _CONFIG.fileValidation.types.includes(currentFileType)) isValid = true;
+        if (currentFileType && _CONFIG.validation.file.types.includes(currentFileType)) isValid = true;
       }
       return isValid;
     }
   });
   ////////////////////////////////////////////   EVENT LISTENERS
-  form.on('file', () => {});
+
+  /**
+   * Progress event listener
+   * Emitted after each incoming chunk of data that has been parsed.
+   * Reports the progress of the incoming form.
+   */
   form.on('progress', function (bytesReceived: any, bytesExpected: any) {
     let perc = Math.round((100 * bytesReceived) / bytesExpected) + '%';
     // console.log('upload', perc);
     return perc;
   });
+
+  /**
+   * Form field event listener
+   * Emitted whenever a field / value pair has been received.
+   * @param name - field name
+   * @param value - field value
+   * @returns {void}
+   */
   form.on('field', (name, value) => {
     folderId = value;
   });
+
+  /**
+   * File begin event listener
+   * Emitted whenever a new file is detected!
+   */
   form.on('fileBegin', (formname, file) => {
     createNecessaryDirectoriesSync(_CONFIG.url.uploadFolder + formname);
     const cim = path.join(_CONFIG.url.uploadFolder + formname + '/' + file.originalFilename);
     file.filepath = cim;
     folderId = formname;
   });
-  form.on('aborted', () => {
-    console.log('e1 pl. timeout miatt lehetséges');
-  });
-  form.on('end', () => {});
+
+  /**
+   * File event listener
+   * Emitted whenever a field / file pair has been received. file is an instance of File.
+   */
+  form.on('file', () => {});
+
+  /**
+   * Error event listener
+   * Emitted when an error occurs.
+   */
   form.on('error', (err) => {
-    console.log(err);
+    console.log(_CONFIG.msg.error.form.general, err);
   });
+
+  /**
+   * Aborted event listener
+   * Emitted when the incoming form has been aborted by the user.
+   */
+  form.on('aborted', () => {
+    console.log(_CONFIG.msg.error.form.aborted);
+  });
+
+  /**
+   * End event listener
+   * Emitted when the entire request has been received, and all contained files have finished flushing to disk.
+   * @todo: send your response here
+   */
+  form.on('end', () => {});
+
   ////////////////////////////////////////////   FORM PARSE
+
+  /**
+   * Parse form
+   * @description Parse form and return fields and files
+   */
   form.parse(req, async (err, fields, files) => {
     if (err) {
       next(err);
     }
-    // await res.json({ status: 200, fields, files });
     try {
       if (!isValid) {
         return res.status(400).json({
           status: 'Failed',
-          message: 'Wrong format type!'
+          message: _CONFIG.msg.error.form.parse
         });
       }
       return res.status(200).json({ stauts: 'success', fields, files });
     } catch (error) {
-      console.log('error multiple ', error);
+      console.log(_CONFIG.msg.error.form.parse, error);
     }
   });
 };
@@ -117,41 +163,40 @@ const deleteFiles = async (req: any, res: any, next: any) => {
     if (fs.existsSync(folder + filePath)) {
       fs.unlink(folder + filePath, (err) => {
         if (err) {
-          console.log('File error:', filePath);
+          console.log(_CONFIG.msg.error.file.unlink, filePath);
         } else {
-          console.log('File removed:', filePath);
+          console.log(_CONFIG.msg.txt.file.removed, filePath);
         }
       });
     }
     if (deleteFolder) {
       try {
         fs.rmdirSync(folder, { recursive: true });
-        console.log(`${folder} is now deleted!`);
       } catch (err) {
-        console.error(`Error while deleting ${folder}.`);
+        console.error(`${_CONFIG.msg.error.file.folder} ${folder}.`);
       }
     }
   });
   let newTask = Object.assign({ id: id }, req.body);
-  res.json({ status: 200, message: 'POST recieved', newTask: newTask });
+  res.json({ status: 200, message: _CONFIG.msg.txt.file.deleteOk, newTask: newTask });
 };
 
 ///////////////////////////////////////////////////////////   APP CONFIG
 const app = express();
 app.use(cors());
-app.use(bodyParser.json({ limit: '1000mb' }));
-app.use(bodyParser.urlencoded({ extended: true, limit: '1000mb', parameterLimit: 100000 }));
-app.use(bodyParser.raw({ limit: '1000mb' }));
-app.post('/upload', upload);
-app.post('/deleteFiles', deleteFiles);
-app.use('/api/3dmodels', routes3d);
-app.listen(5000, () => console.log('Server running at port 5000'));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.raw());
+app.post(_CONFIG.routes.upload, upload);
+app.post(_CONFIG.routes.deleteFiles, deleteFiles);
+app.use(_CONFIG.routes.routes3d, routes3d);
+app.listen(PORT3D, () => console.log(_CONFIG.msg.txt.server.started));
 
 ///////////////////////////////////////////////////////////   RUN APP
 try {
-  console.log('Start database connection...');
+  console.log(_CONFIG.msg.txt.db.startDb);
   connectToDb();
   createNecessaryDirectoriesSync(_CONFIG.url.uploadFolder);
 } catch (error) {
-  console.error('Connection error:', error);
+  console.error(_CONFIG.msg.error.db.connection, error);
 }
