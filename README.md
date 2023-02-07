@@ -1,6 +1,5 @@
 
 # todo
-- dark mode 
 - form validation, is file too large? 
 - axios try catch 
 - react-table

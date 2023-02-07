@@ -52,7 +52,7 @@ const upload = async (req: any, res: any, next: any) => {
     filter: ({ name, originalFilename, mimetype }) => {
       if (originalFilename) {
         const currentFileType = originalFilename.split('.').pop();
-        if (currentFileType && _CONFIG.validTypes.includes(currentFileType)) isValid = true;
+        if (currentFileType && _CONFIG.fileValidation.types.includes(currentFileType)) isValid = true;
       }
       return isValid;
     }

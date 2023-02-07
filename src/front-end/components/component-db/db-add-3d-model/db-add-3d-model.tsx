@@ -83,7 +83,7 @@ export class DbAdd3dModel extends React.Component<any, any> {
         Object.values(files[file]).forEach((individualFile: any, index) => {
           let currentFileType = null;
           if (individualFile.name) currentFileType = individualFile.name.split('.').pop();
-          if (currentFileType && _CONFIG.validTypes.includes(currentFileType)) {
+          if (currentFileType && _CONFIG.fileValidation.types.includes(currentFileType)) {
             isThereAnyValidFile = true;
             const nameSeparatedByComma = data[file].split(',')[index];
             if (individualFile) filesData.append(folderName, individualFile as Blob, nameSeparatedByComma);
@@ -146,6 +146,22 @@ export class DbAdd3dModel extends React.Component<any, any> {
    */
   inputFileDataUpdater = (elm: string, e: any) => {
     try {
+      // TODO:: copy to edit model
+      if (e.target.files.length > 0) {
+        for (let i = 0; i <= e.target.files.length - 1; i++) {
+          const fsize = e.target.files.item(i).size;
+          const file = Math.round(fsize / 1024);
+          // The size of the file.
+          if (file >= _CONFIG.fileValidation.maxSize) {
+            alert('File too Big, please select a file less than...');
+            return;
+          } else if (file < _CONFIG.fileValidation.minSize) {
+            alert('File too small, please select a file greater than...');
+            return;
+          } else {
+          }
+        }
+      }
       let files = { ...this.state.files };
       files[elm] = e.target.files;
       this.setState({ files });
@@ -154,7 +170,7 @@ export class DbAdd3dModel extends React.Component<any, any> {
         const fileName = i.name;
         filesTxt += `${uuid()}-${fileName
           .normalize('NFD')
-          .replace(/[\u0300-\u036f]/g, '') // TODO:: remove hungarian characters  -->removeHunChars()
+          .replace(/[\u0300-\u036f]/g, '')
           .toLowerCase()
           .replace(/[^a-zA-Z0-9.]/g, '-')},`;
       }
@@ -239,7 +255,7 @@ export class DbAdd3dModel extends React.Component<any, any> {
           </Form.Select>
         );
       case 'file':
-        return <Form.Control multiple type={ctr} name={folderId ? folderId : ''} onChange={(e) => this.inputFileDataUpdater(elm.name, e)} accept={_CONFIG.forntendValildTypes}></Form.Control>;
+        return <Form.Control multiple type={ctr} name={folderId ? folderId : ''} onChange={(e) => this.inputFileDataUpdater(elm.name, e)} accept={_CONFIG.fileValidation.forntendTypes}></Form.Control>;
       case 'textarea':
         return <Form.Control as={ctr} rows={3} value={data?.hasOwnProperty(elm.name) ? data[elm.name] : ''} onChange={(e) => this.inputDataUpdater(elm.name, e.target.value)}></Form.Control>;
       default:

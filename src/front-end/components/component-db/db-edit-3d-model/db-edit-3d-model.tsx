@@ -114,7 +114,7 @@ export class DbEdit3dModel extends React.Component<any, any> {
         const fileName = i.name;
         filesTxt += `${uuid()}-${fileName
           .normalize('NFD')
-          .replace(/[\u0300-\u036f]/g, '') // TODO:: remove hungarian characters  -->removeHunChars()
+          .replace(/[\u0300-\u036f]/g, '')
           .toLowerCase()
           .replace(/[^a-zA-Z0-9.]/g, '-')},`;
       }
@@ -283,7 +283,7 @@ export class DbEdit3dModel extends React.Component<any, any> {
         );
       case 'file':
         //@ts-ignore
-        return <Form.Control multiple type={ctr} name='imageName' onChange={(e) => this.inputFileDataUpdater(elm, e)} accept={_CONFIG.forntendValildTypes}></Form.Control>;
+        return <Form.Control multiple type={ctr} name='imageName' onChange={(e) => this.inputFileDataUpdater(elm, e)} accept={_CONFIG.fileValidation.forntendTypes}></Form.Control>;
       case 'textarea':
         return <Form.Control as={ctr} rows={3} value={element ? element : ''} onChange={(e) => this.inputDataUpdater(elm, e.target.value)}></Form.Control>;
       default:
