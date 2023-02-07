@@ -1,11 +1,11 @@
 //////////////////////////////////////////////////////////////////////////////////////   IMPORT
 ///////////////////////////////////////////////////////////   REACT
 import React from 'react';
-import ReactDOM from 'react-dom/client';
 import { BrowserRouter as Router } from 'react-router-dom';
+import ReactDOM from 'react-dom/client';
 ///////////////////////////////////////////////////////////   SCSS
-import './index.scss';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import './index.scss';
 ///////////////////////////////////////////////////////////   COMPONENTS
 import App from './front-end/App';
 // import reportWebVitals from './reportWebVitals';

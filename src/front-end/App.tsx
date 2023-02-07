@@ -41,11 +41,11 @@ class App extends React.Component<unknown, State> {
   componentDidMount() {
     if (this.storedBgStyle !== null) {
       if (this.storedBgStyle === _CONFIG.theme.dark) {
-        this.setState({ isDarkMode: false });
         document.documentElement.setAttribute(_CONFIG.theme.domTrg, _CONFIG.theme.dark);
+        this.setState({ isDarkMode: false });
       } else {
-        this.setState({ isDarkMode: true });
         document.documentElement.setAttribute(_CONFIG.theme.domTrg, _CONFIG.theme.light);
+        this.setState({ isDarkMode: true });
       }
     }
   }
@@ -75,6 +75,7 @@ class App extends React.Component<unknown, State> {
     this.setState({ isDarkMode: !isDarkMode }, () => {
       const theme: string = isDarkMode ? _CONFIG.theme.dark : _CONFIG.theme.light;
       if (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        // document.documentElement.setAttribute('data-bs-theme', '3dDark');
         document.documentElement.setAttribute(_CONFIG.theme.domTrg, _CONFIG.theme.dark);
         this.setState({ isDarkMode: true });
         localStorage.setItem(_CONFIG.theme.storedBg, _CONFIG.theme.dark);
