@@ -3,7 +3,7 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 ///////////////////////////////////////////////////////////   CONFiG
-//import {_CONF} from './config/config';
+import { _CONFIG } from '../_config/_config';
 ///////////////////////////////////////////////////////////   LIBS
 import { View3dModel, DbList3dModel, DbAdd3dModel, DbEdit3dModel } from './components';
 ///////////////////////////////////////////////////////////   DOM
@@ -12,6 +12,8 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 ///////////////////////////////////////////////////////////   SCSS
 import './App.scss';
+import { JSDocNonNullableType } from 'typescript';
+import { constants } from 'buffer';
 ///////////////////////////////////////////////////////////   INTERFACE
 interface State {
   updateIdNum: number | undefined;
@@ -26,7 +28,7 @@ interface State {
  */
 class App extends React.Component<unknown, State> {
   //public data: any;
-  public storedIsDarkMode = localStorage.getItem('storedIsDarkMode');
+  public storedBgStyle = localStorage.getItem(_CONFIG.theme.storedBg);
   constructor(props: unknown) {
     super(props);
     this.state = {
@@ -35,26 +37,17 @@ class App extends React.Component<unknown, State> {
       data: [],
       isDarkMode: false
     };
-    this.getPreferredTheme();
   }
 
-  getPreferredTheme = () => {
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? '3dDark' : 'light';
-  };
-
   componentDidMount() {
-    if (this.storedIsDarkMode !== null) {
-      console.log('storedIsDarkMode is >>', this.storedIsDarkMode);
-      if (this.storedIsDarkMode === '3dDark') {
-        this.setState({ isDarkMode: true });
-      } else {
+    if (this.storedBgStyle !== null) {
+      if (this.storedBgStyle === _CONFIG.theme.dark) {
         this.setState({ isDarkMode: false });
+        document.documentElement.setAttribute(_CONFIG.theme.domTrg, _CONFIG.theme.dark);
+      } else {
+        this.setState({ isDarkMode: true });
+        document.documentElement.setAttribute(_CONFIG.theme.domTrg, _CONFIG.theme.light);
       }
-      this.changeTheme();
-    } else {
-      console.log('storedIsDarkMode is null');
-      this.setState({ isDarkMode: false });
-      localStorage.setItem('storedIsDarkMode', 'light');
     }
   }
 
@@ -63,29 +56,28 @@ class App extends React.Component<unknown, State> {
   };
 
   updateData = (updateData: unknown) => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     this.setState({ data: updateData });
   };
 
   changeTheme = () => {
     const { isDarkMode } = this.state;
-    const theme: string = isDarkMode ? '3dDark' : 'light';
-    if (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      document.documentElement.setAttribute('data-bs-theme', '3dDark');
-      this.setState({ isDarkMode: true });
-      localStorage.setItem('storedIsDarkMode', '3dDark');
-      document.querySelectorAll('[data-bs-theme-value]').forEach((toggle) => {
-        toggle.addEventListener('click', () => {
-          const theme = toggle.getAttribute('data-bs-theme-value');
-          localStorage.setItem('theme', String(theme));
+    this.setState({ isDarkMode: !isDarkMode }, () => {
+      const theme: string = isDarkMode ? _CONFIG.theme.dark : _CONFIG.theme.light;
+      if (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.documentElement.setAttribute(_CONFIG.theme.domTrg, _CONFIG.theme.dark);
+        this.setState({ isDarkMode: true });
+        localStorage.setItem(_CONFIG.theme.storedBg, _CONFIG.theme.dark);
+        document.querySelectorAll('[data-bs-theme-value]').forEach((toggle) => {
+          toggle.addEventListener('click', () => {
+            const theme = toggle.getAttribute('data-bs-theme-value');
+            localStorage.setItem(_CONFIG.theme.storedBg, String(theme));
+          });
         });
-      });
-    } else {
-      console.log('theme', theme);
-      document.documentElement.setAttribute('data-bs-theme', theme);
-      localStorage.setItem('storedIsDarkMode', theme);
-      this.setState({ isDarkMode: !isDarkMode });
-    }
+      } else {
+        document.documentElement.setAttribute(_CONFIG.theme.domTrg, theme);
+        localStorage.setItem(_CONFIG.theme.storedBg, theme);
+      }
+    });
   };
 
   render() {
