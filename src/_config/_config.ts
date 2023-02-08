@@ -78,7 +78,9 @@ export const _CONFIG = {
         folder: 'Error while deleting the folder',
         uploading: 'Error while uploading files',
         tooBig: 'File too Big, please select a file less than...',
-        tooSmall: 'File too small, please select a file bigger than...'
+        tooSmall: 'File too small, please select a file bigger than...',
+        maxFileLimit: 'Maximum allowed file is lower (20)',
+        notValid: 'Non valid file types while adding / editing a record'
       },
       fetch: {
         axios: 'Axios Error',

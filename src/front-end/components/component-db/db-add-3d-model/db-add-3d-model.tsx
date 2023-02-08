@@ -17,17 +17,24 @@ import { ProgressViewer } from '../db-shared/progress-viewer/progress-viewer-com
 ///////////////////////////////////////////////////////////   SCSS
 import 'react-circular-progressbar/dist/styles.css';
 ///////////////////////////////////////////////////////////   INTERFACE
+interface UploadFiles {
+  modelUrl: [];
+  modelImgs: [];
+  modelMaterialUrl: [];
+}
 interface Model3dState {
-  id: number | undefined;
   data: any;
-  files: any;
+  files: UploadFiles;
   isUploading: boolean;
   isSaved: boolean;
   isThankYou: boolean;
   uploadingData: any;
+  folderName: string;
+  modelUuid: string;
+  folderId: string;
 }
 //////////////////////////////////////////////////////////////////////////////////////    CLASS SETUP
-export class DbAdd3dModel extends React.Component<any, any> {
+export class DbAdd3dModel extends React.Component<any, Model3dState> {
   form: React.RefObject<any>;
   constructor(props: any) {
     super(props);
@@ -38,7 +45,8 @@ export class DbAdd3dModel extends React.Component<any, any> {
       uploadingData: null,
       data: {},
       files: { modelUrl: [], modelImgs: [], modelMaterialUrl: [] },
-      folderName: null,
+      folderName: '',
+      modelUuid: '',
       folderId: nanoid(10).toLocaleLowerCase()
     };
     this.form = React.createRef();
@@ -79,7 +87,7 @@ export class DbAdd3dModel extends React.Component<any, any> {
       for (const file in files) {
         Object.values(files[file]).forEach((individualFile: any, index) => {
           let currentFileType = null;
-          if (individualFile.name) currentFileType = individualFile.name.split('.').pop();
+          if (individualFile.name) currentFileType = individualFile.name.split('.').pop().toLowerCase();
           if (currentFileType && _CONFIG.validation.file.types.includes(currentFileType)) {
             isThereAnyValidFile = true;
             const nameSeparatedByComma = data[file].split(',')[index];
@@ -141,18 +149,28 @@ export class DbAdd3dModel extends React.Component<any, any> {
   inputFileDataUpdater = (elm: string, e: any) => {
     try {
       // TODO:: copy to edit model
+      if (e.target.files.length > _CONFIG.validation.file.maxFiles) {
+        alert(_CONFIG.msg.error.file.maxFileLimit);
+        return;
+      }
       if (e.target.files.length > 0) {
+        //_CONFIG.validation.file.types.includes(currentFileType)
         for (let i = 0; i <= e.target.files.length - 1; i++) {
-          const fsize = e.target.files.item(i).size;
-          const file = Math.round(fsize);
-          // The size of the file.
-          if (file >= _CONFIG.validation.file.maxFileSize) {
-            alert(_CONFIG.msg.error.file.tooBig);
+          const item = e.target.files.item(i);
+          const type = item.name.split('.').pop().toLowerCase();
+          const f = item.size;
+          const fileSize = Math.round(f);
+          if (!_CONFIG.validation.file.types.includes(type)) {
+            alert(_CONFIG.msg.error.file.notValid);
             return;
-          } else if (file < _CONFIG.validation.file.minFileSize) {
+          }
+          if (fileSize < _CONFIG.validation.file.minFileSize) {
             alert(_CONFIG.msg.error.file.tooSmall);
             return;
-          } else {
+          }
+          if (fileSize > _CONFIG.validation.file.maxFileSize) {
+            alert(_CONFIG.msg.error.file.tooBig);
+            return;
           }
         }
       }

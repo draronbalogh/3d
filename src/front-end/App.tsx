@@ -13,6 +13,7 @@ import Col from 'react-bootstrap/Col';
 ///////////////////////////////////////////////////////////   SCSS
 import './App.scss';
 ///////////////////////////////////////////////////////////   INTERFACE
+
 interface State {
   updateIdNum: number | undefined;
   updateData: unknown;

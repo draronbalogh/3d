@@ -1,6 +1,5 @@
 
 # todo
-- form validation, is file too large?
 - cont and let define types for varriables 
 - axios try catch 
 - export all config type data to config file

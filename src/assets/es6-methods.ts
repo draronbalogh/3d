@@ -25,10 +25,11 @@ export const validNumbers = (a: number, b: number) => typeof a === 'number' && t
  * Fetch json data from url
  * @param {*} url
  */
-export const removeHunChars = (e: string) => {
+export const removeHunChars = (e: string): string => {
+  let a: string = '';
   try {
     // regex replace multiple spaces with one
-    let a: string = removeAccents(
+    a = removeAccents(
       e
         .toLocaleLowerCase()
         .replace(/[^a-zA-Z0-9 áéíóöőúüű_]/g, '')
@@ -36,10 +37,10 @@ export const removeHunChars = (e: string) => {
         .replace(/\s+/g, ' ')
     );
     a = a.replace(/[_ \s]/g, '-').replace(/--/g, '-');
-    return a;
   } catch (err) {
     console.log('fetchData err:', err);
   }
+  return a;
 };
 
 /**
