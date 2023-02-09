@@ -1,13 +1,10 @@
 
-# todo
-- export all config type data to config file
-
-# sendondary todo
+# Todo
+- form validation for text max length for 1000 chars
+- differnet db tables for images and videos and 3d models
 - react-table
 - login to admin
 - form design
-- 3d layout 2 zindex
-
 
 /*
  * Materialok --> cinema3D-nél tex
