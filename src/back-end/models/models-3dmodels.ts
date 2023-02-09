@@ -1,11 +1,37 @@
 //////////////////////////////////////////////////////////////////////////////////////   IMPORT
 ///////////////////////////////////////////////////////////   CONFIG
 import db from '../../_config/config-database';
-import { modelConfigSequalizeDataTypes } from '../../_config/config-controller-data-types';
+import { seqConfigFor3dModels, seqConfigForImgModels } from '../../_config/config-controller-data-types';
 
 ///////////////////////////////////////////////////////////   CONTROLLERS
-const ModelControllerTypes = db.define('models', modelConfigSequalizeDataTypes, {
+const ModelCtrFor3dTypes = db.define('models', seqConfigFor3dModels, {
   freezeTableName: true
 });
 
-export default ModelControllerTypes;
+const ModelCtrForImageTypes = db.define('images', seqConfigForImgModels, {
+  tableName: 'images',
+  freezeTableName: true
+});
+
+const create3dModelTable = async () => {
+  try {
+    await ModelCtrFor3dTypes.sync({ force: false });
+    console.log('ModelCtrFor3dTypes table created');
+  } catch (error) {
+    console.error('Error creating 3d model table:', error);
+  }
+};
+
+const createImagesTable = async () => {
+  try {
+    await ModelCtrForImageTypes.sync({ force: false });
+    console.log('ModelCtrForImageTypes table created');
+  } catch (error) {
+    console.error('Error creating Images table:', error);
+  }
+};
+
+create3dModelTable();
+createImagesTable();
+///////////////////////////////////////////////////////////   EXPORT
+export { ModelCtrFor3dTypes, ModelCtrForImageTypes };

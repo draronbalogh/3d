@@ -13,6 +13,7 @@ import formidable, { errors as formidableErrors } from 'formidable';
 import routes3d from './routes/index';
 import db from '../_config/config-database';
 import { createNecessaryDirectoriesSync } from '../assets/file-methods';
+import { logAxiosError } from '../assets/gen-methods';
 
 ///////////////////////////////////////////////////////////   FUNCTIONS
 /**
@@ -20,8 +21,12 @@ import { createNecessaryDirectoriesSync } from '../assets/file-methods';
  * @description Start server and connect to database
  */
 const connectToDb = async () => {
-  await db.authenticate();
-  console.log(_CONFIG.msg.txt.db.success);
+  try {
+    await db.authenticate();
+    console.log(_CONFIG.msg.txt.db.success);
+  } catch (error) {
+    logAxiosError(error, _CONFIG.msg.error.db.connection);
+  }
 };
 /**
  * Upload file

@@ -1,6 +1,25 @@
 import { DataTypes } from 'sequelize';
 
-export const modelConfigSequalizeDataTypes = {
+export const seqConfigForImgModels = {
+  id: { type: DataTypes.INTEGER, primaryKey: true },
+  createdAt: { type: DataTypes.DATE },
+  updatedAt: { type: DataTypes.DATE },
+  imgUuid: { type: DataTypes.STRING },
+  imgUploaderUid: { type: DataTypes.STRING },
+  imgFileName: { type: DataTypes.STRING },
+  imgFilePath: { type: DataTypes.STRING },
+  imgFileType: { type: DataTypes.STRING },
+  imgFileFormat: { type: DataTypes.STRING },
+  imgFileWidth: { type: DataTypes.INTEGER },
+  imgFileHeight: { type: DataTypes.INTEGER },
+  imgFileResolution: { type: DataTypes.INTEGER },
+  imgFileTags: { type: DataTypes.STRING },
+  imgFileDescription: { type: DataTypes.STRING },
+  imgFileTitle: { type: DataTypes.STRING },
+  imgFileCategory: { type: DataTypes.STRING },
+  imgFileSourceUrl: { type: DataTypes.STRING }
+};
+export const seqConfigFor3dModels = {
   id: { type: DataTypes.INTEGER, primaryKey: true },
   createdAt: { type: DataTypes.DATE },
   updatedAt: { type: DataTypes.DATE },
