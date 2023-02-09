@@ -10,14 +10,6 @@ component-db/
 view-3d-model/
 server.ts
 # others
-bootstrap-dark.js
-es6-methods.ts
+gen-methods.ts
 
-# build
-dist/
-node_modules/
-package-lock.json
-package.json
-tsconfig.json
-tslint.json
-yarn.lock
+ 

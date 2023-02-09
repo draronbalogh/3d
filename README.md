@@ -1,6 +1,5 @@
 
 # todo
-- axios try catch 
 - export all config type data to config file
 
 # sendondary todo

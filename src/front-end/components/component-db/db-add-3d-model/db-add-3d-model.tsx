@@ -9,7 +9,7 @@ import { modelConfig } from '../../../../_config/config-model';
 import axios from 'axios';
 import { v4 as uuid } from 'uuid';
 import { nanoid } from 'nanoid';
-import { removeHunChars } from '../../../../assets/es6-methods';
+import { removeHunChars, logAxiosError } from '../../../../assets/gen-methods';
 ///////////////////////////////////////////////////////////   DOM
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
@@ -121,10 +121,7 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
       }
       isThereAnyValidFile = false;
     } catch (e: any) {
-      const statusCode = e.response.status; // 400
-      const statusText = e.response.statusText; // Bad Request
-      const message = e.response.data.message[0]; // id should not be empty
-      console.log(`${statusCode} - ${statusText} - ${message}`);
+      logAxiosError(e, _CONFIG.msg.error.fetch.postingData);
     }
   };
 

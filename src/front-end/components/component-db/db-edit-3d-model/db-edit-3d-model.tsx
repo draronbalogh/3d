@@ -8,6 +8,7 @@ import { modelConfig } from '../../../../_config/config-model';
 ///////////////////////////////////////////////////////////   LIBS
 import axios, { AxiosResponse } from 'axios';
 import { v4 as uuid } from 'uuid';
+import { logAxiosError } from '../../../../assets/gen-methods';
 ///////////////////////////////////////////////////////////   DOM
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
@@ -94,7 +95,7 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
       this.setState({ data: response.data });
       this.setState({ oldFilesToDel: response.data });
     } catch (e: any) {
-      if (e.response) console.log(_CONFIG.msg.error.db.fetchById, e.response.data);
+      logAxiosError(e, _CONFIG.msg.error.fetch.fetchById);
     }
   };
 
@@ -207,10 +208,7 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
         this.setState({ isUploading: false, isThankYou: false, isSaved: true });
       }
     } catch (e: any) {
-      const statusCode = e.response.status; // 400
-      const statusText = e.response.statusText; // Bad Request
-      const message = e.response.data.message[0]; // id should not be empty
-      console.log(`${statusCode} - ${statusText} - ${message}`);
+      logAxiosError(e, _CONFIG.msg.error.fetch.updating);
     }
   };
 

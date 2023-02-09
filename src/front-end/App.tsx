@@ -31,10 +31,10 @@ class App extends React.Component<unknown, State> {
   constructor(props: unknown) {
     super(props);
     this.state = {
-      updateIdNum: undefined,
-      updateData: undefined,
       data: [],
-      isDarkMode: false
+      isDarkMode: false,
+      updateIdNum: undefined,
+      updateData: undefined
     };
   }
 

@@ -59,8 +59,7 @@ export const _CONFIG = {
     error: {
       db: {
         connection: 'Error connecting to database!',
-        noDataFromDb: 'No data received from database',
-        fetchById: 'Fetch by id error'
+        noDataFromDb: 'No data received from database'
       },
       server: {
         noConnection: 'Server is not responding',
@@ -85,9 +84,12 @@ export const _CONFIG = {
         notValid: 'Non valid file types while adding / editing a record'
       },
       fetch: {
+        fetchById: 'Fetch by id error',
         axios: 'Axios Error',
+        getData: 'Error while getting data from database',
         postingData: 'Error while posting / storing data to database',
-        saving: 'Error while saving data to database / uploading files'
+        saving: 'Error while saving data to database / uploading files',
+        updating: 'Error while posting / storing data to database'
       }
     }
   }

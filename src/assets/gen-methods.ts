@@ -1,4 +1,17 @@
 /**
+ * Log axios error
+ * @param {*} e Error object
+ * @param {*} custTxt string - custom text
+ * @description Logs error when axios request fails
+ */
+export const logAxiosError = (e: any, custMsg: string) => {
+  const statusCode = e.response.status,
+    statusText = e.response.statusText,
+    message = e.response.data.message[0];
+  console.log(`Custom error message: ${custMsg} \n StatusCode: ${statusCode} \n StatusText: ${statusText} \n Message: ${message}`);
+};
+
+/**
  * huDate()
  * @returns date in hungarian format
  */

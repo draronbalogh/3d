@@ -7,6 +7,7 @@ import { _CONFIG } from '../../../../_config/_config';
 import { modelConfig } from '../../../../_config/config-model';
 ///////////////////////////////////////////////////////////   LIBS
 import axios, { AxiosResponse } from 'axios';
+import { logAxiosError } from '../../../../assets/gen-methods';
 ///////////////////////////////////////////////////////////   DOM
 import Table from 'react-bootstrap/Table';
 ///////////////////////////////////////////////////////////   INTERFACE
@@ -43,10 +44,7 @@ export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
       this.setState({ data: resp, isDeleted: false });
       this.props.updateData(resp);
     } catch (e: any) {
-      const statusCode = e.response.status; // 400
-      const statusText = e.response.statusText; // Bad Request
-      const message = e.response.data.message[0]; // id should not be empty
-      console.log(`${statusCode} - ${statusText} - ${message}`);
+      logAxiosError(e, _CONFIG.msg.error.fetch.fetchById);
     }
   };
 
