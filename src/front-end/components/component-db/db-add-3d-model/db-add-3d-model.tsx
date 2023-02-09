@@ -262,7 +262,7 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
       case 'textarea':
         return <Form.Control as={ctr} rows={3} value={data?.hasOwnProperty(elm.name) ? data[elm.name] : ''} onChange={(e) => this.inputDataUpdater(elm.name, e.target.value)}></Form.Control>;
       default:
-        return <Form.Control maxLength={1000} disabled={elm.name === 'modelUuid' ? true : false} type={ctr} value={data?.hasOwnProperty(elm.name) ? data[elm.name] : ''} onChange={(e) => this.inputDataUpdater(elm.name, e.target.value)} required={elm.isRequired}></Form.Control>;
+        return <Form.Control maxLength={elm.maxLength} disabled={elm.name === 'modelUuid' ? true : false} type={ctr} value={data?.hasOwnProperty(elm.name) ? data[elm.name] : ''} onChange={(e) => this.inputDataUpdater(elm.name, e.target.value)} required={elm.isRequired}></Form.Control>;
     }
   };
 
@@ -279,11 +279,11 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
       <Form onSubmit={this.save3dModel} ref={this.form}>
         {modelConfig
           ? modelConfig.map((elm: any, i: number) => {
-              let ctr: string = modelConfig[i].control,
+              const ctr: string = modelConfig[i].control,
                 enableForAddEdit: boolean = modelConfig[i].enableForAddEdit;
               return enableForAddEdit ? (
-                <Form.Group className={ctr !== 'hidden' ? 'm-1' : 'd-nonennnn'} key={i}>
-                  {ctr !== 'switch' ? <Form.Label>{elm.label}</Form.Label> : null}
+                <Form.Group key={i}>
+                  {<Form.Label>{elm.label}</Form.Label>}
                   {this.formBuilder(i, elm)}
                 </Form.Group>
               ) : null;

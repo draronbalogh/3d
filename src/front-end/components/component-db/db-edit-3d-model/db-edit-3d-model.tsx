@@ -264,14 +264,14 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
    * @description This function is used to build the form
    * @todo This function is too long, it needs to be refactored
    */
-  formBuilder = (i: number, elm: string) => {
+  formBuilder = (i: number, elm: string, id: any) => {
     let { data } = this.state,
       element = data[elm],
       ctr = modelConfig[i].control,
       category = modelConfig[i].categories,
       isRequired = modelConfig[i].isRequired,
       label = modelConfig[i].label;
-
+    // console.log('element', element);
     switch (ctr) {
       case 'switch':
         return <Form.Check type={'switch'} id={`ctr${i}`} label={label} defaultChecked={element} onChange={(e) => this.switcher(elm, e.target.checked)} />;
@@ -302,14 +302,14 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
       <ProgressViewer uploadingData={uploadingData} />
     ) : (
       <Form onSubmit={this.update3dModel}>
-        {data
-          ? Object.keys(data)?.map((elm: any, i: number) => {
-              let ctr: string = modelConfig[i]?.control,
-                enableForAddEdit: boolean = modelConfig[i]?.enableForAddEdit;
+        {modelConfig
+          ? modelConfig.map((elm: any, i: number) => {
+              const ctr: string = modelConfig[i].control,
+                enableForAddEdit: boolean = modelConfig[i].enableForAddEdit;
               return enableForAddEdit ? (
-                <Form.Group className={ctr !== 'hidden' ? 'm-1' : 'd-none'} key={i}>
-                  {ctr !== 'switch' ? <Form.Label>{this.getTitle(elm)}</Form.Label> : null}
-                  {this.formBuilder(i, elm)}
+                <Form.Group key={i}>
+                  {<Form.Label>{elm.label}</Form.Label>}
+                  {this.formBuilder(i, elm.name, data.id)}
                 </Form.Group>
               ) : null;
             })
