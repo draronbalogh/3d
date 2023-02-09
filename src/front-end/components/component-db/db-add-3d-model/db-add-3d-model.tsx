@@ -104,9 +104,9 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
               this.setState({ uploadingData: data });
             }
           })
-          .then((response) => {
+          .then((response: any) => {
             if (response.data.success === false) {
-              console.log(_CONFIG.msg.error.file.uploading, response);
+              throw new Error(_CONFIG.msg.error.file.uploading, response);
             } else {
               setTimeout(() => {
                 this.setState({ isUploading: false, isThankYou: true });
@@ -121,14 +121,10 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
       }
       isThereAnyValidFile = false;
     } catch (e: any) {
-      let errorStatus: string = '';
-      console.error(e.response.data);
-      if (!e.response) {
-        errorStatus = 'Error: Network Error';
-      } else {
-        errorStatus = e.response.data.message;
-      }
-      console.log(_CONFIG.msg.error.fetch.saving, errorStatus, e);
+      const statusCode = e.response.status; // 400
+      const statusText = e.response.statusText; // Bad Request
+      const message = e.response.data.message[0]; // id should not be empty
+      console.log(`${statusCode} - ${statusText} - ${message}`);
     }
   };
 

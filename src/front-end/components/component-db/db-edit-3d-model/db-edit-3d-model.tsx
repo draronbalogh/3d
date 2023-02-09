@@ -94,7 +94,7 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
       this.setState({ data: response.data });
       this.setState({ oldFilesToDel: response.data });
     } catch (e: any) {
-      if (e.response) console.log('Axios Error: ', e.response.data);
+      if (e.response) console.log(_CONFIG.msg.error.db.fetchById, e.response.data);
     }
   };
 
@@ -112,7 +112,6 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
         modelUrlA = modelUrl.split(','),
         modelImgsA = modelImgs.split(','),
         modelMaterialUrlA = modelMaterialUrl.split(',');
-
       if (elm === 'modelUrl') DbEdit3dModel.imgArray.push(modelUrlA);
       if (elm === 'modelImgs') DbEdit3dModel.imgArray.push(modelImgsA);
       if (elm === 'modelMaterialUrl') DbEdit3dModel.imgArray.push(modelMaterialUrlA);
@@ -167,15 +166,8 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
       e.preventDefault();
       let isThereAnyValidFile = false;
       DbEdit3dModel.imgArray = [];
-      await axios.post(_CONFIG.url.deleteFiles, { deleteTheseFiles, id, modelUuid, deleteFolder: false }, {}); /*.then((resp: any) => {
-          this.setState({
-            deleteTheseFiles: []
-          });
-        });*/
-      //   let removable = elm === 'modelImgs' ? modelImgs : elm === 'modelMaterialUrl' ? modelMaterialUrl : modelUrl;
-      //     let imgArray = [...removable];
+      await axios.post(_CONFIG.url.deleteFiles, { deleteTheseFiles, id, modelUuid, deleteFolder: false }, {});
       await axios.patch(_CONFIG.url.getModel + id, data);
-
       const { files } = this.state;
       const filesData = new FormData();
       for (const file in files) {
@@ -215,10 +207,10 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
         this.setState({ isUploading: false, isThankYou: false, isSaved: true });
       }
     } catch (e: any) {
-      if (e.response) console.log('Axios Error: ', e.response.data);
       const statusCode = e.response.status; // 400
       const statusText = e.response.statusText; // Bad Request
       const message = e.response.data.message[0]; // id should not be empty
+      console.log(`${statusCode} - ${statusText} - ${message}`);
     }
   };
 

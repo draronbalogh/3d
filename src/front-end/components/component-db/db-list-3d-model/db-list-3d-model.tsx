@@ -37,10 +37,17 @@ export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
    * Get 3d model data from database
    */
   get3dModel = async () => {
-    const response = await axios.get<any>(_CONFIG.url.getModel);
-    const resp = response.data;
-    this.setState({ data: resp, isDeleted: false });
-    this.props.updateData(resp);
+    try {
+      const response = await axios.get<any>(_CONFIG.url.getModel);
+      const resp = response.data;
+      this.setState({ data: resp, isDeleted: false });
+      this.props.updateData(resp);
+    } catch (e: any) {
+      const statusCode = e.response.status; // 400
+      const statusText = e.response.statusText; // Bad Request
+      const message = e.response.data.message[0]; // id should not be empty
+      console.log(`${statusCode} - ${statusText} - ${message}`);
+    }
   };
 
   /**
@@ -50,20 +57,27 @@ export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
    * @param ob object
    */
   delete3dModel = async (id: number, modelUuid: string, ob: any) => {
-    let modelImgs: string[] = ob['modelImgs'] ? ob['modelImgs']?.split(',') : [],
-      modelMaterialUrl: string[] = ob['modelMaterialUrl'] ? ob['modelMaterialUrl']?.split(',') : [],
-      modelUrl: string[] = ob['modelUrl'] ? ob['modelUrl']?.split(',') : [],
-      deleteTheseFiles: string[] = [...modelImgs, ...modelMaterialUrl, ...modelUrl];
-    await axios.post(_CONFIG.url.deleteFiles, { deleteTheseFiles, id: ob['id'], modelUuid: ob['modelUuid'], deleteFolder: true }, {}).then((response) => {
-      if (response.data.success === false) console.log('Error uploading to safe.moe: ', response);
-    });
-    await axios.delete(_CONFIG.url.getModel + id).then((response) => {
-      if (response.data.success === false) {
-        console.log(_CONFIG.msg.error.file.deleting, response);
-      } else {
-        this.get3dModel();
-      }
-    });
+    try {
+      let modelImgs: string[] = ob['modelImgs'] ? ob['modelImgs']?.split(',') : [],
+        modelMaterialUrl: string[] = ob['modelMaterialUrl'] ? ob['modelMaterialUrl']?.split(',') : [],
+        modelUrl: string[] = ob['modelUrl'] ? ob['modelUrl']?.split(',') : [],
+        deleteTheseFiles: string[] = [...modelImgs, ...modelMaterialUrl, ...modelUrl];
+      await axios.post(_CONFIG.url.deleteFiles, { deleteTheseFiles, id: ob['id'], modelUuid: ob['modelUuid'], deleteFolder: true }, {}).then((response) => {
+        if (response.data.success === false) console.log(_CONFIG.msg.error.file.deleting, response);
+      });
+      await axios.delete(_CONFIG.url.getModel + id).then((response) => {
+        if (response.data.success === false) {
+          console.log(_CONFIG.msg.error.file.deleting, response);
+        } else {
+          this.get3dModel();
+        }
+      });
+    } catch (e: any) {
+      const statusCode = e.response.status; // 400
+      const statusText = e.response.statusText; // Bad Request
+      const message = e.response.data.message[0]; // id should not be empty
+      console.log(`${statusCode} - ${statusText} - ${message}`);
+    }
   };
 
   /**

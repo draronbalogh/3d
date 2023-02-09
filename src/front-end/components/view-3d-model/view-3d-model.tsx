@@ -50,7 +50,10 @@ export class View3dModel extends React.Component<CompProps, CompState> {
       const response = await axios.get(_CONFIG.url.getModel + id);
       this.setState({ data: response.data });
     } catch (e: any) {
-      if (e.response) console.log(_CONFIG.msg.error.fetch.axios, e.response.data);
+      const statusCode = e.response.status; // 400
+      const statusText = e.response.statusText; // Bad Request
+      const message = e.response.data.message[0]; // id should not be empty
+      console.log(`${statusCode} - ${statusText} - ${message}`);
     }
   };
 
