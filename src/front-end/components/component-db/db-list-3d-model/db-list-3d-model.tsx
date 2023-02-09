@@ -111,19 +111,13 @@ export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
    * @returns
    */
   printModelDesc = () => {
-    // TODO::: error javítás, ha nem az utolsót törlöm, hanem egyel korábbit, akkor nem törlni a foldert.
     const { data } = this.state;
-    let id: any = null;
     return data?.map((elm, i) => (
-      <tbody key={Math.random()}>
-        <tr key={i}>
-          {Object.keys(elm).map((vv: string, ii: any) => {
-            if (vv === 'id') id = elm[vv];
-            return <td key={ii}>{elm[vv]}</td>;
-          })}
-        </tr>
-        <tr key={i + 1}>{this.printEditorBtns(elm)}</tr>
-      </tbody>
+      <tr key={i}>
+        {modelConfig.map((elm: any, ii: number) => {
+          return elm.name === 'editBtns' ? <td key={ii}>{this.printEditorBtns(data[i])}</td> : <td key={ii}>{data[i][elm.name]}</td>;
+        })}
+      </tr>
     ));
   };
 
@@ -134,7 +128,7 @@ export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
    */
   printEditorBtns = (elm: any) => {
     return (
-      <td>
+      <span>
         <Link to={`/edit/${elm.id}`} className='button is-small is-info'>
           Szerkesztés
         </Link>{' '}
@@ -144,7 +138,7 @@ export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
         <Link to={`/view/${elm.id}`} className='button is-small is-info'>
           Megjelenítés
         </Link>
-      </td>
+      </span>
     );
   };
 
@@ -160,7 +154,7 @@ export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
           <thead>
             <tr>{this.printModelTitle()}</tr>
           </thead>
-          {this.printModelDesc()}
+          <tbody key={Math.random()}>{this.printModelDesc()}</tbody>
         </Table>
       </div>
     );

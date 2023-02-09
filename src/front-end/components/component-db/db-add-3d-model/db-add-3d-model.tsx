@@ -279,8 +279,7 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
       <Form onSubmit={this.save3dModel} ref={this.form}>
         {modelConfig
           ? modelConfig.map((elm: any, i: number) => {
-              const ctr: string = modelConfig[i].control,
-                enableForAddEdit: boolean = modelConfig[i].enableForAddEdit;
+              const enableForAddEdit: boolean = modelConfig[i].enableForAddEdit;
               return enableForAddEdit ? (
                 <Form.Group key={i}>
                   {<Form.Label>{elm.label}</Form.Label>}

@@ -16,7 +16,6 @@ import { ProgressViewer } from '../db-shared/progress-viewer/progress-viewer-com
 ///////////////////////////////////////////////////////////   SCSS
 import 'react-circular-progressbar/dist/styles.css';
 ///////////////////////////////////////////////////////////   INTERFACE
-
 interface ModelProps {
   data: any;
 }
@@ -67,7 +66,6 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
     if (data.length >= 1) this.findDataById();
     if (!data.length) this.fetchModelDataById();
   }
-
   componentDidUpdate(prevProps: any, prevState: any) {
     if (JSON.stringify(this.props.data) !== JSON.stringify(prevProps.data)) {
       this.setState({ data: this.props.data });

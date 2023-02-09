@@ -1,5 +1,15 @@
 export const modelConfig = [
   {
+    name: 'editBtns',
+    label: 'Btns',
+    control: '',
+    inputType: '',
+    enableForAddEdit: false,
+    isRequired: false,
+    visibility: true,
+    maxLength: 100
+  },
+  {
     name: 'id',
     label: 'Id',
     control: 'number',
@@ -59,7 +69,6 @@ export const modelConfig = [
     visibility: true,
     maxLength: 100
   },
-
   {
     name: 'modelDescription',
     label: 'Leírás',
@@ -75,7 +84,7 @@ export const modelConfig = [
     name: 'modelChannel',
     label: 'Csatorna',
     control: 'select',
-    categories: ['1', '2', '3'],
+    categories: ['Válassz kategóriát', '1', '2', '3'],
     inputType: 'select',
     enableForAddEdit: true,
     isRequired: false,
@@ -86,7 +95,7 @@ export const modelConfig = [
     name: 'modelCategory',
     label: 'Kategória',
     control: 'select',
-    categories: ['Ember', 'Állat', 'Gép', 'Egyéb'],
+    categories: ['Válassz kategóriát', 'Ember', 'Állat', 'Gép', 'Egyéb'],
     inputType: 'select',
     enableForAddEdit: true,
     isRequired: false,
@@ -106,7 +115,7 @@ export const modelConfig = [
   {
     name: 'modelPolyCategory',
     label: 'Polygon kategória',
-    categories: ['Alacsony', 'Közepes', 'Magas'],
+    categories: ['Válassz kategóriát', 'Alacsony', 'Közepes', 'Magas'],
     control: 'select',
     inputType: 'select',
     enableForAddEdit: true,
@@ -128,7 +137,7 @@ export const modelConfig = [
     name: 'modelFormat',
     label: 'Formátum',
     control: 'input',
-    categories: ['obj', 'fbx'],
+    categories: ['Válassz kategóriát', 'obj', 'fbx'],
     inputType: 'text',
     enableForAddEdit: true,
     isRequired: false,
@@ -220,7 +229,7 @@ export const modelConfig = [
   {
     name: 'modelState',
     label: 'Állapot',
-    categories: ['Elérhető', 'Nem elérhető'],
+    categories: ['Válassz kategóriát', 'Elérhető', 'Nem elérhető'],
     control: 'select',
     inputType: 'select',
     enableForAddEdit: true,
@@ -271,7 +280,7 @@ export const modelConfig = [
   {
     name: 'modelLegality',
     label: 'Jogállás',
-    categories: ['Jogtiszta modell', 'Ingyenes modell', 'Nem ismert forrás'],
+    categories: ['Válassz kategóriát', 'Jogtiszta modell', 'Ingyenes modell', 'Nem ismert forrás'],
     control: 'select',
     inputType: 'select',
     enableForAddEdit: true,

@@ -1,6 +1,5 @@
 
 # Todo
-- form validation for text max length for 1000 chars
 - differnet db tables for images and videos and 3d models
 - react-table
 - login to admin
