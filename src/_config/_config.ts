@@ -77,6 +77,7 @@ export const _CONFIG = {
         unlink: 'Error unlinking file',
         folder: 'Error while deleting the folder',
         uploading: 'Error while uploading files',
+        deleting: 'Error while deleting files',
         tooBig: 'File too Big, please select a file less than...',
         tooSmall: 'File too small, please select a file bigger than...',
         maxFileLimit: 'Maximum allowed file is lower (20)',

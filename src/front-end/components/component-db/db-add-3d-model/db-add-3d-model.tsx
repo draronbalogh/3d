@@ -17,11 +17,6 @@ import { ProgressViewer } from '../db-shared/progress-viewer/progress-viewer-com
 ///////////////////////////////////////////////////////////   SCSS
 import 'react-circular-progressbar/dist/styles.css';
 ///////////////////////////////////////////////////////////   INTERFACE
-interface UploadFiles {
-  modelUrl: [];
-  modelImgs: [];
-  modelMaterialUrl: [];
-}
 interface Model3dState {
   data: any;
   isUploading: boolean;
@@ -33,8 +28,19 @@ interface Model3dState {
   files: UploadFiles | any;
   folderId: string;
 }
+interface UploadFiles {
+  modelUrl: [];
+  modelImgs: [];
+  modelMaterialUrl: [];
+}
+
+interface ModelMethods {
+  save3dModel: (e: any) => Promise<void>;
+  formBuilder: (i: number, elm: any) => JSX.Element;
+}
+
 //////////////////////////////////////////////////////////////////////////////////////    CLASS SETUP
-export class DbAdd3dModel extends React.Component<any, Model3dState> {
+export class DbAdd3dModel extends React.Component<any, Model3dState> implements ModelMethods {
   form: React.RefObject<any>;
   constructor(props: any) {
     super(props);

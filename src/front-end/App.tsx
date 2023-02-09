@@ -40,15 +40,7 @@ class App extends React.Component<unknown, State> {
 
   ///////////////////////////////////////////////////////////   LIFECYCLE METHODS
   componentDidMount() {
-    if (this.storedBgStyle !== null) {
-      if (this.storedBgStyle === _CONFIG.theme.dark) {
-        document.documentElement.setAttribute(_CONFIG.theme.domTrg, _CONFIG.theme.dark);
-        this.setState({ isDarkMode: false });
-      } else {
-        document.documentElement.setAttribute(_CONFIG.theme.domTrg, _CONFIG.theme.light);
-        this.setState({ isDarkMode: true });
-      }
-    }
+    this.changeBgStyle();
   }
 
   ///////////////////////////////////////////////////////////   CLASS METHODS
@@ -56,7 +48,7 @@ class App extends React.Component<unknown, State> {
    * Update id
    * @param id
    */
-  updateId = (id: number) => {
+  private readonly updateId = (id: number) => {
     this.setState({ updateIdNum: id });
   };
 
@@ -66,6 +58,21 @@ class App extends React.Component<unknown, State> {
    */
   updateData = (updateData: unknown) => {
     this.setState({ data: updateData });
+  };
+
+  /**
+   * Change bg style
+   */
+  private readonly changeBgStyle = () => {
+    if (this.storedBgStyle !== null) {
+      if (this.storedBgStyle === _CONFIG.theme.dark) {
+        document.documentElement.setAttribute(_CONFIG.theme.domTrg, _CONFIG.theme.dark);
+        this.setState({ isDarkMode: false });
+      } else {
+        document.documentElement.setAttribute(_CONFIG.theme.domTrg, _CONFIG.theme.light);
+        this.setState({ isDarkMode: true });
+      }
+    }
   };
 
   /**

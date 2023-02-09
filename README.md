@@ -1,6 +1,5 @@
 
 # todo
-- cont and let define types for varriables 
 - axios try catch 
 - export all config type data to config file
 

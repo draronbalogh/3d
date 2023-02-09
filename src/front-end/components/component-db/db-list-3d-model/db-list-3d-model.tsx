@@ -50,18 +50,16 @@ export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
    * @param ob object
    */
   delete3dModel = async (id: number, modelUuid: string, ob: any) => {
-    let modelImgs = ob['modelImgs'] ? ob['modelImgs']?.split(',') : [];
-    let modelMaterialUrl = ob['modelMaterialUrl'] ? ob['modelMaterialUrl']?.split(',') : [];
-    let modelUrl = ob['modelUrl'] ? ob['modelUrl']?.split(',') : [];
-    let deleteTheseFiles = [...modelImgs, ...modelMaterialUrl, ...modelUrl];
+    let modelImgs: string[] = ob['modelImgs'] ? ob['modelImgs']?.split(',') : [],
+      modelMaterialUrl: string[] = ob['modelMaterialUrl'] ? ob['modelMaterialUrl']?.split(',') : [],
+      modelUrl: string[] = ob['modelUrl'] ? ob['modelUrl']?.split(',') : [],
+      deleteTheseFiles: string[] = [...modelImgs, ...modelMaterialUrl, ...modelUrl];
     await axios.post(_CONFIG.url.deleteFiles, { deleteTheseFiles, id: ob['id'], modelUuid: ob['modelUuid'], deleteFolder: true }, {}).then((response) => {
-      if (response.data.success === false) {
-        console.log('Error uploading to safe.moe: ', response);
-      }
+      if (response.data.success === false) console.log('Error uploading to safe.moe: ', response);
     });
     await axios.delete(_CONFIG.url.getModel + id).then((response) => {
       if (response.data.success === false) {
-        console.log('Error uploading to safe.moe: ', response);
+        console.log(_CONFIG.msg.error.file.deleting, response);
       } else {
         this.get3dModel();
       }

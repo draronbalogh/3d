@@ -314,8 +314,8 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
       <Form onSubmit={this.update3dModel}>
         {data
           ? Object.keys(data)?.map((elm: any, i: number) => {
-              let ctr = modelConfig[i]?.control,
-                enableForAddEdit = modelConfig[i]?.enableForAddEdit;
+              let ctr: string = modelConfig[i]?.control,
+                enableForAddEdit: boolean = modelConfig[i]?.enableForAddEdit;
               return enableForAddEdit ? (
                 <Form.Group className={ctr !== 'hidden' ? 'm-1' : 'd-none'} key={i}>
                   {ctr !== 'switch' ? <Form.Label>{this.getTitle(elm)}</Form.Label> : null}
