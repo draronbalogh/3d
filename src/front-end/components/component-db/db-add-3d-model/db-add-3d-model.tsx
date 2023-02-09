@@ -24,13 +24,13 @@ interface UploadFiles {
 }
 interface Model3dState {
   data: any;
-  files: UploadFiles;
   isUploading: boolean;
   isSaved: boolean;
   isThankYou: boolean;
   uploadingData: any;
   folderName: string;
   modelUuid: string;
+  files: UploadFiles | any;
   folderId: string;
 }
 //////////////////////////////////////////////////////////////////////////////////////    CLASS SETUP
@@ -66,8 +66,6 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> {
   /**
    * Save 3d model
    * @param e
-   * @returns
-   * @private
    * @memberof DbAdd3dModel
    * @description
    * 1. Check if there is any valid file
@@ -140,8 +138,7 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> {
   /**
    * Input file data updater
    * @param elm string
-   * @param e any
-   * @returns void
+   * @param e file data
    * @memberof DbAdd3dModel
    * @description
    * Update state with uuuid file names

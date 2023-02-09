@@ -15,14 +15,26 @@ import { ProgressViewer } from '../db-shared/progress-viewer/progress-viewer-com
 ///////////////////////////////////////////////////////////   SCSS
 import 'react-circular-progressbar/dist/styles.css';
 ///////////////////////////////////////////////////////////   INTERFACE
+
+interface ModelProps {
+  data: any;
+}
+interface UploadFiles {
+  modelUrl: [];
+  modelImgs: [];
+  modelMaterialUrl: [];
+}
 interface Model3dState {
   id: number | undefined;
   data: any;
-  files: any;
+  uploadingData: any;
+  files: UploadFiles | any;
   isUploading: boolean;
   isSaved: boolean;
   isThankYou: boolean;
   oldFilesToDel: any;
+  folderId: string;
+  deleteTheseFiles: string[];
 }
 declare module 'react' {
   interface HTMLAttributes<T> {
@@ -31,7 +43,7 @@ declare module 'react' {
   }
 }
 //////////////////////////////////////////////////////////////////////////////////////    CLASS SETUP
-export class DbEdit3dModel extends React.Component<any, any> {
+export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
   static imgArray: any[] = [];
   constructor(props: any) {
     super(props);
@@ -43,7 +55,9 @@ export class DbEdit3dModel extends React.Component<any, any> {
       data: this.props.data,
       files: { modelUrl: [], modelImgs: [], modelMaterialUrl: [] },
       oldFilesToDel: null,
-      folderId: null
+      deleteTheseFiles: [],
+      uploadingData: [],
+      folderId: ''
     };
   }
   ///////////////////////////////////////////////////////////   LIFECYCLE METHODS
@@ -57,9 +71,9 @@ export class DbEdit3dModel extends React.Component<any, any> {
       this.setState({ data: this.props.data });
       DbEdit3dModel.imgArray = [];
     }
-    if (JSON.stringify(this.props.files) !== JSON.stringify(prevProps.files)) {
+    /*if (JSON.stringify(this.props.files) !== JSON.stringify(prevProps.files)) {
       this.setState({ files: this.props.files });
-    }
+    }*/
   }
 
   ///////////////////////////////////////////////////////////   CLASS METHODS
@@ -111,7 +125,7 @@ export class DbEdit3dModel extends React.Component<any, any> {
       files[elm] = e.target.files;
       this.setState({ files });
       for (const i of e.target.files) {
-        const fileName = i.name;
+        const fileName: string = i.name;
         filesTxt += `${uuid()}-${fileName
           .normalize('NFD')
           .replace(/[\u0300-\u036f]/g, '')
