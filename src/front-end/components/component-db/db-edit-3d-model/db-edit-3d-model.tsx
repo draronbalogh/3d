@@ -66,16 +66,13 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
     if (data.length >= 1) this.findDataById();
     if (!data.length) this.fetchModelDataById();
   }
+
   componentDidUpdate(prevProps: any, prevState: any) {
     if (JSON.stringify(this.props.data) !== JSON.stringify(prevProps.data)) {
       this.setState({ data: this.props.data });
       DbEdit3dModel.imgArray = [];
     }
-    /*if (JSON.stringify(this.props.files) !== JSON.stringify(prevProps.files)) {
-      this.setState({ files: this.props.files });
-    }*/
   }
-
   ///////////////////////////////////////////////////////////   CLASS METHODS
   /**
    * Find data by id

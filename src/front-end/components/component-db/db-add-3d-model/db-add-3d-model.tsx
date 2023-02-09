@@ -52,16 +52,7 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> {
     this.form = React.createRef();
   }
   ///////////////////////////////////////////////////////////   LIFECYCLE METHODS
-  async componentDidMount() {
-    let { data } = this.state;
-    modelConfig?.forEach((elm: any, i: number) => {
-      let d = data[modelConfig[i].name];
-      elm.name !== 'id' && elm.control !== 'switch' ? (d = '') : null;
-      if (elm.name === 'modelViewCount' || elm.name === 'modelViewCount') d = 1;
-      this.setState({ data: data });
-    });
-  }
-
+  componentDidMount() {}
   ///////////////////////////////////////////////////////////   CLASS METHODS
   /**
    * Save 3d model
@@ -88,7 +79,7 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> {
           if (individualFile.name) currentFileType = individualFile.name.split('.').pop().toLowerCase();
           if (currentFileType && _CONFIG.validation.file.types.includes(currentFileType)) {
             isThereAnyValidFile = true;
-            const nameSeparatedByComma = data[file].split(',')[index];
+            const nameSeparatedByComma: string = data[file].split(',')[index];
             if (individualFile) filesData.append(folderName, individualFile as Blob, nameSeparatedByComma);
           }
         });
@@ -124,7 +115,7 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> {
       }
       isThereAnyValidFile = false;
     } catch (e: any) {
-      let errorStatus = '';
+      let errorStatus: string = '';
       console.error(e.response.data);
       if (!e.response) {
         errorStatus = 'Error: Network Error';
@@ -145,7 +136,7 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> {
    */
   inputFileDataUpdater = (elm: string, e: any) => {
     try {
-      // TODO:: copy to edit model
+      // TODO:: copy to edit model, and update alerts to real messages
       if (e.target.files.length > _CONFIG.validation.file.maxFiles) {
         alert(_CONFIG.msg.error.file.maxFileLimit);
         return;
@@ -153,10 +144,10 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> {
       if (e.target.files.length > 0) {
         //_CONFIG.validation.file.types.includes(currentFileType)
         for (let i = 0; i <= e.target.files.length - 1; i++) {
-          const item = e.target.files.item(i);
-          const type = item.name.split('.').pop().toLowerCase();
-          const f = item.size;
-          const fileSize = Math.round(f);
+          const item = e.target.files.item(i),
+            type: string = item.name.split('.').pop().toLowerCase(),
+            f: number = item.size,
+            fileSize: number = Math.round(f);
           if (!_CONFIG.validation.file.types.includes(type)) {
             alert(_CONFIG.msg.error.file.notValid);
             return;
@@ -174,24 +165,21 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> {
       let files = { ...this.state.files };
       files[elm] = e.target.files;
       this.setState({ files });
-      let filesTxt = '';
+      let filesTxt: string = '';
       for (const i of e.target.files) {
-        const fileName = i.name;
+        const fileName: string = i.name;
         filesTxt += `${uuid()}-${fileName
           .normalize('NFD')
           .replace(/[\u0300-\u036f]/g, '')
           .toLowerCase()
           .replace(/[^a-zA-Z0-9.]/g, '-')},`;
       }
-      this.setState(
-        {
-          data: {
-            ...this.state.data,
-            [elm]: filesTxt.slice(0, -1) // comma separated list of files as mysql record
-          }
-        },
-        () => {}
-      );
+      this.setState({
+        data: {
+          ...this.state.data,
+          [elm]: filesTxt.slice(0, -1) // comma separated list of files as mysql record
+        }
+      });
 
       this.setState({ isSaved: false });
     } catch (error) {}
@@ -253,8 +241,8 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> {
    */
   formBuilder = (i: number, elm: any) => {
     let { data, folderId } = this.state,
-      ctr = modelConfig[i].control,
-      category = modelConfig[i].categories;
+      ctr: string = modelConfig[i].control,
+      category: string[] | undefined = modelConfig[i].categories;
     switch (ctr) {
       case 'switch':
         return <Form.Check type={'switch'} id={`ctr${i}`} label={elm.label} defaultChecked={elm.name === 'modelVisibility' ? true : false} onChange={(e) => this.switcher(elm.name, e.target.checked)} />;
@@ -292,8 +280,8 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> {
       <Form onSubmit={this.save3dModel} ref={this.form}>
         {modelConfig
           ? modelConfig.map((elm: any, i: number) => {
-              let ctr = modelConfig[i].control,
-                enableForAddEdit = modelConfig[i].enableForAddEdit;
+              let ctr: string = modelConfig[i].control,
+                enableForAddEdit: boolean = modelConfig[i].enableForAddEdit;
               return enableForAddEdit ? (
                 <Form.Group className={ctr !== 'hidden' ? 'm-1' : 'd-nonennnn'} key={i}>
                   {ctr !== 'switch' ? <Form.Label>{elm.label}</Form.Label> : null}
