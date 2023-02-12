@@ -116,6 +116,7 @@ class App extends React.Component<unknown, State> {
               <Route path='/add' element={<DbAdd3dModel />} />
               <Route path='/edit/:id' element={<DbEdit3dModel data={data} />} />
               <Route path='/view/:id' element={<View3dModel data={data} />} />
+              <Route path='/getLastId' element={<>asdsad {console.log(data)}</>} />
               <Route path='*' element={<code>{_CONFIG.routes.error}</code>} />
             </Routes>
           </Col>

@@ -58,7 +58,7 @@ export const _CONFIG = {
     },
     error: {
       db: {
-        connection: 'Error connecting to database!',
+        connection: 'Unable to connect to the database!',
         noDataFromDb: 'No data received from database'
       },
       server: {

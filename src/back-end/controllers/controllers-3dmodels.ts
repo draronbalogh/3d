@@ -3,8 +3,9 @@
 import { _CONFIG } from '../../_config/_config';
 ///////////////////////////////////////////////////////////   CONTROLLERS
 import { Request, Response } from 'express';
-import { ModelCtrFor3dTypes } from '../models/models-3dmodels';
+import { ModelCtrFor3dTypes, ModelCtrForImageTypes } from '../models/models-3dmodels';
 ///////////////////////////////////////////////////////////   ROUTES
+
 /**
  * Get all models 3d
  * @param req Request
@@ -31,7 +32,7 @@ export const getLastModelId = async (req: Request, res: Response) => {
       where: {},
       order: [['createdAt', 'DESC']]
     });
-
+    console.log('id', id);
     res.json(id);
   } catch (error: any | unknown) {
     res.json({ message: error.message });

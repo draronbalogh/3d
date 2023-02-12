@@ -5,7 +5,8 @@ const db = new Sequelize('3d', 'root', 'Asdqwe123', {
   dialect: 'mysql' /* or 'mysql' | 'postgres' | 'sqlite' | 'mariadb' | 'mssql' | 'db2' | 'snowflake' | 'oracle' */,
   define: {
     freezeTableName: true
-  }
+  },
+  logging: console.log // output SQL statements to console
 });
 export default db;
 // more settings : https://www.bezkoder.com/node-js-upload-image-mysql/

@@ -5,6 +5,7 @@ import { seqConfigFor3dModels, seqConfigForImgModels } from '../../_config/confi
 
 ///////////////////////////////////////////////////////////   CONTROLLERS
 const ModelCtrFor3dTypes = db.define('models', seqConfigFor3dModels, {
+  tableName: 'models',
   freezeTableName: true
 });
 
@@ -15,7 +16,7 @@ const ModelCtrForImageTypes = db.define('images', seqConfigForImgModels, {
 
 const create3dModelTable = async () => {
   try {
-    await ModelCtrFor3dTypes.sync({ force: false });
+    await ModelCtrFor3dTypes.sync({ force: true }); // TODO:: make it force: false
     console.log('ModelCtrFor3dTypes table created');
   } catch (error) {
     console.error('Error creating 3d model table:', error);
@@ -24,13 +25,12 @@ const create3dModelTable = async () => {
 
 const createImagesTable = async () => {
   try {
-    await ModelCtrForImageTypes.sync({ force: false });
+    await ModelCtrForImageTypes.sync({ force: true }); // TODO:: make it force: false
     console.log('ModelCtrForImageTypes table created');
   } catch (error) {
     console.error('Error creating Images table:', error);
   }
 };
-
 create3dModelTable();
 createImagesTable();
 ///////////////////////////////////////////////////////////   EXPORT

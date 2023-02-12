@@ -17,7 +17,7 @@ import { logAxiosError } from '../assets/gen-methods';
 
 ///////////////////////////////////////////////////////////   FUNCTIONS
 /**
- * Start server
+ * Connect to database and start server
  * @description Start server and connect to database
  */
 const connectToDb = async () => {
@@ -185,7 +185,7 @@ const deleteFiles = async (req: any, res: any, next: any) => {
   res.json({ status: 200, message: _CONFIG.msg.txt.file.deleteOk, newTask: newTask });
 };
 
-///////////////////////////////////////////////////////////   APP CONFIG
+///////////////////////////////////////////////////////////   APP (pre)CONFIG
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());

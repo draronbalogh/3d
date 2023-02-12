@@ -20,12 +20,12 @@ export const seqConfigForImgModels = {
   imgFileSourceUrl: { type: DataTypes.STRING }
 };
 export const seqConfigFor3dModels = {
-  id: { type: DataTypes.INTEGER, primaryKey: true },
+  id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   createdAt: { type: DataTypes.DATE },
   updatedAt: { type: DataTypes.DATE },
-  modelUuid: { type: DataTypes.STRING },
-  modelUploaderUid: { type: DataTypes.STRING },
-  modelTitle: { type: DataTypes.STRING },
+  modelUuid: { type: DataTypes.STRING(1024) },
+  modelUploaderUid: { type: DataTypes.STRING(100) },
+  modelTitle: { type: DataTypes.STRING(1024) },
   modelDescription: { type: DataTypes.TEXT },
   modelChannel: { type: DataTypes.STRING },
   modelCategory: { type: DataTypes.STRING },
@@ -53,3 +53,41 @@ export const seqConfigFor3dModels = {
   modelDownloaderUid: { type: DataTypes.STRING },
   modelDownloadCount: { type: DataTypes.INTEGER }
 };
+
+/*
+export const seqConfigFor3dModels = {
+  id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+  createdAt: { type: DataTypes.DATE },
+  updatedAt: { type: DataTypes.DATE },
+  modelUuid: { type: DataTypes.STRING(1048) },
+  modelUploaderUid: { type: DataTypes.STRING(100) },
+  modelTitle: { type: DataTypes.STRING(1024) },
+  modelDescription: { type: DataTypes.TEXT },
+  modelChannel: { type: DataTypes.STRING(100) },
+  modelCategory: { type: DataTypes.STRING(100) },
+  modelRenderEngine: { type: DataTypes.STRING(1024) },
+  modelPolyCategory: { type: DataTypes.STRING(100) },
+  modelPolyCount: { type: DataTypes.STRING(1024) },
+  modelFormat: { type: DataTypes.STRING(1024) },
+  modelTags: { type: DataTypes.STRING(1024) },
+  modelUrl: { type: DataTypes.STRING(1024) },
+  modelFileName: { type: DataTypes.STRING(1024) },
+  modelImgs: { type: DataTypes.STRING(2048) },
+  modelSourceUrl: { type: DataTypes.STRING(2048) },
+  modelIframeUrl: { type: DataTypes.STRING(2048) },
+  modelExtraLinks: { type: DataTypes.TEXT },
+  modelMaterialUrl: { type: DataTypes.STRING(2048) },
+  modelState: { type: DataTypes.STRING(1024) },
+  modelVisibility: { type: DataTypes.TINYINT },
+  modelRigged: { type: DataTypes.TINYINT },
+  modelAnimated: { type: DataTypes.TINYINT },
+  modelUv: { type: DataTypes.STRING(2048) },
+  modelLegality: { type: DataTypes.STRING(100) },
+  modelScript: { type: DataTypes.STRING(2048) },
+  modelViewerUid: { type: DataTypes.STRING(100) },
+  modelViewCount: { type: DataTypes.INTEGER },
+  modelDownloaderUid: { type: DataTypes.STRING(100) },
+  modelDownloadCount: { type: DataTypes.INTEGER }
+};
+
+ */

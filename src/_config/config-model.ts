@@ -142,7 +142,7 @@ export const modelConfig = [
     enableForAddEdit: true,
     isRequired: false,
     visibility: true,
-    maxLength: 1000
+    maxLength: 1024
   },
   {
     name: 'modelTags',
@@ -152,7 +152,7 @@ export const modelConfig = [
     enableForAddEdit: true,
     isRequired: false,
     visibility: true,
-    maxLength: 1000
+    maxLength: 1024
   },
   {
     name: 'modelUrl',
@@ -162,7 +162,7 @@ export const modelConfig = [
     enableForAddEdit: true,
     isRequired: false,
     visibility: true,
-    maxLength: 1000
+    maxLength: 1024
   },
   {
     name: 'modelFileName',
@@ -172,7 +172,7 @@ export const modelConfig = [
     enableForAddEdit: true,
     isRequired: false,
     visibility: true,
-    maxLength: 1000
+    maxLength: 1024
   },
   {
     name: 'modelImgs',
@@ -214,7 +214,7 @@ export const modelConfig = [
     enableForAddEdit: true,
     isRequired: false,
     visibility: true,
-    maxLength: 1000
+    maxLength: 1024
   },
   {
     name: 'modelMaterialUrl',
@@ -235,7 +235,7 @@ export const modelConfig = [
     enableForAddEdit: true,
     isRequired: false,
     visibility: true,
-    maxLength: 1000
+    maxLength: 1024
   },
   {
     name: 'modelVisibility',
@@ -317,7 +317,7 @@ export const modelConfig = [
     enableForAddEdit: false,
     isRequired: false,
     visibility: true,
-    maxLength: 1000
+    maxLength: 1024
   },
   {
     name: 'modelDownloaderUid',
@@ -336,6 +336,6 @@ export const modelConfig = [
     inputType: 'text',
     enableForAddEdit: false,
     isRequired: false,
-    maxLength: 1000
+    maxLength: 1024
   }
 ];
