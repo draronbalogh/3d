@@ -2,7 +2,7 @@
 ///////////////////////////////////////////////////////////   REACT
 import React from 'react';
 ///////////////////////////////////////////////////////////   CONFIG
-import { _CONFIG } from '../../../_config/_config';
+import { _CONFIG } from '../../../_config/_config-general';
 import { modelConfig } from '../../../_config/config-model';
 ///////////////////////////////////////////////////////////   LIBS
 import axios from 'axios';

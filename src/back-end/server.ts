@@ -6,7 +6,7 @@ import bodyParser from 'body-parser';
 import path, { parse } from 'path';
 import fs from 'node:fs';
 ///////////////////////////////////////////////////////////   CONFIG
-import { _CONFIG, PORT3D } from '../_config/_config';
+import { _CONFIG, PORT3D } from '../_config/_config-general';
 ///////////////////////////////////////////////////////////   LIBS
 import formidable, { errors as formidableErrors } from 'formidable';
 ///////////////////////////////////////////////////////////   COMPS
