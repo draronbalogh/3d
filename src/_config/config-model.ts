@@ -1,3 +1,175 @@
+export const imageConfig = [
+  {
+    name: 'id',
+    label: 'id',
+    control: 'number',
+    inputType: 'input',
+    enableForAddEdit: false,
+    isRequired: false,
+    visibility: true,
+    maxLength: 100
+  },
+  {
+    name: 'createdAt',
+    label: 'Létrehozva',
+    control: 'input',
+    inputType: 'text',
+    enableForAddEdit: false,
+    isRequired: false,
+    visibility: true,
+    maxLength: 500
+  },
+  {
+    name: 'updatedAt',
+    label: 'Frissítve',
+    control: 'input',
+    inputType: 'text',
+    enableForAddEdit: false,
+    isRequired: false,
+    visibility: true,
+    maxLength: 500
+  },
+  {
+    name: 'imgUuid',
+    label: 'Egyedi azonosító',
+    control: 'input',
+    inputType: 'text',
+    enableForAddEdit: false,
+    isRequired: false,
+    visibility: true,
+    maxLength: 100
+  },
+  {
+    name: 'imgUploaderUid',
+    label: 'Feltöltő azonosító',
+    control: 'input',
+    inputType: 'text',
+    enableForAddEdit: false,
+    isRequired: false,
+    visibility: true,
+    maxLength: 50
+  },
+  {
+    name: 'imgFileName',
+    label: 'imgFileName',
+    control: 'input',
+    inputType: 'text',
+    enableForAddEdit: false,
+    isRequired: false,
+    visibility: true,
+    maxLength: 3000
+  },
+  {
+    name: 'imgFilePath',
+    label: 'imgFilePath',
+    control: 'input',
+    inputType: 'text',
+    enableForAddEdit: false,
+    isRequired: false,
+    visibility: true,
+    maxLength: 3000
+  },
+  {
+    name: 'imgFileType',
+    label: 'imgFileType',
+    control: 'input',
+    inputType: 'text',
+    enableForAddEdit: false,
+    isRequired: false,
+    visibility: true,
+    maxLength: 100
+  },
+  {
+    name: 'imgFileFormat',
+    label: 'imgFileFormat',
+    control: 'input',
+    inputType: 'text',
+    enableForAddEdit: false,
+    isRequired: false,
+    visibility: true,
+    maxLength: 100
+  },
+  {
+    name: 'imgFileWidth',
+    label: 'imgFileWidth',
+    control: 'input',
+    inputType: 'text',
+    enableForAddEdit: false,
+    isRequired: false,
+    visibility: true,
+    maxLength: 10
+  },
+  {
+    name: 'imgFileHeight',
+    label: 'imgFileHeight',
+    control: 'input',
+    inputType: 'text',
+    enableForAddEdit: false,
+    isRequired: false,
+    visibility: true,
+    maxLength: 10
+  },
+  {
+    name: 'imgFileResolution',
+    label: 'imgFileResolution',
+    control: 'input',
+    inputType: 'text',
+    enableForAddEdit: false,
+    isRequired: false,
+    visibility: true,
+    maxLength: 100
+  },
+  {
+    name: 'imgFileTags',
+    label: 'imgFileTags',
+    control: 'input',
+    inputType: 'text',
+    enableForAddEdit: false,
+    isRequired: false,
+    visibility: true,
+    maxLength: 3000
+  },
+  {
+    name: 'imgFileDescription',
+    label: 'imgFileDescription',
+    control: 'input',
+    inputType: 'text',
+    enableForAddEdit: false,
+    isRequired: false,
+    visibility: true,
+    maxLength: 3000
+  },
+  {
+    name: 'imgFileTitle',
+    label: 'imgFileTitle',
+    control: 'input',
+    inputType: 'text',
+    enableForAddEdit: false,
+    isRequired: false,
+    visibility: true,
+    maxLength: 255
+  },
+  {
+    name: 'imgFileCategory',
+    label: 'imgFileCategory',
+    control: 'input',
+    inputType: 'text',
+    enableForAddEdit: false,
+    isRequired: false,
+    visibility: true,
+    maxLength: 255
+  },
+  {
+    name: 'imgFileSourceUrl',
+    label: 'imgFileSourceUrl',
+    control: 'input',
+    inputType: 'text',
+    enableForAddEdit: false,
+    isRequired: false,
+    visibility: true,
+    maxLength: 3000
+  }
+];
 export const modelConfig = [
   {
     name: 'editBtns',
@@ -47,7 +219,7 @@ export const modelConfig = [
     enableForAddEdit: true,
     isRequired: true,
     visibility: true,
-    maxLength: 1024
+    maxLength: 255
   },
   {
     name: 'modelUuid',
@@ -57,7 +229,7 @@ export const modelConfig = [
     enableForAddEdit: true,
     isRequired: false,
     visibility: true,
-    maxLength: 1048
+    maxLength: 100
   },
   {
     name: 'modelUploaderUid',
@@ -67,7 +239,7 @@ export const modelConfig = [
     enableForAddEdit: false,
     isRequired: false,
     visibility: true,
-    maxLength: 100
+    maxLength: 50
   },
   {
     name: 'modelDescription',
@@ -89,7 +261,7 @@ export const modelConfig = [
     enableForAddEdit: true,
     isRequired: false,
     visibility: true,
-    maxLength: 100
+    maxLength: 50
   },
   {
     name: 'modelCategory',
@@ -100,7 +272,7 @@ export const modelConfig = [
     enableForAddEdit: true,
     isRequired: false,
     visibility: true,
-    maxLength: 100
+    maxLength: 50
   },
   {
     name: 'modelRenderEngine',
@@ -110,7 +282,7 @@ export const modelConfig = [
     enableForAddEdit: true,
     isRequired: false,
     visibility: true,
-    maxLength: 1024
+    maxLength: 255
   },
   {
     name: 'modelPolyCategory',
@@ -121,7 +293,7 @@ export const modelConfig = [
     enableForAddEdit: true,
     isRequired: false,
     visibility: true,
-    maxLength: 100
+    maxLength: 50
   },
   {
     name: 'modelPolyCount',
@@ -131,7 +303,7 @@ export const modelConfig = [
     enableForAddEdit: true,
     isRequired: false,
     visibility: true,
-    maxLength: 1024
+    maxLength: 255
   },
   {
     name: 'modelFormat',
@@ -142,7 +314,7 @@ export const modelConfig = [
     enableForAddEdit: true,
     isRequired: false,
     visibility: true,
-    maxLength: 1024
+    maxLength: 255
   },
   {
     name: 'modelTags',
@@ -152,7 +324,7 @@ export const modelConfig = [
     enableForAddEdit: true,
     isRequired: false,
     visibility: true,
-    maxLength: 1024
+    maxLength: 255
   },
   {
     name: 'modelUrl',
@@ -162,7 +334,7 @@ export const modelConfig = [
     enableForAddEdit: true,
     isRequired: false,
     visibility: true,
-    maxLength: 1024
+    maxLength: 255
   },
   {
     name: 'modelFileName',
@@ -172,7 +344,7 @@ export const modelConfig = [
     enableForAddEdit: true,
     isRequired: false,
     visibility: true,
-    maxLength: 1024
+    maxLength: 3000
   },
   {
     name: 'modelImgs',
@@ -182,7 +354,7 @@ export const modelConfig = [
     enableForAddEdit: true,
     isRequired: false,
     visibility: true,
-    maxLength: 2048
+    maxLength: 3000
   },
   {
     name: 'modelSourceUrl',
@@ -193,7 +365,7 @@ export const modelConfig = [
     enableForAddEdit: true,
     isRequired: false,
     visibility: true,
-    maxLength: 2048
+    maxLength: 3000
   },
   {
     name: 'modelIframeUrl',
@@ -203,7 +375,7 @@ export const modelConfig = [
     enableForAddEdit: true,
     isRequired: false,
     visibility: true,
-    maxLength: 2048
+    maxLength: 3000
   },
   {
     name: 'modelExtraLinks',
@@ -214,7 +386,7 @@ export const modelConfig = [
     enableForAddEdit: true,
     isRequired: false,
     visibility: true,
-    maxLength: 1024
+    maxLength: 3000
   },
   {
     name: 'modelMaterialUrl',
@@ -224,7 +396,7 @@ export const modelConfig = [
     enableForAddEdit: true,
     isRequired: false,
     visibility: true,
-    maxLength: 2048
+    maxLength: 3000
   },
   {
     name: 'modelState',
@@ -235,7 +407,7 @@ export const modelConfig = [
     enableForAddEdit: true,
     isRequired: false,
     visibility: true,
-    maxLength: 1024
+    maxLength: 255
   },
   {
     name: 'modelVisibility',
@@ -275,7 +447,7 @@ export const modelConfig = [
     enableForAddEdit: true,
     isRequired: false,
     visibility: true,
-    maxLength: 2048
+    maxLength: 3000
   },
   {
     name: 'modelLegality',
@@ -286,7 +458,7 @@ export const modelConfig = [
     enableForAddEdit: true,
     isRequired: false,
     visibility: true,
-    maxLength: 100
+    maxLength: 255
   },
   {
     name: 'modelScript',
@@ -297,7 +469,7 @@ export const modelConfig = [
     enableForAddEdit: true,
     isRequired: false,
     visibility: true,
-    maxLength: 2048
+    maxLength: 30000
   },
   {
     name: 'modelViewerUid',
@@ -307,7 +479,7 @@ export const modelConfig = [
     enableForAddEdit: false,
     isRequired: false,
     visibility: true,
-    maxLength: 100
+    maxLength: 50
   },
   {
     name: 'modelViewCount',
@@ -327,7 +499,7 @@ export const modelConfig = [
     enableForAddEdit: false,
     isRequired: false,
     visibility: true,
-    maxLength: 100
+    maxLength: 50
   },
   {
     name: 'modelDownloadCount',
