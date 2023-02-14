@@ -40,9 +40,11 @@ export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
   get3dModel = async () => {
     try {
       const response = await axios.get<any>(_CONFIG.url.getModel);
-      const resp = response.data;
-      this.setState({ data: resp, isDeleted: false });
-      this.props.updateData(resp);
+      const resp = response?.data;
+      if (resp) {
+        this.setState({ data: resp, isDeleted: false });
+        this.props.updateData(resp);
+      }
     } catch (e: any) {
       logAxiosError(e, _CONFIG.msg.error.fetch.fetchById);
     }
@@ -112,13 +114,15 @@ export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
    */
   printModelDesc = () => {
     const { data } = this.state;
-    return data?.map((elm, i) => (
-      <tr key={i}>
-        {modelConfig.map((elm: any, ii: number) => {
-          return elm.name === 'editBtns' ? <td key={ii}>{this.printEditorBtns(data[i])}</td> : <td key={ii}>{data[i][elm.name]}</td>;
-        })}
-      </tr>
-    ));
+    return data.length > 0
+      ? data?.map((elm, i) => (
+          <tr key={i}>
+            {modelConfig.map((elm: any, ii: number) => {
+              return elm.name === 'editBtns' ? <td key={ii}>{this.printEditorBtns(data[i])}</td> : <td key={ii}>{data[i][elm.name]}</td>;
+            })}
+          </tr>
+        ))
+      : null;
   };
 
   /**

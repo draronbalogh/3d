@@ -1,10 +1,14 @@
 
 # Todo
-- differnet db tables for images and videos and 3d models
-- react-table
+- add a mysql table for videos 
+- create the users table
 - login to admin
+
+- react-table
 - form design
 
+
+- 
 /*
  * Materialok --> cinema3D-nél tex
  */

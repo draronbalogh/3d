@@ -19,6 +19,7 @@ import 'react-circular-progressbar/dist/styles.css';
 ///////////////////////////////////////////////////////////   INTERFACE
 interface Model3dState {
   data: any;
+  imgData: any;
   isUploading: boolean;
   isSaved: boolean;
   isThankYou: boolean;
@@ -50,6 +51,7 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
       isUploading: false,
       uploadingData: null,
       data: {},
+      imgData: {},
       files: { modelUrl: [], modelImgs: [], modelMaterialUrl: [] },
       folderName: '',
       modelUuid: '',
@@ -146,7 +148,20 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
           const item = e.target.files.item(i),
             type: string = item.name.split('.').pop().toLowerCase(),
             f: number = item.size,
-            fileSize: number = Math.round(f);
+            fileSize: number = Math.round(f),
+            fileName: string = item.name,
+            fileNameWithoutExtension: string = fileName.split('.').slice(0, -1).join('.'),
+            fileExtension: any = fileName.split('.').pop(),
+            fileUuid: string = nanoid(10).toLocaleLowerCase(),
+            fileUuidName: string = `${fileNameWithoutExtension}_${fileUuid}.${fileExtension}`,
+            fileWidth: number = item.width,
+            fileHeight: number = item.height,
+            fileResolution: number = item.resolution,
+            fileOrientation: string = item.orientation,
+            fileMimeType: string = item.type,
+            fileLastModified: number = item.lastModified,
+            fileLastModifiedDate: string = item.lastModifiedDate;
+
           if (!_CONFIG.validation.file.types.includes(type)) {
             alert(_CONFIG.msg.error.file.notValid);
             return;
@@ -177,7 +192,8 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
         data: {
           ...this.state.data,
           [elm]: filesTxt.slice(0, -1) // comma separated list of files as mysql record
-        }
+        },
+        imgData: {} // TODO:: push image data to state and send to server
       });
 
       this.setState({ isSaved: false });
