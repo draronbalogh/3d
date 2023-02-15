@@ -19,6 +19,8 @@ import 'react-circular-progressbar/dist/styles.css';
 import { forEachChild } from 'typescript';
 ///////////////////////////////////////////////////////////   INTERFACE
 interface Model3dState {
+  data: any;
+  imgData: imgDataType[];
   isUploading: boolean;
   isSaved: boolean;
   isThankYou: boolean;
@@ -27,8 +29,6 @@ interface Model3dState {
   modelUuid: string;
   files: UploadFiles | any;
   folderId: string;
-  data: any;
-  imgData: any;
 }
 interface UploadFiles {
   modelUrl: [];
@@ -175,7 +175,7 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
         for (let i = 0; i <= e.target.files.length - 1; i++) {
           let item = e.target.files.item(i);
           console.log('elm', elm);
-          this.imgD.elm.push({
+          this.imgD.push({
             type: item.name.split('.').pop().toLowerCase(),
             f: item.size,
             fileSize: Math.round(item.size),
