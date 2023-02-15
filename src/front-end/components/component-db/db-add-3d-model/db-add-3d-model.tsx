@@ -39,11 +39,10 @@ interface imgDataType {
   type: string;
   f: number;
   fileSize: number;
-  fileName: string;
+  origFileName: string;
   fileNameWithoutExtension: string;
   fileExtension: any;
   fileUuid: string;
-  fileUuidName: string;
   fileWidth: number;
   fileHeight: number;
   fileResolution: number;
@@ -96,10 +95,6 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
    */
   save3dModel = async (e: any) => {
     e.preventDefault();
-    console.log('imgDataType', this.state.imgData);
-    alert('ok');
-
-    return;
 
     const { data, files, folderName } = this.state;
     let isThereAnyValidFile: boolean = false;
@@ -116,6 +111,11 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
           }
         });
       }
+
+      console.log('this.state.imgData', this.state.imgData);
+      alert('ok');
+
+      return;
 
       await axios.post(_CONFIG.url.createModel, data, {}).then((response: any) => {
         if (response.data.success === false) {
@@ -163,7 +163,10 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
    * Update state with uuuid file names
    */
   inputFileDataUpdater = (elm: string, e: any) => {
+    e.preventDefault();
     try {
+      this.imgD[elm] = [];
+
       // TODO:: copy to edit model, and update alerts to real messages
       if (e.target.files.length > _CONFIG.validation.file.maxFiles) {
         alert(_CONFIG.msg.error.file.maxFileLimit);
@@ -174,51 +177,48 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
         //_CONFIG.validation.file.types.includes(currentFileType)
         for (let i = 0; i <= e.target.files.length - 1; i++) {
           let item = e.target.files.item(i);
-          console.log('elm', elm);
-          this.imgD.push({
+
+          this.imgD[elm].push({
             type: item.name.split('.').pop().toLowerCase(),
             f: item.size,
             fileSize: Math.round(item.size),
-            fileName: item.name.toLocaleLowerCase(),
+            origFileName: item.name.toLocaleLowerCase(),
             fileNameWithoutExtension: item.name.split('.').slice(0, -1).join('.').toLocaleLowerCase(),
             fileExtension: item.name.split('.').pop(),
             fileUuid: nanoid(10).toLocaleLowerCase(),
-            fileUuidName: `${item.name.split('.').slice(0, -1).join('.')}_${nanoid(10).toLocaleLowerCase()}.${item.name.split('.').pop()}`,
+
             fileMimeType: item.type,
             fileLastModified: item.lastModified,
             fileLastModifiedDate: item.lastModifiedDate
           });
-          console.log('imgD', this.imgD);
-          if (!_CONFIG.validation.file.types.includes(this.imgD[i].type)) {
+
+          if (!_CONFIG.validation.file.types.includes(this.imgD[elm][i].type)) {
             alert(_CONFIG.msg.error.file.notValid);
             return;
           }
-          if (this.imgD[i].fileSize < _CONFIG.validation.file.minFileSize) {
+          if (this.imgD[elm][i].fileSize < _CONFIG.validation.file.minFileSize) {
             alert(_CONFIG.msg.error.file.tooSmall);
             return;
           }
-          if (this.imgD[i].fileSize > _CONFIG.validation.file.maxFileSize) {
+          if (this.imgD[elm][i].fileSize > _CONFIG.validation.file.maxFileSize) {
             alert(_CONFIG.msg.error.file.tooBig);
             return;
           }
         }
       }
       let files = { ...this.state.files };
-
       files[elm] = e.target.files;
       this.setState({ files });
       let filesTxt: string = '';
-
-      e.target.files.forEach((value: any, key: number) => {
-        console.log(`Index: ${key}, Value: ${value}`);
+      Array.from(e.target.files).forEach((value: any, key: number) => {
+        // console.log(`Index: ${key}, Value: ${value.name}`);
         const fileName: string = value.name;
-        filesTxt += `${uuid()}-${fileName
+        filesTxt = `${uuid()}-${fileName
           .normalize('NFD')
           .replace(/[\u0300-\u036f]/g, '')
           .toLowerCase()
           .replace(/[^a-zA-Z0-9.]/g, '-')},`;
-        this.imgD[key].fileNameForignKey = filesTxt;
-        console.log('filesTxt', filesTxt);
+        this.imgD[elm][key]['fileNameAsForignKey'] = filesTxt.substring(0, filesTxt.length - 1);
       });
 
       this.setState({
@@ -226,7 +226,7 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
           ...this.state.data,
           [elm]: filesTxt.slice(0, -1) // comma separated list of files as mysql record
         },
-        imgData: { ...this.imgD } // TODO:: push image data to state and send to server
+        imgData: this.imgD // TODO:: push image data to state and send to server
       });
 
       this.setState({ isSaved: false });
