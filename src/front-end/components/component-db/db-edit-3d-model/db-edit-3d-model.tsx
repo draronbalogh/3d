@@ -260,7 +260,6 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
    * @param elm string
    * @returns
    * @description This function is used to build the form
-   * @todo This function is too long, it needs to be refactored
    */
   formBuilder = (i: number, elm: string, id: any) => {
     let { data } = this.state,

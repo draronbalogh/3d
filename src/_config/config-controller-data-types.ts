@@ -54,20 +54,3 @@ export const seqConfigFor3dModels = {
   modelDownloaderUid: { type: DataTypes.STRING(50) },
   modelDownloadCount: { type: DataTypes.INTEGER }
 };
-/*
-export const seqConfigFor3dModels = {
-   modelMaterialUrl: { type: DataTypes.STRING(2048) },
-  modelState: { type: DataTypes.STRING(1024) },
-  modelVisibility: { type: DataTypes.TINYINT },
-  modelRigged: { type: DataTypes.TINYINT },
-  modelAnimated: { type: DataTypes.TINYINT },
-  modelUv: { type: DataTypes.STRING(2048) },
-  modelLegality: { type: DataTypes.STRING(100) },
-  modelScript: { type: DataTypes.STRING(2048) },
-  modelViewerUid: { type: DataTypes.STRING(100) },
-  modelViewCount: { type: DataTypes.INTEGER },
-  modelDownloaderUid: { type: DataTypes.STRING(100) },
-  modelDownloadCount: { type: DataTypes.INTEGER }
-};
-
- */

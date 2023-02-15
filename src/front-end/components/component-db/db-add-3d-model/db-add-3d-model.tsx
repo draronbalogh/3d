@@ -16,10 +16,9 @@ import Button from 'react-bootstrap/Button';
 import { ProgressViewer } from '../db-shared/progress-viewer/progress-viewer-component';
 ///////////////////////////////////////////////////////////   SCSS
 import 'react-circular-progressbar/dist/styles.css';
+import { forEachChild } from 'typescript';
 ///////////////////////////////////////////////////////////   INTERFACE
 interface Model3dState {
-  data: any;
-  imgData: any;
   isUploading: boolean;
   isSaved: boolean;
   isThankYou: boolean;
@@ -28,11 +27,30 @@ interface Model3dState {
   modelUuid: string;
   files: UploadFiles | any;
   folderId: string;
+  data: any;
+  imgData: any;
 }
 interface UploadFiles {
   modelUrl: [];
   modelImgs: [];
   modelMaterialUrl: [];
+}
+interface imgDataType {
+  type: string;
+  f: number;
+  fileSize: number;
+  fileName: string;
+  fileNameWithoutExtension: string;
+  fileExtension: any;
+  fileUuid: string;
+  fileUuidName: string;
+  fileWidth: number;
+  fileHeight: number;
+  fileResolution: number;
+  fileOrientation: string;
+  fileMimeType: string;
+  fileLastModified: number;
+  fileLastModifiedDate: string;
 }
 
 interface ModelMethods {
@@ -43,6 +61,7 @@ interface ModelMethods {
 //////////////////////////////////////////////////////////////////////////////////////    CLASS SETUP
 export class DbAdd3dModel extends React.Component<any, Model3dState> implements ModelMethods {
   form: React.RefObject<any>;
+  private imgD: any = [];
   constructor(props: any) {
     super(props);
     this.state = {
@@ -51,7 +70,7 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
       isUploading: false,
       uploadingData: null,
       data: {},
-      imgData: {},
+      imgData: [],
       files: { modelUrl: [], modelImgs: [], modelMaterialUrl: [] },
       folderName: '',
       modelUuid: '',
@@ -77,6 +96,11 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
    */
   save3dModel = async (e: any) => {
     e.preventDefault();
+    console.log('imgDataType', this.state.imgData);
+    alert('ok');
+
+    return;
+
     const { data, files, folderName } = this.state;
     let isThereAnyValidFile: boolean = false;
     try {
@@ -92,11 +116,14 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
           }
         });
       }
+
       await axios.post(_CONFIG.url.createModel, data, {}).then((response: any) => {
         if (response.data.success === false) {
           throw new Error(_CONFIG.msg.error.fetch.postingData, response);
         }
       });
+      // TODO:: validate this.state.imgData if it's existing and post it to  CONFIG.url.createModel
+
       if (isThereAnyValidFile) {
         this.setState({ isUploading: true });
         await axios
@@ -142,58 +169,64 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
         alert(_CONFIG.msg.error.file.maxFileLimit);
         return;
       }
+
       if (e.target.files.length > 0) {
         //_CONFIG.validation.file.types.includes(currentFileType)
         for (let i = 0; i <= e.target.files.length - 1; i++) {
-          const item = e.target.files.item(i),
-            type: string = item.name.split('.').pop().toLowerCase(),
-            f: number = item.size,
-            fileSize: number = Math.round(f),
-            fileName: string = item.name,
-            fileNameWithoutExtension: string = fileName.split('.').slice(0, -1).join('.'),
-            fileExtension: any = fileName.split('.').pop(),
-            fileUuid: string = nanoid(10).toLocaleLowerCase(),
-            fileUuidName: string = `${fileNameWithoutExtension}_${fileUuid}.${fileExtension}`,
-            fileWidth: number = item.width,
-            fileHeight: number = item.height,
-            fileResolution: number = item.resolution,
-            fileOrientation: string = item.orientation,
-            fileMimeType: string = item.type,
-            fileLastModified: number = item.lastModified,
-            fileLastModifiedDate: string = item.lastModifiedDate;
-
-          if (!_CONFIG.validation.file.types.includes(type)) {
+          let item = e.target.files.item(i);
+          console.log('elm', elm);
+          this.imgD.elm.push({
+            type: item.name.split('.').pop().toLowerCase(),
+            f: item.size,
+            fileSize: Math.round(item.size),
+            fileName: item.name.toLocaleLowerCase(),
+            fileNameWithoutExtension: item.name.split('.').slice(0, -1).join('.').toLocaleLowerCase(),
+            fileExtension: item.name.split('.').pop(),
+            fileUuid: nanoid(10).toLocaleLowerCase(),
+            fileUuidName: `${item.name.split('.').slice(0, -1).join('.')}_${nanoid(10).toLocaleLowerCase()}.${item.name.split('.').pop()}`,
+            fileMimeType: item.type,
+            fileLastModified: item.lastModified,
+            fileLastModifiedDate: item.lastModifiedDate
+          });
+          console.log('imgD', this.imgD);
+          if (!_CONFIG.validation.file.types.includes(this.imgD[i].type)) {
             alert(_CONFIG.msg.error.file.notValid);
             return;
           }
-          if (fileSize < _CONFIG.validation.file.minFileSize) {
+          if (this.imgD[i].fileSize < _CONFIG.validation.file.minFileSize) {
             alert(_CONFIG.msg.error.file.tooSmall);
             return;
           }
-          if (fileSize > _CONFIG.validation.file.maxFileSize) {
+          if (this.imgD[i].fileSize > _CONFIG.validation.file.maxFileSize) {
             alert(_CONFIG.msg.error.file.tooBig);
             return;
           }
         }
       }
       let files = { ...this.state.files };
+
       files[elm] = e.target.files;
       this.setState({ files });
       let filesTxt: string = '';
-      for (const i of e.target.files) {
-        const fileName: string = i.name;
+
+      e.target.files.forEach((value: any, key: number) => {
+        console.log(`Index: ${key}, Value: ${value}`);
+        const fileName: string = value.name;
         filesTxt += `${uuid()}-${fileName
           .normalize('NFD')
           .replace(/[\u0300-\u036f]/g, '')
           .toLowerCase()
           .replace(/[^a-zA-Z0-9.]/g, '-')},`;
-      }
+        this.imgD[key].fileNameForignKey = filesTxt;
+        console.log('filesTxt', filesTxt);
+      });
+
       this.setState({
         data: {
           ...this.state.data,
           [elm]: filesTxt.slice(0, -1) // comma separated list of files as mysql record
         },
-        imgData: {} // TODO:: push image data to state and send to server
+        imgData: { ...this.imgD } // TODO:: push image data to state and send to server
       });
 
       this.setState({ isSaved: false });
