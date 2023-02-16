@@ -13,14 +13,14 @@ interface CompProps {
 }
 interface CompState {
   data: any;
-  id: number | any;
+  modelId: number | any;
 }
 //////////////////////////////////////////////////////////////////////////////////////    CLASS SETUP
 export class View3dModel extends React.Component<CompProps, CompState> {
   constructor(props: CompProps) {
     super(props);
     this.state = {
-      id: Number(window.location.pathname.split('/').pop()),
+      modelId: Number(window.location.pathname.split('/').pop()),
       data: this.props.data
     };
   }
@@ -34,21 +34,21 @@ export class View3dModel extends React.Component<CompProps, CompState> {
 
   ///////////////////////////////////////////////////////////   CLASS METHODS
   /**
-   * Find data by id
+   * Find data by modelId
    */
   findDataById = () => {
-    const { data, id } = this.state;
-    const obj = data.find((o: { id: any }) => o.id === id);
+    const { data, modelId } = this.state;
+    const obj = data.find((o: { modelId: any }) => o.modelId === modelId);
     this.setState({ data: obj });
   };
 
   /**
-   * Fetch data by id
+   * Fetch data by modelId
    */
   fetchModelDataById = async () => {
     try {
-      const { id } = this.state;
-      const response = await axios.get(_CONFIG.url.getModel + id);
+      const { modelId } = this.state;
+      const response = await axios.get(_CONFIG.url.getModel + modelId);
       this.setState({ data: response.data });
     } catch (e: any) {
       logAxiosError(e, _CONFIG.msg.error.fetch.getData);
@@ -81,12 +81,12 @@ export class View3dModel extends React.Component<CompProps, CompState> {
 
   //////////////////////////////////////////////////////////////////////////////////////    RENDER
   render() {
-    const { id } = this.state;
+    const { modelId } = this.state;
     return (
       <table>
         <thead>
           <tr>
-            <th>3d component ({id})</th>
+            <th>3d component ({modelId})</th>
           </tr>
           <tr>{this.getTitle()}</tr>
         </thead>

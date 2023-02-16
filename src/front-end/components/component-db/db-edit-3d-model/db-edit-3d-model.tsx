@@ -25,7 +25,7 @@ interface UploadFiles {
   modelMaterialUrl: [];
 }
 interface Model3dState {
-  id: number | undefined;
+  modelId: number | undefined;
   data: any;
   uploadingData: any;
   files: UploadFiles | any;
@@ -48,7 +48,7 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
   constructor(props: any) {
     super(props);
     this.state = {
-      id: Number(window.location.pathname.split('/').pop()),
+      modelId: Number(window.location.pathname.split('/').pop()),
       isSaved: false,
       isThankYou: false,
       isUploading: false,
@@ -74,22 +74,22 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
   }
   ///////////////////////////////////////////////////////////   CLASS METHODS
   /**
-   * Find data by id
+   * Find data by modelId
    */
   findDataById = () => {
-    const { data, id } = this.state;
-    const obj = data.find((o: { id: any }) => o.id === id);
+    const { data, modelId } = this.state;
+    const obj = data.find((o: { modelId: any }) => o.modelId === modelId);
     this.setState({ data: obj });
     this.setState({ oldFilesToDel: obj });
   };
 
   /**
-   * Fetch 3D model data by id
+   * Fetch 3D model data by modelId
    */
   fetchModelDataById = async () => {
     try {
-      const { id } = this.state;
-      const response = await axios.get(_CONFIG.url.getModel + id);
+      const { modelId } = this.state;
+      const response = await axios.get(_CONFIG.url.getModel + modelId);
       this.setState({ data: response.data });
       this.setState({ oldFilesToDel: response.data });
     } catch (e: any) {
@@ -159,14 +159,14 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
    * @param e any
    */
   update3dModel = async (e: any) => {
-    const { data, deleteTheseFiles, id } = this.state;
+    const { data, deleteTheseFiles, modelId } = this.state;
     const { modelUuid } = data;
     try {
       e.preventDefault();
       let isThereAnyValidFile = false;
       DbEdit3dModel.imgArray = [];
-      await axios.post(_CONFIG.url.deleteFiles, { deleteTheseFiles, id, modelUuid, deleteFolder: false }, {});
-      await axios.patch(_CONFIG.url.getModel + id, data);
+      await axios.post(_CONFIG.url.deleteModelFiles, { deleteTheseFiles, modelId, modelUuid, deleteFolder: false }, {});
+      await axios.patch(_CONFIG.url.getModel + modelId, data);
       const { files } = this.state;
       const filesData = new FormData();
       for (const file in files) {
@@ -261,7 +261,7 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
    * @returns
    * @description This function is used to build the form
    */
-  formBuilder = (i: number, elm: string, id: any) => {
+  formBuilder = (i: number, elm: string, modelId: any) => {
     let { data } = this.state,
       element = data[elm],
       ctr = modelConfig[i].control,
@@ -306,7 +306,7 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
               return enableForAddEdit ? (
                 <Form.Group key={i}>
                   {<Form.Label>{elm.label}</Form.Label>}
-                  {this.formBuilder(i, elm.name, data.id)}
+                  {this.formBuilder(i, elm.name, data.modelId)}
                 </Form.Group>
               ) : null;
             })

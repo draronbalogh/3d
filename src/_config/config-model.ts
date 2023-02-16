@@ -10,8 +10,8 @@ export const modelConfig = [
     maxLength: 100
   },
   {
-    name: 'id',
-    label: 'Id',
+    name: 'modelId',
+    label: 'modelId',
     control: 'number',
     inputType: 'input',
     enableForAddEdit: false,
@@ -20,7 +20,7 @@ export const modelConfig = [
     maxLength: 100
   },
   {
-    name: 'createdAt',
+    name: 'modelCreatedAt',
     label: 'Létrehozva',
     control: 'input',
     inputType: 'text',
@@ -30,7 +30,7 @@ export const modelConfig = [
     maxLength: 500
   },
   {
-    name: 'updatedAt',
+    name: 'modelUpdatedAt',
     label: 'Frissítve',
     control: 'input',
     inputType: 'text',

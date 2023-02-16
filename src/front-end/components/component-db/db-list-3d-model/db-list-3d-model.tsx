@@ -52,20 +52,20 @@ export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
 
   /**
    * Delete 3d model data from database and also delete files from server
-   * @param id number
+   * @param modelId number
    * @param modelUuid string
    * @param ob object
    */
-  delete3dModel = async (id: number, modelUuid: string, ob: any) => {
+  delete3dModel = async (modelId: number, modelUuid: string, ob: any) => {
     try {
       let modelImgs: string[] = ob['modelImgs'] ? ob['modelImgs']?.split(',') : [],
         modelMaterialUrl: string[] = ob['modelMaterialUrl'] ? ob['modelMaterialUrl']?.split(',') : [],
         modelUrl: string[] = ob['modelUrl'] ? ob['modelUrl']?.split(',') : [],
         deleteTheseFiles: string[] = [...modelImgs, ...modelMaterialUrl, ...modelUrl];
-      await axios.post(_CONFIG.url.deleteFiles, { deleteTheseFiles, id: ob['id'], modelUuid: ob['modelUuid'], deleteFolder: true }, {}).then((response) => {
+      await axios.post(_CONFIG.url.deleteModelFiles, { deleteTheseFiles, modelId: ob['modelId'], modelUuid: ob['modelUuid'], deleteFolder: true }, {}).then((response) => {
         if (response.data.success === false) console.log(_CONFIG.msg.error.file.deleting, response);
       });
-      await axios.delete(_CONFIG.url.getModel + id).then((response) => {
+      await axios.delete(_CONFIG.url.getModel + modelId).then((response) => {
         if (response.data.success === false) {
           console.log(_CONFIG.msg.error.file.deleting, response);
         } else {
@@ -75,17 +75,17 @@ export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
     } catch (e: any) {
       const statusCode = e.response.status; // 400
       const statusText = e.response.statusText; // Bad Request
-      const message = e.response.data.message[0]; // id should not be empty
+      const message = e.response.data.message[0]; // modelId should not be empty
       console.log(`${statusCode} - ${statusText} - ${message}`);
     }
   };
 
   /**
-   * Update id in parent component
-   * @param id number
+   * Update modelId in parent component
+   * @param modelId number
    */
-  updateId = (id: number) => {
-    this.props.updateId(id);
+  updateId = (modelId: number) => {
+    this.props.updateId(modelId);
   };
 
   /**
@@ -133,13 +133,13 @@ export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
   printEditorBtns = (elm: any) => {
     return (
       <span>
-        <Link to={`/edit/${elm.id}`} className='button is-small is-info'>
+        <Link to={`/edit/${elm.modelId}`} className='button is-small is-info'>
           Szerkesztés
         </Link>{' '}
-        <a onClick={() => this.delete3dModel(elm.id, elm.modelUuid, elm)} className='button is-small is-danger'>
+        <a onClick={() => this.delete3dModel(elm.modelId, elm.modelUuid, elm)} className='button is-small is-danger'>
           Törlés
         </a>{' '}
-        <Link to={`/view/${elm.id}`} className='button is-small is-info'>
+        <Link to={`/view/${elm.modelId}`} className='button is-small is-info'>
           Megjelenítés
         </Link>
       </span>

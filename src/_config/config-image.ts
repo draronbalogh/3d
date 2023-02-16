@@ -1,7 +1,7 @@
 export const imageConfig = [
   {
-    name: 'id',
-    label: 'id',
+    name: 'imgId',
+    label: 'imgId',
     control: 'number',
     inputType: 'input',
     enableForAddEdit: false,
@@ -10,7 +10,7 @@ export const imageConfig = [
     maxLength: 100
   },
   {
-    name: 'createdAt',
+    name: 'imgCreatedAt',
     label: 'Létrehozva',
     control: 'input',
     inputType: 'text',
@@ -20,7 +20,7 @@ export const imageConfig = [
     maxLength: 500
   },
   {
-    name: 'updatedAt',
+    name: 'imgUpdatedAt',
     label: 'Frissítve',
     control: 'input',
     inputType: 'text',
@@ -28,6 +28,26 @@ export const imageConfig = [
     isRequired: false,
     visibility: true,
     maxLength: 500
+  },
+  {
+    name: 'modelId',
+    label: 'modelId',
+    control: 'number',
+    inputType: 'input',
+    enableForAddEdit: false,
+    isRequired: false,
+    visibility: true,
+    maxLength: 100
+  },
+  {
+    name: 'modelUuid',
+    label: 'Egyedi azonosító',
+    control: 'input',
+    inputType: 'text',
+    enableForAddEdit: true,
+    isRequired: false,
+    visibility: true,
+    maxLength: 100
   },
   {
     name: 'imgUuid',

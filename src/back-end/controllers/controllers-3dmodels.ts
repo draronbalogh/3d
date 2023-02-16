@@ -21,26 +21,26 @@ export const getAllModels3ds = async (req: Request, res: Response) => {
 };
 
 /**
- * Get last model id
+ * Get last model modelId
  * @param req Request
  * @param res Response
  */
 export const getLastModelId = async (req: Request, res: Response) => {
   try {
-    const id = await ModelCtrFor3dTypes.findAll({
+    const modelId = await ModelCtrFor3dTypes.findAll({
       limit: 1,
       where: {},
       order: [['createdAt', 'DESC']]
     });
-    console.log('id', id);
-    res.json(id);
+    console.log('modelId', modelId);
+    res.json(modelId);
   } catch (error: any | unknown) {
     res.json({ message: error.message });
   }
 };
 
 /**
- * Get model 3d by id
+ * Get model 3d by modelId
  * @param req Request
  * @param res Response
  */
@@ -48,7 +48,7 @@ export const getModels3dById = async (req: Request, res: Response) => {
   try {
     const modells = await ModelCtrFor3dTypes.findAll({
       where: {
-        id: req.params.id
+        modelId: req.params.modelId
       }
     });
     res.json(modells[0]);
@@ -81,7 +81,7 @@ export const updateModels3d = async (req: Request, res: Response) => {
   try {
     await ModelCtrFor3dTypes.update(req.body, {
       where: {
-        id: req.params.id
+        modelId: req.params.modelId
       }
     });
     res.json({
@@ -101,7 +101,7 @@ export const delete3dModel = async (req: Request, res: Response) => {
   try {
     await ModelCtrFor3dTypes.destroy({
       where: {
-        id: req.params.id
+        modelId: req.params.modelId
       }
     });
     res.json({

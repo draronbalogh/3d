@@ -34,7 +34,7 @@ const connectToDb = async () => {
  * @param res
  * @param next
  */
-const upload = async (req: any, res: any, next: any) => {
+const uploadModel = async (req: any, res: any, next: any) => {
   let folderId = '',
     isValid = false;
   ////////////////////////////////////////////   FORM CONFIG
@@ -72,7 +72,7 @@ const upload = async (req: any, res: any, next: any) => {
    */
   form.on('progress', function (bytesReceived: any, bytesExpected: any) {
     const perc = Math.round((100 * bytesReceived) / bytesExpected) + '%';
-    // console.log('upload', perc);
+    // console.log('uploadModel', perc);
     return perc;
   });
 
@@ -157,7 +157,7 @@ const upload = async (req: any, res: any, next: any) => {
  * @param res
  * @param next
  */
-const deleteFiles = async (req: any, res: any, next: any) => {
+const deleteModelFiles = async (req: any, res: any, next: any) => {
   const arr: string[] = req.body.deleteTheseFiles || [],
     id = req.body.id,
     modelUuid = req.body.modelUuid,
@@ -191,8 +191,8 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.raw());
-app.post(_CONFIG.routes.upload, upload);
-app.post(_CONFIG.routes.deleteFiles, deleteFiles);
+app.post(_CONFIG.routes.uploadModel, uploadModel);
+app.post(_CONFIG.routes.deleteModelFiles, deleteModelFiles);
 app.use(_CONFIG.routes.routes3d, routes3d);
 app.listen(PORT3D, () => console.log(_CONFIG.msg.txt.server.started));
 

@@ -50,6 +50,8 @@ interface imgDataType {
   fileMimeType: string;
   fileLastModified: number;
   fileLastModifiedDate: string;
+  modelTitle: string;
+  modelUuid: string;
 }
 
 interface ModelMethods {
@@ -95,7 +97,6 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
    */
   save3dModel = async (e: any) => {
     e.preventDefault();
-
     const { data, files, folderName } = this.state;
     let isThereAnyValidFile: boolean = false;
     try {
@@ -111,17 +112,21 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
           }
         });
       }
-
-      console.log('this.state.imgData', this.state.imgData);
-      alert('ok');
-
-      return;
-
       await axios.post(_CONFIG.url.createModel, data, {}).then((response: any) => {
         if (response.data.success === false) {
           throw new Error(_CONFIG.msg.error.fetch.postingData, response);
         }
       });
+      let imgPush: any[] = [];
+      await axios.get(_CONFIG.url.getLastModelId).then((response: any) => {
+        if (response.data.success === false) throw new Error(_CONFIG.msg.error.fetch.postingData, response);
+        Object.keys(this.imgD).forEach((element: any, key: number) => {
+          this.imgD[element][key].modelId = response.data[0].modelId;
+          this.imgD[element][key].modelUuid = data.modelUuid;
+          imgPush.push(this.imgD[element]);
+        });
+      });
+      console.log('imgPush', imgPush);
       // TODO:: validate this.state.imgData if it's existing and post it to  CONFIG.url.createModel
 
       if (isThereAnyValidFile) {
@@ -186,7 +191,6 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
             fileNameWithoutExtension: item.name.split('.').slice(0, -1).join('.').toLocaleLowerCase(),
             fileExtension: item.name.split('.').pop(),
             fileUuid: nanoid(10).toLocaleLowerCase(),
-
             fileMimeType: item.type,
             fileLastModified: item.lastModified,
             fileLastModifiedDate: item.lastModifiedDate
@@ -218,7 +222,7 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
           .replace(/[\u0300-\u036f]/g, '')
           .toLowerCase()
           .replace(/[^a-zA-Z0-9.]/g, '-')},`;
-        this.imgD[elm][key]['fileNameAsForignKey'] = filesTxt.substring(0, filesTxt.length - 1);
+        this.imgD[elm][key]['fileNameAsForeignKey'] = filesTxt.substring(0, filesTxt.length - 1);
       });
 
       this.setState({

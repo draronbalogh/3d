@@ -1,29 +1,9 @@
 import { DataTypes } from 'sequelize';
 
-export const seqConfigForImgModels = {
-  id: { type: DataTypes.INTEGER, primaryKey: true },
-  createdAt: { type: DataTypes.DATE },
-  updatedAt: { type: DataTypes.DATE },
-  imgUuid: { type: DataTypes.STRING(100) },
-  imgUploaderUid: { type: DataTypes.STRING(50) },
-  imgFileName: { type: DataTypes.TEXT },
-  imgFilePath: { type: DataTypes.TEXT },
-  imgFileType: { type: DataTypes.STRING(100) },
-  imgFileFormat: { type: DataTypes.STRING(100) },
-  imgFileWidth: { type: DataTypes.INTEGER },
-  imgFileHeight: { type: DataTypes.INTEGER },
-  imgFileResolution: { type: DataTypes.INTEGER },
-  imgFileTags: { type: DataTypes.TEXT },
-  imgFileDescription: { type: DataTypes.TEXT },
-  imgFileTitle: { type: DataTypes.STRING(255) },
-  imgFileCategory: { type: DataTypes.STRING(255) },
-  imgFileSourceUrl: { type: DataTypes.TEXT }
-};
-
 export const seqConfigFor3dModels = {
-  id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  createdAt: { type: DataTypes.DATE },
-  updatedAt: { type: DataTypes.DATE },
+  modelId: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
+  modelCreatedAt: { type: DataTypes.DATE },
+  modelUpdatedAt: { type: DataTypes.DATE },
   modelUuid: { type: DataTypes.STRING(100) },
   modelUploaderUid: { type: DataTypes.STRING(50) },
   modelTitle: { type: DataTypes.STRING(255) },
@@ -53,4 +33,26 @@ export const seqConfigFor3dModels = {
   modelViewCount: { type: DataTypes.INTEGER },
   modelDownloaderUid: { type: DataTypes.STRING(50) },
   modelDownloadCount: { type: DataTypes.INTEGER }
+};
+
+export const seqConfigForImgModels = {
+  imgId: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
+  imgCreatedAt: { type: DataTypes.DATE },
+  imgUpdatedAt: { type: DataTypes.DATE },
+  modelId: { type: DataTypes.INTEGER },
+  modelUuid: { type: DataTypes.STRING(100) },
+  imgUuid: { type: DataTypes.STRING(100) },
+  imgUploaderUid: { type: DataTypes.STRING(50) },
+  imgFileName: { type: DataTypes.TEXT },
+  imgFilePath: { type: DataTypes.TEXT },
+  imgFileType: { type: DataTypes.STRING(100) },
+  imgFileFormat: { type: DataTypes.STRING(100) },
+  imgFileWidth: { type: DataTypes.INTEGER },
+  imgFileHeight: { type: DataTypes.INTEGER },
+  imgFileResolution: { type: DataTypes.INTEGER },
+  imgFileTags: { type: DataTypes.TEXT },
+  imgFileDescription: { type: DataTypes.TEXT },
+  imgFileTitle: { type: DataTypes.STRING(255) },
+  imgFileCategory: { type: DataTypes.STRING(255) },
+  imgFileSourceUrl: { type: DataTypes.TEXT }
 };

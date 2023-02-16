@@ -3,15 +3,15 @@ export const HOST3D = 'http://127.0.0.1'; // TODO: Change proxy in package.json 
 export const _CONFIG = {
   url: {
     getModel: `${HOST3D}:${PORT3D}/api/3dmodels/`,
-    createModel: `${HOST3D}:${PORT3D}/api/3dmodels/create`,
-    getLastId: `${HOST3D}:${PORT3D}/api/3dmodels/getLastId`,
-    uploadFiles: `${HOST3D}:${PORT3D}/upload`,
-    deleteFiles: `${HOST3D}:${PORT3D}/deleteFiles`,
+    createModel: `${HOST3D}:${PORT3D}/api/3dmodels/createModel`,
+    getLastModelId: `${HOST3D}:${PORT3D}/api/3dmodels/getLastModelId`,
+    uploadFiles: `${HOST3D}:${PORT3D}/uploadModel`,
+    deleteModelFiles: `${HOST3D}:${PORT3D}/deleteModelFiles`,
     uploadFolder: 'c:/node/3d_uploads/'
   },
   routes: {
-    upload: '/upload',
-    deleteFiles: '/deleteFiles',
+    uploadModel: '/uploadModel',
+    deleteModelFiles: '/deleteModelFiles',
     routes3d: '/api/3dmodels',
     error: 'Hibás URL cím, vagy nem létező oldal!'
   },

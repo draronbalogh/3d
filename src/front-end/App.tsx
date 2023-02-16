@@ -45,11 +45,11 @@ class App extends React.Component<unknown, State> {
 
   ///////////////////////////////////////////////////////////   CLASS METHODS
   /**
-   * Update id
-   * @param id
+   * Update modelId
+   * @param modelId
    */
-  private readonly updateId = (id: number) => {
-    this.setState({ updateIdNum: id });
+  private readonly updateId = (modelId: number) => {
+    this.setState({ updateIdNum: modelId });
   };
 
   /**
@@ -114,9 +114,9 @@ class App extends React.Component<unknown, State> {
             <Routes>
               <Route path='/' element={<DbList3dModel updateId={this.updateId} updateData={this.updateData} />} />
               <Route path='/add' element={<DbAdd3dModel />} />
-              <Route path='/edit/:id' element={<DbEdit3dModel data={data} />} />
-              <Route path='/view/:id' element={<View3dModel data={data} />} />
-              <Route path='/getLastId' element={<>asdsad {console.log(data)}</>} />
+              <Route path='/edit/:modelId' element={<DbEdit3dModel data={data} />} />
+              <Route path='/view/:modelId' element={<View3dModel data={data} />} />
+              <Route path='/getLastModelId' element={<>asdsad {console.log(data)}</>} />
               <Route path='*' element={<code>{_CONFIG.routes.error}</code>} />
             </Routes>
           </Col>
