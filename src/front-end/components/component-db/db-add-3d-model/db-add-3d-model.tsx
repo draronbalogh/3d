@@ -123,29 +123,25 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
         if (response.data.success === false) throw new Error(_CONFIG.msg.error.fetch.postingData, response);
         modelId = response.data[0].modelId;
       });
-
       let imgPush: any[] = [];
-      console.log('this.imgD', this.imgD);
       Object.keys(this.imgD).forEach((element: any, key: number) => {
-        console.log('element', element);
-        console.log('key', key);
-        console.log('response.data[0].modelId', modelId);
-
-        imgPush.push(modelId);
-        // this.imgD[element][key].modelId = modelId;
-        // this.imgD[element][key].modelUuid = data.modelUuid;
+        this.imgD[element].forEach((e: any, k: number) => {
+          imgPush.push(this.imgD[element][k]);
+          this.imgD[element][k].modelId = modelId;
+          this.imgD[element][k].modelUuid = data.modelUuid;
+        });
       });
 
-      /*
-      const fn = arr => arr.flatMap(({ attributes, ...rest }) => 
-        attributes.map(o => ({
-          ...rest,
-          ...o
-        }))
-      )
-      */
-      // TODO:: flatten imgD array to have a simple img array list
-      console.log('imgPush', imgPush);
+      await axios
+        .post(_CONFIG.url.uploadFiles, filesData, {
+          headers: { 'content-type': 'multipart/form-data' },
+          onUploadProgress: (data) => {
+            this.setState({ uploadingData: data });
+          }
+        })
+        .then((response: any) => {
+          console.log('imgPush', imgPush);
+        });
 
       if (isThereAnyValidFile) {
         this.setState({ isUploading: true });

@@ -4,6 +4,7 @@ export const _CONFIG = {
   url: {
     getModel: `${HOST3D}:${PORT3D}/api/3dmodels/`,
     createModel: `${HOST3D}:${PORT3D}/api/3dmodels/createModel`,
+    createImage: `${HOST3D}:${PORT3D}/api/3dmodels/createImage`,
     getLastModelId: `${HOST3D}:${PORT3D}/api/3dmodels/getLastModelId`,
     uploadFiles: `${HOST3D}:${PORT3D}/uploadModel`,
     deleteModelFiles: `${HOST3D}:${PORT3D}/deleteModelFiles`,

@@ -3,89 +3,88 @@
 import { _CONFIG } from '../../_config/_config-general';
 ///////////////////////////////////////////////////////////   CONTROLLERS
 import { Request, Response } from 'express';
-import { ModelCtrFor3dTypes } from '../models/model-for-3dmodels';
+import { ModelCtrForImageTypes } from '../models/model-for-images';
 ///////////////////////////////////////////////////////////   ROUTES
 
 /**
- * Get all models 3d
+ * Get all images
  * @param req Request
  * @param res Response
  */
-export const getAllModels3ds = async (req: Request, res: Response) => {
+export const getAllImagess = async (req: Request, res: Response) => {
   try {
-    const models = await ModelCtrFor3dTypes.findAll();
-    res.json(models);
+    const images = await ModelCtrForImageTypes.findAll();
+    res.json(images);
   } catch (error: any | unknown) {
     res.json({ message: error.message });
   }
 };
 
 /**
- * Get last model modelId
+ * Get last image imageId
  * @param req Request
  * @param res Response
  */
 export const getLastModelId = async (req: Request, res: Response) => {
   try {
-    const modelId = await ModelCtrFor3dTypes.findAll({
+    const imageId = await ModelCtrForImageTypes.findAll({
       limit: 1,
       where: {},
       order: [['createdAt', 'DESC']]
     });
-    console.log('modelId', modelId);
-    res.json(modelId);
+    console.log('imageId', imageId);
+    res.json(imageId);
   } catch (error: any | unknown) {
     res.json({ message: error.message });
   }
 };
 
 /**
- * Get model 3d by modelId
+ * Get images by imageId
  * @param req Request
  * @param res Response
  */
-export const getModels3dById = async (req: Request, res: Response) => {
+export const getImagesById = async (req: Request, res: Response) => {
   try {
-    const modells = await ModelCtrFor3dTypes.findAll({
+    const imagels = await ModelCtrForImageTypes.findAll({
       where: {
-        modelId: req.params.modelId
+        imageId: req.params.imageId
       }
     });
-    res.json(modells[0]);
+    res.json(imagels[0]);
   } catch (error: any | unknown) {
     res.json({ message: error.message });
   }
 };
 
 /**
- * Create model 3d
+ * Create images
  * @param req Request
  * @param res Response
  * @param next NextFunction
  */
-export const createModels3d = async (req: Request, res: Response, next: any) => {
+export const createImages = async (req: Request, res: Response, next: any) => {
   try {
-    const a = await ModelCtrFor3dTypes.create(req.body);
+    const a = await ModelCtrForImageTypes.create(req.body);
     await res.status(200).json('Record created');
   } catch (error: any | unknown) {
     res.json({ message: error.message });
   }
 };
-
 /**
- * Update model 3d
+ * Update images
  * @param req Request
  * @param res Response
  */
-export const updateModels3d = async (req: Request, res: Response) => {
+export const updateImages = async (req: Request, res: Response) => {
   try {
-    await ModelCtrFor3dTypes.update(req.body, {
+    await ModelCtrForImageTypes.update(req.body, {
       where: {
-        modelId: req.params.modelId
+        imageId: req.params.imageId
       }
     });
     res.json({
-      message: 'ModelCtrFor3dTypes Updated'
+      message: 'ModelCtrForImageTypes Updated'
     });
   } catch (error: any | unknown) {
     res.json({ message: error.message });
@@ -93,19 +92,19 @@ export const updateModels3d = async (req: Request, res: Response) => {
 };
 
 /**
- * Detete model 3d
+ * Detete images
  * @param req Request
  * @param res Response
  */
 export const delete3dModel = async (req: Request, res: Response) => {
   try {
-    await ModelCtrFor3dTypes.destroy({
+    await ModelCtrForImageTypes.destroy({
       where: {
-        modelId: req.params.modelId
+        imageId: req.params.imageId
       }
     });
     res.json({
-      message: 'ModelCtrFor3dTypes Deleted'
+      message: 'ModelCtrForImageTypes Deleted'
     });
   } catch (error: any | unknown) {
     res.json({ message: error.message });
