@@ -95,6 +95,7 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
    * 6. Reset state
    * 7. Reset form
    */
+
   save3dModel = async (e: any) => {
     e.preventDefault();
     const { data, files, folderName } = this.state;
@@ -117,17 +118,34 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
           throw new Error(_CONFIG.msg.error.fetch.postingData, response);
         }
       });
-      let imgPush: any[] = [];
+      let modelId: null = null;
       await axios.get(_CONFIG.url.getLastModelId).then((response: any) => {
         if (response.data.success === false) throw new Error(_CONFIG.msg.error.fetch.postingData, response);
-        Object.keys(this.imgD).forEach((element: any, key: number) => {
-          this.imgD[element][key].modelId = response.data[0].modelId;
-          this.imgD[element][key].modelUuid = data.modelUuid;
-          imgPush.push(this.imgD[element]);
-        });
+        modelId = response.data[0].modelId;
       });
+
+      let imgPush: any[] = [];
+      console.log('this.imgD', this.imgD);
+      Object.keys(this.imgD).forEach((element: any, key: number) => {
+        console.log('element', element);
+        console.log('key', key);
+        console.log('response.data[0].modelId', modelId);
+
+        imgPush.push(modelId);
+        // this.imgD[element][key].modelId = modelId;
+        // this.imgD[element][key].modelUuid = data.modelUuid;
+      });
+
+      /*
+      const fn = arr => arr.flatMap(({ attributes, ...rest }) => 
+        attributes.map(o => ({
+          ...rest,
+          ...o
+        }))
+      )
+      */
+      // TODO:: flatten imgD array to have a simple img array list
       console.log('imgPush', imgPush);
-      // TODO:: validate this.state.imgData if it's existing and post it to  CONFIG.url.createModel
 
       if (isThereAnyValidFile) {
         this.setState({ isUploading: true });
