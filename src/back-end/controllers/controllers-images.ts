@@ -65,8 +65,11 @@ export const getImagesById = async (req: Request, res: Response) => {
  */
 export const createImages = async (req: Request, res: Response, next: any) => {
   try {
-    const a = await ModelCtrForImageTypes.create(req.body);
-    await res.status(200).json('Record created');
+    for (const element of req.body) {
+      await ModelCtrForImageTypes.create(element);
+    }
+
+    res.status(200).json('Records created successfully');
   } catch (error: any | unknown) {
     res.json({ message: error.message });
   }
@@ -96,11 +99,11 @@ export const updateImages = async (req: Request, res: Response) => {
  * @param req Request
  * @param res Response
  */
-export const delete3dModel = async (req: Request, res: Response) => {
+export const deleteImage = async (req: Request, res: Response) => {
   try {
     await ModelCtrForImageTypes.destroy({
       where: {
-        imageId: req.params.imageId
+        modelId: req.params.modelId
       }
     });
     res.json({

@@ -8,10 +8,12 @@ export const _CONFIG = {
     getLastModelId: `${HOST3D}:${PORT3D}/api/3dmodels/getLastModelId`,
     uploadFiles: `${HOST3D}:${PORT3D}/uploadModel`,
     deleteModelFiles: `${HOST3D}:${PORT3D}/deleteModelFiles`,
+    deleteImage: `${HOST3D}:${PORT3D}/api/3dmodels/deleteImage`,
     uploadFolder: 'c:/node/3d_uploads/'
   },
   routes: {
     uploadModel: '/uploadModel',
+    createImage: '/createImage',
     deleteModelFiles: '/deleteModelFiles',
     routes3d: '/api/3dmodels',
     error: 'Hibás URL cím, vagy nem létező oldal!'
@@ -50,6 +52,7 @@ export const _CONFIG = {
         started: `Server started on port ${PORT3D}`,
         uploadSuccess: 'File uploaded successfully',
         dataUploaded: 'Data uploaded successfully',
+        imgDataUploaded: 'Image data uploaded successfully',
         postOk: 'POST recieved successfully'
       },
       file: {

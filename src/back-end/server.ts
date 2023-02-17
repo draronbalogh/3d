@@ -28,6 +28,7 @@ const connectToDb = async () => {
     logAxiosError(error, _CONFIG.msg.error.db.connection);
   }
 };
+
 /**
  * Upload file
  * @param req
@@ -185,6 +186,17 @@ const deleteModelFiles = async (req: any, res: any, next: any) => {
   res.json({ status: 200, message: _CONFIG.msg.txt.file.deleteOk, newTask: newTask });
 };
 
+/**
+ * Create Model
+ *
+ */
+const createImage = async (req: any, res: any, next: any) => {
+  res.json({ status: 200, message: _CONFIG.msg.txt.server.imgDataUploaded });
+};
+const deleteImages = async (req: any, res: any, next: any) => {
+  res.json({ status: 200, message: 'okokokokokokolok' });
+};
+
 ///////////////////////////////////////////////////////////   APP (pre)CONFIG
 const app = express();
 app.use(cors());
@@ -192,7 +204,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.raw());
 app.post(_CONFIG.routes.uploadModel, uploadModel);
+//app.post(_CONFIG.routes.createImage, createImage);
 app.post(_CONFIG.routes.deleteModelFiles, deleteModelFiles);
+//app.post(_CONFIG.routes.routes3d, deleteImages);
 app.use(_CONFIG.routes.routes3d, routes3d);
 app.listen(PORT3D, () => console.log(_CONFIG.msg.txt.server.started));
 

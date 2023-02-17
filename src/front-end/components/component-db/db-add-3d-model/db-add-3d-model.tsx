@@ -131,16 +131,15 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
           this.imgD[element][k].modelUuid = data.modelUuid;
         });
       });
-
+      // TODO: refaktor
       await axios
-        .post(_CONFIG.url.uploadFiles, filesData, {
-          headers: { 'content-type': 'multipart/form-data' },
-          onUploadProgress: (data) => {
-            this.setState({ uploadingData: data });
-          }
-        })
+        .post(_CONFIG.url.createImage, imgPush)
         .then((response: any) => {
           console.log('imgPush', imgPush);
+          console.log('imgPush response', response);
+        })
+        .catch((error: any) => {
+          console.log('Error:', error);
         });
 
       if (isThereAnyValidFile) {
