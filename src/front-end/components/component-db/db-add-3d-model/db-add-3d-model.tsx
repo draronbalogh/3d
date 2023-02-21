@@ -131,7 +131,7 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
           this.imgD[element][k].modelUuid = data.modelUuid;
         });
       });
-      // TODO: refaktor
+
       await axios
         .post(_CONFIG.url.createImage, imgPush)
         .then((response: any) => {
@@ -196,9 +196,10 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
         for (let i = 0; i <= e.target.files.length - 1; i++) {
           let item = e.target.files.item(i);
 
+          // TODO:: azonos nevűnek kell lennie az adatoknak itt is és a mysql modelben is
           this.imgD[elm].push({
+            ...this.state.data,
             type: item.name.split('.').pop().toLowerCase(),
-            f: item.size,
             fileSize: Math.round(item.size),
             origFileName: item.name.toLocaleLowerCase(),
             fileNameWithoutExtension: item.name.split('.').slice(0, -1).join('.').toLocaleLowerCase(),
@@ -227,23 +228,29 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
       files[elm] = e.target.files;
       this.setState({ files });
       let filesTxt: string = '';
+      let filesTxtForImgs: string = '';
       Array.from(e.target.files).forEach((value: any, key: number) => {
-        // console.log(`Index: ${key}, Value: ${value.name}`);
+        console.log(`Index: ${key}, Value: ${value.name}`);
         const fileName: string = value.name;
-        filesTxt = `${uuid()}-${fileName
+        filesTxt += `${uuid()}-${fileName
           .normalize('NFD')
           .replace(/[\u0300-\u036f]/g, '')
           .toLowerCase()
           .replace(/[^a-zA-Z0-9.]/g, '-')},`;
-        this.imgD[elm][key]['fileNameAsForeignKey'] = filesTxt.substring(0, filesTxt.length - 1);
+        filesTxtForImgs = `${uuid()}-${fileName
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .toLowerCase()
+          .replace(/[^a-zA-Z0-9.]/g, '-')}`;
+        this.imgD[elm][key]['imgFileName'] = filesTxtForImgs;
       });
-
+      console.log('filesTxt>>>', filesTxt);
       this.setState({
         data: {
           ...this.state.data,
           [elm]: filesTxt.slice(0, -1) // comma separated list of files as mysql record
         },
-        imgData: this.imgD // TODO:: push image data to state and send to server
+        imgData: this.imgD
       });
 
       this.setState({ isSaved: false });
