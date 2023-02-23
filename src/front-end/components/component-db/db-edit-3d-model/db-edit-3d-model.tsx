@@ -3,7 +3,7 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 ///////////////////////////////////////////////////////////   CONFIG
-import { _CONFIG } from '../../../../_config/_config-general';
+import { _CONFIG } from '../../../../_config/config-general';
 import { modelConfig } from '../../../../_config/config-model';
 ///////////////////////////////////////////////////////////   LIBS
 import axios, { AxiosResponse } from 'axios';
@@ -189,9 +189,9 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
               this.setState({ uploadingData: data });
             }
           })
-          .then((response) => {
+          .then((response: any) => {
             if (response.data.success === false) {
-              console.log('Error uploading to safe.moe: ', response);
+              throw new Error(_CONFIG.msg.error.file.uploading, response);
             } else {
               setTimeout(() => {
                 this.setState({ isUploading: false, isThankYou: true });

@@ -3,7 +3,7 @@
 import React, { useRef } from 'react';
 import { Navigate } from 'react-router-dom';
 ///////////////////////////////////////////////////////////   CONFIG
-import { _CONFIG } from '../../../../_config/_config-general';
+import { _CONFIG } from '../../../../_config/config-general';
 import { modelConfig } from '../../../../_config/config-model';
 ///////////////////////////////////////////////////////////   LIBS
 import axios from 'axios';
@@ -36,20 +36,15 @@ interface UploadFiles {
   modelMaterialUrl: [];
 }
 interface imgDataType {
-  type: string;
-  f: number;
-  fileSize: number;
-  origFileName: string;
-  fileNameWithoutExtension: string;
-  fileExtension: any;
-  fileUuid: string;
-  fileWidth: number;
-  fileHeight: number;
-  fileResolution: number;
-  fileOrientation: string;
-  fileMimeType: string;
-  fileLastModified: number;
-  fileLastModifiedDate: string;
+  imgFileType: string;
+  imgFileSize: number;
+  imgOriginalFileName: string;
+  imgFileNameWithoutExtension: string;
+  imgFileExtension: any;
+  imgFileUuid: string;
+  imgFileMimeType: string;
+  imgFileLastModified: string;
+  imgFileLastModifiedDate: string;
   modelTitle: string;
   modelUuid: string;
 }
@@ -127,8 +122,9 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
       Object.keys(this.imgD).forEach((element: any, key: number) => {
         this.imgD[element].forEach((e: any, k: number) => {
           imgPush.push(this.imgD[element][k]);
-          this.imgD[element][k].modelId = modelId;
-          this.imgD[element][k].modelUuid = data.modelUuid;
+          this.imgD[element][k].joinFromTable = _CONFIG.db.tableName3d;
+          this.imgD[element][k].joinId = modelId;
+          this.imgD[element][k].joinUuid = data.modelUuid;
         });
       });
 
@@ -195,30 +191,33 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
         //_CONFIG.validation.file.types.includes(currentFileType)
         for (let i = 0; i <= e.target.files.length - 1; i++) {
           let item = e.target.files.item(i);
-
+          console.log('this.state.data', this.state.data.modelUuid);
+          console.log('this.state.folderName', this.state.folderName);
           // TODO:: azonos nevűnek kell lennie az adatoknak itt is és a mysql modelben is
           this.imgD[elm].push({
             ...this.state.data,
-            type: item.name.split('.').pop().toLowerCase(),
-            fileSize: Math.round(item.size),
-            origFileName: item.name.toLocaleLowerCase(),
-            fileNameWithoutExtension: item.name.split('.').slice(0, -1).join('.').toLocaleLowerCase(),
-            fileExtension: item.name.split('.').pop(),
-            fileUuid: nanoid(10).toLocaleLowerCase(),
-            fileMimeType: item.type,
-            fileLastModified: item.lastModified,
-            fileLastModifiedDate: item.lastModifiedDate
+            imgFileType: item.name.split('.').pop().toLowerCase(),
+            imgFileSize: Math.round(item.size),
+            imgOriginalFileName: item.name.toLocaleLowerCase(),
+            imgFolderPath: `${_CONFIG.url.uploadFolder}${this.state.folderName}`,
+            imgFileNameWithoutExtension: item.name.split('.').slice(0, -1).join('.').toLocaleLowerCase(),
+            imgFileExtension: item.name.split('.').pop(),
+            imgVisibility: 1,
+            imgUuid: nanoid(10).toLocaleLowerCase(),
+            imgFileMimeType: item.type,
+            imgFileLastModified: item.lastModified,
+            imgFileLastModifiedDate: item.lastModifiedDate
           });
 
-          if (!_CONFIG.validation.file.types.includes(this.imgD[elm][i].type)) {
+          if (!_CONFIG.validation.file.types.includes(this.imgD[elm][i].imgFileType)) {
             alert(_CONFIG.msg.error.file.notValid);
             return;
           }
-          if (this.imgD[elm][i].fileSize < _CONFIG.validation.file.minFileSize) {
+          if (this.imgD[elm][i].imgFileSize < _CONFIG.validation.file.minFileSize) {
             alert(_CONFIG.msg.error.file.tooSmall);
             return;
           }
-          if (this.imgD[elm][i].fileSize > _CONFIG.validation.file.maxFileSize) {
+          if (this.imgD[elm][i].imgFileSize > _CONFIG.validation.file.maxFileSize) {
             alert(_CONFIG.msg.error.file.tooBig);
             return;
           }
@@ -245,6 +244,7 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
         this.imgD[elm][key]['imgFileName'] = filesTxtForImgs;
       });
       console.log('filesTxt>>>', filesTxt);
+      console.log('this.state.data22>>>', this.state.data);
       this.setState({
         data: {
           ...this.state.data,

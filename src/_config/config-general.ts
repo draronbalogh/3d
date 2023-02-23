@@ -1,6 +1,11 @@
 export const PORT3D = 5000;
 export const HOST3D = 'http://127.0.0.1'; // TODO: Change proxy in package.json to this
 export const _CONFIG = {
+  db: {
+    tableName3d: 'models',
+    tableNameImages: 'images',
+    tableNameVideos: 'videos'
+  },
   url: {
     getModel: `${HOST3D}:${PORT3D}/api/3dmodels/`,
     createModel: `${HOST3D}:${PORT3D}/api/3dmodels/createModel`,

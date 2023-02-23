@@ -80,6 +80,16 @@ export const imageConfig = [
     maxLength: 3000
   },
   {
+    name: 'imgFileSize',
+    label: 'imgFileSize',
+    control: 'input',
+    inputType: 'text',
+    enableForAddEdit: false,
+    isRequired: false,
+    visibility: true,
+    maxLength: 100
+  },
+  {
     name: 'imgFilePath',
     label: 'imgFilePath',
     control: 'input',

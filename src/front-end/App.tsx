@@ -3,7 +3,7 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 ///////////////////////////////////////////////////////////   CONFIG
-import { _CONFIG } from '../_config/_config-general';
+import { _CONFIG } from '../_config/config-general';
 ///////////////////////////////////////////////////////////   LIBS
 import { View3dModel, DbList3dModel, DbAdd3dModel, DbEdit3dModel } from './components';
 ///////////////////////////////////////////////////////////   DOM

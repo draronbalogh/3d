@@ -3,7 +3,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 ////////////////////////////////////////////////////////////   CONFIG
-import { _CONFIG } from '../../../../_config/_config-general';
+import { _CONFIG } from '../../../../_config/config-general';
 import { modelConfig } from '../../../../_config/config-model';
 ///////////////////////////////////////////////////////////   LIBS
 import axios, { AxiosResponse } from 'axios';

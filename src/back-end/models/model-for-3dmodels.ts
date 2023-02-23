@@ -2,10 +2,11 @@
 ///////////////////////////////////////////////////////////   CONFIG
 import db from '../../_config/config-database';
 import { seqConfigFor3dModels } from '../../_config/config-controller-data-types';
+import { _CONFIG } from '../../_config/config-general';
 
 ///////////////////////////////////////////////////////////   CONTROLLERS
-const ModelCtrFor3dTypes = db.define('models', seqConfigFor3dModels, {
-  tableName: 'models',
+const ModelCtrFor3dTypes = db.define(_CONFIG.db.tableName3d, seqConfigFor3dModels, {
+  tableName: _CONFIG.db.tableName3d,
   freezeTableName: true
 });
 
