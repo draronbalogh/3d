@@ -8,7 +8,7 @@ export const _CONFIG = {
     getLastModelId: `${HOST3D}:${PORT3D}/api/3dmodels/getLastModelId`,
     uploadFiles: `${HOST3D}:${PORT3D}/uploadModel`,
     deleteModelFiles: `${HOST3D}:${PORT3D}/deleteModelFiles`,
-    deleteImage: `${HOST3D}:${PORT3D}/api/3dmodels/images/`,
+    deleteImage: `${HOST3D}:${PORT3D}/api/images/`,
     uploadFolder: 'c:/node/3d_uploads/'
   },
   routes: {

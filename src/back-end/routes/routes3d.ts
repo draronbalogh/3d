@@ -10,5 +10,5 @@ router.post('/createModel', createModels3d);
 router.post('/createImage', createImages);
 router.patch('/:modelId', updateModels3d);
 router.delete('/:modelId', delete3dModel);
-router.delete('/images/:modelId', deleteImage);
+
 export default router;
