@@ -8,7 +8,7 @@ export const _CONFIG = {
     getLastModelId: `${HOST3D}:${PORT3D}/api/3dmodels/getLastModelId`,
     uploadFiles: `${HOST3D}:${PORT3D}/uploadModel`,
     deleteModelFiles: `${HOST3D}:${PORT3D}/deleteModelFiles`,
-    deleteImage: `${HOST3D}:${PORT3D}/api/3dmodels/deleteImage`,
+    deleteImage: `${HOST3D}:${PORT3D}/api/3dmodels/images/`,
     uploadFolder: 'c:/node/3d_uploads/'
   },
   routes: {
@@ -16,6 +16,7 @@ export const _CONFIG = {
     createImage: '/createImage',
     deleteModelFiles: '/deleteModelFiles',
     routes3d: '/api/3dmodels',
+    routesImages: '/api/images',
     error: 'Hibás URL cím, vagy nem létező oldal!'
   },
   theme: {

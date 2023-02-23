@@ -3,7 +3,8 @@
 import { _CONFIG } from '../../_config/_config-general';
 ///////////////////////////////////////////////////////////   CONTROLLERS
 import { Request, Response } from 'express';
-import { ModelCtrForImageTypes } from '../models/model-for-images';
+import sequelize from 'sequelize';
+import { db, ModelCtrForImageTypes } from '../models/model-for-images';
 ///////////////////////////////////////////////////////////   ROUTES
 
 /**
@@ -101,11 +102,13 @@ export const updateImages = async (req: Request, res: Response) => {
  */
 export const deleteImage = async (req: Request, res: Response) => {
   try {
+    await db.query('SET sql_safe_updates = 0;');
     await ModelCtrForImageTypes.destroy({
       where: {
         modelId: req.params.modelId
       }
     });
+    await db.query('SET sql_safe_updates = 1;');
     res.json({
       message: 'ModelCtrForImageTypes Deleted'
     });

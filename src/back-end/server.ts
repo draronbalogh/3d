@@ -10,7 +10,8 @@ import { _CONFIG, PORT3D } from '../_config/_config-general';
 ///////////////////////////////////////////////////////////   LIBS
 import formidable, { errors as formidableErrors } from 'formidable';
 ///////////////////////////////////////////////////////////   COMPS
-import routes3d from './routes/index';
+import routes3d from './routes/routes3d';
+import routesImages from './routes/routesImages';
 import db from '../_config/config-database';
 import { createNecessaryDirectoriesSync } from '../assets/file-methods';
 import { logAxiosError } from '../assets/gen-methods';
@@ -208,6 +209,7 @@ app.post(_CONFIG.routes.uploadModel, uploadModel);
 app.post(_CONFIG.routes.deleteModelFiles, deleteModelFiles);
 //app.post(_CONFIG.routes.routes3d, deleteImages);
 app.use(_CONFIG.routes.routes3d, routes3d);
+app.use(_CONFIG.routes.routesImages, routesImages);
 app.listen(PORT3D, () => console.log(_CONFIG.msg.txt.server.started));
 
 ///////////////////////////////////////////////////////////   RUN APP

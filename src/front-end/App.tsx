@@ -10,6 +10,7 @@ import { View3dModel, DbList3dModel, DbAdd3dModel, DbEdit3dModel } from './compo
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import Button from 'react-bootstrap/Button';
 ///////////////////////////////////////////////////////////   SCSS
 import './App.scss';
 ///////////////////////////////////////////////////////////   INTERFACE
@@ -106,7 +107,7 @@ class App extends React.Component<unknown, State> {
       <Container fluid className={'3dRegform'}>
         <Row>
           <Col xs={12}>
-            <button onClick={this.changeTheme}>{isDarkMode ? 'sötét' : 'világos'}</button>
+            <Button onClick={this.changeTheme}>{isDarkMode ? 'sötét' : 'világos'}</Button>
           </Col>
         </Row>
         <Row>

@@ -20,4 +20,4 @@ const createImagesTable = async () => {
 
 createImagesTable();
 ///////////////////////////////////////////////////////////   EXPORT
-export { ModelCtrForImageTypes };
+export { ModelCtrForImageTypes, db };

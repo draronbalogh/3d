@@ -4,6 +4,7 @@ import { _CONFIG } from '../../_config/_config-general';
 ///////////////////////////////////////////////////////////   CONTROLLERS
 import { Request, Response } from 'express';
 import { ModelCtrFor3dTypes } from '../models/model-for-3dmodels';
+import { db, ModelCtrForImageTypes } from '../models/model-for-images';
 ///////////////////////////////////////////////////////////   ROUTES
 
 /**
@@ -104,6 +105,12 @@ export const delete3dModel = async (req: Request, res: Response) => {
         modelId: req.params.modelId
       }
     });
+    /* await ModelCtrForImageTypes.destroy({
+      where: {
+        modelId: req.params.modelId
+      }
+    });*/
+
     res.json({
       message: 'ModelCtrFor3dTypes Deleted'
     });

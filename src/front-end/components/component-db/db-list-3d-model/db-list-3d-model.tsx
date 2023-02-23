@@ -66,6 +66,16 @@ export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
         if (response.data.success === false) console.log(_CONFIG.msg.error.file.deleting, response);
       });
       await axios.delete(_CONFIG.url.getModel + modelId).then((response) => {
+        console.log('response delete 1', response);
+        if (response.data.success === false) {
+          console.log(_CONFIG.msg.error.file.deleting, response);
+        } else {
+          this.get3dModel();
+        }
+      });
+      await axios.delete(_CONFIG.url.deleteImage + modelId).then((response) => {
+        console.log('respons delete 2222222222222', response);
+        console.log('response', response);
         if (response.data.success === false) {
           console.log(_CONFIG.msg.error.file.deleting, response);
         } else {
