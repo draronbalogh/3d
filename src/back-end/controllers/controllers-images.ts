@@ -82,11 +82,13 @@ export const createImages = async (req: Request, res: Response, next: any) => {
  */
 export const updateImages = async (req: Request, res: Response) => {
   try {
+    await db.query('SET sql_safe_updates = 0;');
     await ModelCtrForImageTypes.update(req.body, {
       where: {
         imageId: req.params.imageId
       }
     });
+    await db.query('SET sql_safe_updates = 1;');
     res.json({
       message: 'ModelCtrForImageTypes Updated'
     });
