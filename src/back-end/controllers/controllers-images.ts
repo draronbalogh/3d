@@ -107,7 +107,7 @@ export const deleteImage = async (req: Request, res: Response) => {
     await db.query('SET sql_safe_updates = 0;');
     await ModelCtrForImageTypes.destroy({
       where: {
-        modelId: req.params.modelId
+        joinId: req.params.modelId
       }
     });
     await db.query('SET sql_safe_updates = 1;');
