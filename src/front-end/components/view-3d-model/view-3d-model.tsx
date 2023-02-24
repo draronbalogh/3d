@@ -48,7 +48,7 @@ export class View3dModel extends React.Component<CompProps, CompState> {
   fetchModelDataById = async () => {
     try {
       const { modelId } = this.state;
-      const response = await axios.get(_CONFIG.url.getModel + modelId);
+      const response = await axios.get(_CONFIG.url.modelApi + modelId);
       this.setState({ data: response.data });
     } catch (e: any) {
       logAxiosError(e, _CONFIG.msg.error.fetch.getData);

@@ -6,7 +6,7 @@ export const imageConfig = [
     inputType: 'input',
     enableForAddEdit: false,
     isRequired: false,
-    visibility: true,
+    visibility: false,
     maxLength: 100
   },
   {
@@ -16,7 +16,7 @@ export const imageConfig = [
     inputType: 'text',
     enableForAddEdit: false,
     isRequired: false,
-    visibility: true,
+    visibility: false,
     maxLength: 500
   },
   {
@@ -26,28 +26,8 @@ export const imageConfig = [
     inputType: 'text',
     enableForAddEdit: false,
     isRequired: false,
-    visibility: true,
+    visibility: false,
     maxLength: 500
-  },
-  {
-    name: 'modelId',
-    label: 'modelId',
-    control: 'number',
-    inputType: 'input',
-    enableForAddEdit: false,
-    isRequired: false,
-    visibility: true,
-    maxLength: 100
-  },
-  {
-    name: 'modelUuid',
-    label: 'Egyedi azonosító',
-    control: 'input',
-    inputType: 'text',
-    enableForAddEdit: true,
-    isRequired: false,
-    visibility: true,
-    maxLength: 100
   },
   {
     name: 'imgUuid',
@@ -56,7 +36,7 @@ export const imageConfig = [
     inputType: 'text',
     enableForAddEdit: false,
     isRequired: false,
-    visibility: true,
+    visibility: false,
     maxLength: 100
   },
   {
@@ -66,8 +46,18 @@ export const imageConfig = [
     inputType: 'text',
     enableForAddEdit: false,
     isRequired: false,
-    visibility: true,
+    visibility: false,
     maxLength: 50
+  },
+  {
+    name: 'imgFileTitle',
+    label: 'imgFileTitle',
+    control: 'input',
+    inputType: 'text',
+    enableForAddEdit: false,
+    isRequired: false,
+    visibility: false,
+    maxLength: 255
   },
   {
     name: 'imgFileName',
@@ -76,8 +66,38 @@ export const imageConfig = [
     inputType: 'text',
     enableForAddEdit: false,
     isRequired: false,
-    visibility: true,
+    visibility: false,
     maxLength: 3000
+  },
+  {
+    name: 'imgOriginalFileName',
+    label: 'imgOriginalFileName',
+    control: 'input',
+    inputType: 'text',
+    enableForAddEdit: false,
+    isRequired: false,
+    visibility: false,
+    maxLength: 3000
+  },
+  {
+    name: 'imgFileNameWithoutExtension',
+    label: 'imgFileNameWithoutExtension',
+    control: 'input',
+    inputType: 'text',
+    enableForAddEdit: false,
+    isRequired: false,
+    visibility: false,
+    maxLength: 3000
+  },
+  {
+    name: 'imgFileExtension',
+    label: 'imgFileExtension',
+    control: 'input',
+    inputType: 'text',
+    enableForAddEdit: false,
+    isRequired: false,
+    visibility: false,
+    maxLength: 100
   },
   {
     name: 'imgFileSize',
@@ -86,17 +106,17 @@ export const imageConfig = [
     inputType: 'text',
     enableForAddEdit: false,
     isRequired: false,
-    visibility: true,
+    visibility: false,
     maxLength: 100
   },
   {
-    name: 'imgFilePath',
-    label: 'imgFilePath',
+    name: 'imgFolderPath',
+    label: 'imgFolderPath',
     control: 'input',
     inputType: 'text',
     enableForAddEdit: false,
     isRequired: false,
-    visibility: true,
+    visibility: false,
     maxLength: 3000
   },
   {
@@ -106,7 +126,17 @@ export const imageConfig = [
     inputType: 'text',
     enableForAddEdit: false,
     isRequired: false,
-    visibility: true,
+    visibility: false,
+    maxLength: 100
+  },
+  {
+    name: 'imgFileMimeType',
+    label: 'imgFileMimeType',
+    control: 'input',
+    inputType: 'text',
+    enableForAddEdit: false,
+    isRequired: false,
+    visibility: false,
     maxLength: 100
   },
   {
@@ -116,7 +146,7 @@ export const imageConfig = [
     inputType: 'text',
     enableForAddEdit: false,
     isRequired: false,
-    visibility: true,
+    visibility: false,
     maxLength: 100
   },
   {
@@ -126,7 +156,7 @@ export const imageConfig = [
     inputType: 'text',
     enableForAddEdit: false,
     isRequired: false,
-    visibility: true,
+    visibility: false,
     maxLength: 10
   },
   {
@@ -136,18 +166,8 @@ export const imageConfig = [
     inputType: 'text',
     enableForAddEdit: false,
     isRequired: false,
-    visibility: true,
+    visibility: false,
     maxLength: 10
-  },
-  {
-    name: 'imgFileResolution',
-    label: 'imgFileResolution',
-    control: 'input',
-    inputType: 'text',
-    enableForAddEdit: false,
-    isRequired: false,
-    visibility: true,
-    maxLength: 100
   },
   {
     name: 'imgFileTags',
@@ -156,7 +176,7 @@ export const imageConfig = [
     inputType: 'text',
     enableForAddEdit: false,
     isRequired: false,
-    visibility: true,
+    visibility: false,
     maxLength: 3000
   },
   {
@@ -166,18 +186,18 @@ export const imageConfig = [
     inputType: 'text',
     enableForAddEdit: false,
     isRequired: false,
-    visibility: true,
+    visibility: false,
     maxLength: 3000
   },
   {
-    name: 'imgFileTitle',
-    label: 'imgFileTitle',
+    name: 'imgFileMeta',
+    label: 'imgFileMeta',
     control: 'input',
     inputType: 'text',
     enableForAddEdit: false,
     isRequired: false,
-    visibility: true,
-    maxLength: 255
+    visibility: false,
+    maxLength: 3000
   },
   {
     name: 'imgFileCategory',
@@ -186,17 +206,114 @@ export const imageConfig = [
     inputType: 'text',
     enableForAddEdit: false,
     isRequired: false,
-    visibility: true,
+    visibility: false,
     maxLength: 255
   },
   {
-    name: 'imgFileSourceUrl',
-    label: 'imgFileSourceUrl',
+    name: 'imgVisibility',
+    label: 'imgVisibility',
     control: 'input',
     inputType: 'text',
     enableForAddEdit: false,
     isRequired: false,
-    visibility: true,
+    visibility: false,
+    maxLength: 1
+  },
+  {
+    name: 'imgLegality',
+    label: 'imgLegality',
+    control: 'input',
+    inputType: 'text',
+    enableForAddEdit: false,
+    isRequired: false,
+    visibility: false,
+    maxLength: 255
+  },
+  {
+    name: 'imgViewerUid',
+    label: 'imgViewerUid',
+    control: 'input',
+    inputType: 'text',
+    enableForAddEdit: false,
+    isRequired: false,
+    visibility: false,
+    maxLength: 50
+  },
+  {
+    name: 'imgViewCount',
+    label: 'imgViewCount',
+    control: 'input',
+    inputType: 'text',
+    enableForAddEdit: false,
+    isRequired: false,
+    visibility: false,
+    maxLength: 100
+  },
+  {
+    name: 'imgDownloaderUid',
+    label: 'imgDownloaderUid',
+    control: 'input',
+    inputType: 'text',
+    enableForAddEdit: false,
+    isRequired: false,
+    visibility: false,
+    maxLength: 50
+  },
+  {
+    name: 'imgDownloadCount',
+    label: 'imgDownloadCount',
+    control: 'input',
+    inputType: 'text',
+    enableForAddEdit: false,
+    isRequired: false,
+    visibility: false,
+    maxLength: 100
+  },
+  {
+    name: 'imgThumbnailFileName',
+    label: 'imgThumbnailFileName',
+    control: 'input',
+    inputType: 'text',
+    enableForAddEdit: false,
+    isRequired: false,
+    visibility: false,
     maxLength: 3000
+  },
+  {
+    name: 'imgThumbnailPath',
+    label: 'imgThumbnailPath',
+    control: 'input',
+    inputType: 'text',
+    enableForAddEdit: false,
+    isRequired: false,
+    visibility: false,
+    maxLength: 3000
+  },
+  {
+    name: 'joinFromTable',
+    label: 'Forrás tábla',
+    control: 'input',
+    inputType: 'text',
+    enableForAddEdit: false,
+    isRequired: false,
+    maxLength: 255
+  },
+  {
+    name: 'joinId',
+    label: 'Join Id',
+    control: 'input',
+    inputType: 'text',
+    enableForAddEdit: false,
+    isRequired: false,
+    maxLength: 1024
+  },
+  {
+    name: 'joinUuid',
+    label: 'Join Uuid',
+    control: 'input',
+    inputType: 'text',
+    enableForAddEdit: false,
+    isRequired: false,
+    maxLength: 1024
   }
 ];

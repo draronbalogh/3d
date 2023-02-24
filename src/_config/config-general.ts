@@ -7,13 +7,13 @@ export const _CONFIG = {
     tableNameVideos: 'videos'
   },
   url: {
-    getModel: `${HOST3D}:${PORT3D}/api/3dmodels/`,
+    modelApi: `${HOST3D}:${PORT3D}/api/3dmodels/`,
     createModel: `${HOST3D}:${PORT3D}/api/3dmodels/createModel`,
     createImage: `${HOST3D}:${PORT3D}/api/3dmodels/createImage`,
     getLastModelId: `${HOST3D}:${PORT3D}/api/3dmodels/getLastModelId`,
     uploadFiles: `${HOST3D}:${PORT3D}/uploadModel`,
     deleteModelFiles: `${HOST3D}:${PORT3D}/deleteModelFiles`,
-    deleteImage: `${HOST3D}:${PORT3D}/api/images/`,
+    imageApi: `${HOST3D}:${PORT3D}/api/images/`,
     uploadFolder: 'c:/node/3d_uploads/'
   },
   routes: {

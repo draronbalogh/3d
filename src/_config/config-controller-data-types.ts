@@ -63,8 +63,6 @@ export const seqConfigForImgModels = {
   imgFileCategory: { type: DataTypes.STRING(255) },
   imgVisibility: { type: DataTypes.TINYINT },
   imgLegality: { type: DataTypes.STRING(255) },
-  imgFileLastModified: { type: DataTypes.STRING(200) },
-  imgFileLastModifiedDate: { type: DataTypes.STRING(200) },
   imgViewerUid: { type: DataTypes.STRING(50) },
   imgViewCount: { type: DataTypes.INTEGER },
   imgDownloaderUid: { type: DataTypes.STRING(50) },

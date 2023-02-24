@@ -49,7 +49,7 @@ export const getImagesById = async (req: Request, res: Response) => {
   try {
     const imagels = await ModelCtrForImageTypes.findAll({
       where: {
-        imageId: req.params.imageId
+        joinId: req.params.imageId
       }
     });
     res.json(imagels[0]);
@@ -85,7 +85,7 @@ export const updateImages = async (req: Request, res: Response) => {
     await db.query('SET sql_safe_updates = 0;');
     await ModelCtrForImageTypes.update(req.body, {
       where: {
-        imageId: req.params.imageId
+        joinId: req.params.imageId
       }
     });
     await db.query('SET sql_safe_updates = 1;');

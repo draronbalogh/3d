@@ -8,7 +8,7 @@ import { modelConfig } from '../../../../_config/config-model';
 ///////////////////////////////////////////////////////////   LIBS
 import axios, { AxiosResponse } from 'axios';
 import { v4 as uuid } from 'uuid';
-import { logAxiosError } from '../../../../assets/gen-methods';
+import { removeHunChars, logAxiosError } from '../../../../assets/gen-methods';
 ///////////////////////////////////////////////////////////   DOM
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
@@ -33,7 +33,9 @@ interface Model3dState {
   isSaved: boolean;
   isThankYou: boolean;
   oldFilesToDel: any;
+  modelUuid: string;
   folderId: string;
+  folderName: string;
   deleteTheseFiles: string[];
 }
 declare module 'react' {
@@ -45,6 +47,7 @@ declare module 'react' {
 //////////////////////////////////////////////////////////////////////////////////////    CLASS SETUP
 export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
   static imgArray: any[] = [];
+  private imgD: any = [];
   constructor(props: any) {
     super(props);
     this.state = {
@@ -57,7 +60,9 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
       oldFilesToDel: null,
       deleteTheseFiles: [],
       uploadingData: [],
-      folderId: ''
+      folderId: '',
+      folderName: '',
+      modelUuid: ''
     };
   }
   ///////////////////////////////////////////////////////////   LIFECYCLE METHODS
@@ -89,7 +94,7 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
   fetchModelDataById = async () => {
     try {
       const { modelId } = this.state;
-      const response = await axios.get(_CONFIG.url.getModel + modelId);
+      const response = await axios.get(_CONFIG.url.modelApi + modelId);
       this.setState({ data: response.data });
       this.setState({ oldFilesToDel: response.data });
     } catch (e: any) {
@@ -99,22 +104,31 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
 
   /**
    * Input file data updater
+   * Collect input data from multiple selected files
    * @param elm string
    * @param e any
    */
   inputFileDataUpdater = async (elm: string, e: any) => {
+    e.preventDefault();
     try {
-      const { oldFilesToDel } = this.state;
-      let modelUrl = oldFilesToDel['modelUrl'] ? oldFilesToDel['modelUrl'] : '',
-        modelImgs = oldFilesToDel['modelImgs'] ? oldFilesToDel['modelImgs'] : '',
-        modelMaterialUrl = oldFilesToDel['modelMaterialUrl'] ? oldFilesToDel['modelMaterialUrl'] : '',
-        modelUrlA = modelUrl.split(','),
-        modelImgsA = modelImgs.split(','),
-        modelMaterialUrlA = modelMaterialUrl.split(',');
-      if (elm === 'modelUrl') DbEdit3dModel.imgArray.push(modelUrlA);
-      if (elm === 'modelImgs') DbEdit3dModel.imgArray.push(modelImgsA);
-      if (elm === 'modelMaterialUrl') DbEdit3dModel.imgArray.push(modelMaterialUrlA);
-      this.setState({ deleteTheseFiles: DbEdit3dModel.imgArray.flat(1) });
+      this.imgD[elm] = [];
+      if (e.target.files.length > _CONFIG.validation.file.maxFiles) {
+        alert(_CONFIG.msg.error.file.maxFileLimit);
+        return;
+      }
+      if (e.target.files.length > 0) {
+        const { oldFilesToDel } = this.state;
+        let modelUrl = oldFilesToDel['modelUrl'] ? oldFilesToDel['modelUrl'] : '',
+          modelImgs = oldFilesToDel['modelImgs'] ? oldFilesToDel['modelImgs'] : '',
+          modelMaterialUrl = oldFilesToDel['modelMaterialUrl'] ? oldFilesToDel['modelMaterialUrl'] : '',
+          modelUrlA = modelUrl.split(','),
+          modelImgsA = modelImgs.split(','),
+          modelMaterialUrlA = modelMaterialUrl.split(',');
+        if (elm === 'modelUrl') DbEdit3dModel.imgArray.push(modelUrlA);
+        if (elm === 'modelImgs') DbEdit3dModel.imgArray.push(modelImgsA);
+        if (elm === 'modelMaterialUrl') DbEdit3dModel.imgArray.push(modelMaterialUrlA);
+        this.setState({ deleteTheseFiles: DbEdit3dModel.imgArray.flat(1) });
+      }
       let files = { ...this.state.files },
         filesTxt = '';
       files[elm] = e.target.files;
@@ -152,6 +166,18 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
       },
       isSaved: false
     });
+    if (elm === 'modelTitle')
+      this.setState({ modelUuid: removeHunChars(e) }, () => {
+        const { modelUuid } = this.state;
+        this.setState({
+          data: {
+            ...this.state.data,
+            modelUuid: modelUuid + '-' + this.state.data.folderId
+          },
+          folderName: modelUuid + '-' + this.state.data.folderId
+        });
+      });
+    this.setState({ isSaved: false });
   };
 
   /**
@@ -161,12 +187,15 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
   update3dModel = async (e: any) => {
     const { data, deleteTheseFiles, modelId } = this.state;
     const { modelUuid } = data;
+    console.log('data', data);
+    console.log('modelUuid', modelUuid);
     try {
       e.preventDefault();
       let isThereAnyValidFile = false;
       DbEdit3dModel.imgArray = [];
       await axios.post(_CONFIG.url.deleteModelFiles, { deleteTheseFiles, modelId, modelUuid, deleteFolder: false }, {});
-      await axios.patch(_CONFIG.url.getModel + modelId, data);
+      await axios.patch(_CONFIG.url.modelApi + modelId, data);
+      // await axios.patch(_CONFIG.url.imageApi + modelId, data);
       const { files } = this.state;
       const filesData = new FormData();
       for (const file in files) {

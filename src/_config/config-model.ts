@@ -40,16 +40,6 @@ export const modelConfig = [
     maxLength: 500
   },
   {
-    name: 'modelTitle',
-    label: 'Cím',
-    control: 'input',
-    inputType: 'text',
-    enableForAddEdit: true,
-    isRequired: true,
-    visibility: true,
-    maxLength: 255
-  },
-  {
     name: 'modelUuid',
     label: 'Egyedi azonosító',
     control: 'input',
@@ -70,8 +60,29 @@ export const modelConfig = [
     maxLength: 50
   },
   {
+    name: 'modelTitle',
+    label: 'Cím',
+    control: 'input',
+    inputType: 'text',
+    enableForAddEdit: true,
+    isRequired: true,
+    visibility: true,
+    maxLength: 255
+  },
+  {
     name: 'modelDescription',
     label: 'Leírás',
+    control: 'textarea',
+    inputType: 'text',
+    value: '',
+    enableForAddEdit: true,
+    isRequired: false,
+    visibility: true,
+    maxLength: 3000
+  },
+  {
+    name: 'modelMeta',
+    label: 'Meta',
     control: 'textarea',
     inputType: 'text',
     value: '',
@@ -203,7 +214,7 @@ export const modelConfig = [
     enableForAddEdit: true,
     isRequired: false,
     visibility: true,
-    maxLength: 3000
+    maxLength: 30000
   },
   {
     name: 'modelExtraLinks',
@@ -332,6 +343,33 @@ export const modelConfig = [
   {
     name: 'modelDownloadCount',
     label: 'Download count',
+    control: 'input',
+    inputType: 'text',
+    enableForAddEdit: false,
+    isRequired: false,
+    maxLength: 1024
+  },
+  {
+    name: 'joinFromTable',
+    label: 'Forrás tábla',
+    control: 'input',
+    inputType: 'text',
+    enableForAddEdit: false,
+    isRequired: false,
+    maxLength: 255
+  },
+  {
+    name: 'joinId',
+    label: 'Join Id',
+    control: 'input',
+    inputType: 'text',
+    enableForAddEdit: false,
+    isRequired: false,
+    maxLength: 1024
+  },
+  {
+    name: 'joinUuid',
+    label: 'Join Uuid',
     control: 'input',
     inputType: 'text',
     enableForAddEdit: false,
