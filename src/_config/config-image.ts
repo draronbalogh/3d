@@ -29,6 +29,17 @@ export const imageConfig = [
     visibility: false,
     maxLength: 500
   },
+
+  {
+    name: 'imgFileTitle',
+    label: 'imgFileTitle',
+    control: 'input',
+    inputType: 'text',
+    enableForAddEdit: false,
+    isRequired: false,
+    visibility: false,
+    maxLength: 255
+  },
   {
     name: 'imgUuid',
     label: 'Egyedi azonosító',
@@ -49,16 +60,7 @@ export const imageConfig = [
     visibility: false,
     maxLength: 50
   },
-  {
-    name: 'imgFileTitle',
-    label: 'imgFileTitle',
-    control: 'input',
-    inputType: 'text',
-    enableForAddEdit: false,
-    isRequired: false,
-    visibility: false,
-    maxLength: 255
-  },
+
   {
     name: 'imgFileName',
     label: 'imgFileName',

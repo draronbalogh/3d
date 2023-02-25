@@ -8,6 +8,7 @@ import { modelConfig } from '../../../../_config/config-model';
 ///////////////////////////////////////////////////////////   LIBS
 import axios, { AxiosResponse } from 'axios';
 import { v4 as uuid } from 'uuid';
+import { nanoid } from 'nanoid';
 import { removeHunChars, logAxiosError } from '../../../../assets/gen-methods';
 ///////////////////////////////////////////////////////////   DOM
 import Button from 'react-bootstrap/Button';
@@ -27,6 +28,7 @@ interface UploadFiles {
 interface Model3dState {
   modelId: number | undefined;
   data: any;
+  imgData: imgDataType[];
   uploadingData: any;
   files: UploadFiles | any;
   isUploading: boolean;
@@ -38,6 +40,19 @@ interface Model3dState {
   folderName: string;
   joinFromInput: string;
   deleteTheseFiles: string[];
+}
+interface imgDataType {
+  imgFileType: string;
+  imgFileSize: number;
+  imgOriginalFileName: string;
+  imgFileNameWithoutExtension: string;
+  imgFileExtension: any;
+  imgFileUuid: string;
+  imgFileMimeType: string;
+  imgFileLastModified: string;
+  imgFileLastModifiedDate: string;
+  modelTitle: string;
+  modelUuid: string;
 }
 declare module 'react' {
   interface HTMLAttributes<T> {
@@ -57,6 +72,7 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
       isThankYou: false,
       isUploading: false,
       data: this.props.data,
+      imgData: [],
       files: { modelUrl: [], modelImgs: [], modelMaterialUrl: [] },
       oldFilesToDel: null,
       deleteTheseFiles: [],
@@ -114,10 +130,12 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
     e.preventDefault();
     try {
       this.imgD[elm] = [];
+
       if (e.target.files.length > _CONFIG.validation.file.maxFiles) {
         alert(_CONFIG.msg.error.file.maxFileLimit);
         return;
       }
+
       if (e.target.files.length > 0) {
         const { oldFilesToDel } = this.state;
         let modelUrl = oldFilesToDel['modelUrl'] ? oldFilesToDel['modelUrl'] : '',
@@ -130,24 +148,69 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
         if (elm === 'modelImgs') DbEdit3dModel.imgArray.push(modelImgsA);
         if (elm === 'modelMaterialUrl') DbEdit3dModel.imgArray.push(modelMaterialUrlA);
         this.setState({ deleteTheseFiles: DbEdit3dModel.imgArray.flat(1) });
+
+        for (let i = 0; i <= e.target.files.length - 1; i++) {
+          let item = e.target.files.item(i);
+          console.log('EDIT: this.state.data', this.state.data.modelUuid);
+          console.log('EDIT: this.state.folderName', this.state.folderName);
+          this.imgD[elm].push({
+            ...this.state.data,
+            imgFileType: item.name.split('.').pop().toLowerCase(),
+            imgFileSize: Math.round(item.size),
+            imgOriginalFileName: item.name.toLocaleLowerCase(),
+            imgFolderPath: `${_CONFIG.url.uploadFolder}${this.state.data.modelUuid}`,
+            imgFileNameWithoutExtension: item.name.split('.').slice(0, -1).join('.').toLocaleLowerCase(),
+            imgFileExtension: item.name.split('.').pop(),
+            imgVisibility: 1,
+            imgUuid: nanoid(10).toLocaleLowerCase(),
+            imgFileMimeType: item.type,
+            imgFileLastModified: item.lastModified,
+            imgFileLastModifiedDate: item.lastModifiedDate,
+            joinFromInput: elm
+          });
+
+          if (!_CONFIG.validation.file.types.includes(this.imgD[elm][i].imgFileType)) {
+            alert(_CONFIG.msg.error.file.notValid);
+            return;
+          }
+          if (this.imgD[elm][i].imgFileSize < _CONFIG.validation.file.minFileSize) {
+            alert(_CONFIG.msg.error.file.tooSmall);
+            return;
+          }
+          if (this.imgD[elm][i].imgFileSize > _CONFIG.validation.file.maxFileSize) {
+            alert(_CONFIG.msg.error.file.tooBig);
+            return;
+          }
+        }
       }
-      let files = { ...this.state.files },
-        filesTxt = '';
+      let files = { ...this.state.files };
+      let filesTxt: string = '';
+      let filesTxtForImgs: string = '';
       files[elm] = e.target.files;
       this.setState({ files });
-      for (const i of e.target.files) {
-        const fileName: string = i.name;
+
+      Array.from(e.target.files).forEach((value: any, key: number) => {
+        // loop through files with key and value
+        const fileName: string = value.name;
         filesTxt += `${uuid()}-${fileName
           .normalize('NFD')
           .replace(/[\u0300-\u036f]/g, '')
           .toLowerCase()
           .replace(/[^a-zA-Z0-9.]/g, '-')},`;
-      }
+
+        filesTxtForImgs = `${uuid()}-${fileName
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .toLowerCase()
+          .replace(/[^a-zA-Z0-9.]/g, '-')}`;
+        this.imgD[elm][key]['imgFileName'] = filesTxtForImgs;
+      });
       this.setState({
         data: {
           ...this.state.data,
           [elm]: filesTxt.slice(0, -1) // comma separated list of files as mysql record
         },
+        imgData: this.imgD,
         joinFromInput: elm,
         isSaved: false
       });
@@ -162,6 +225,7 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
    * @param e any
    */
   inputDataUpdater = (elm: string, e: any) => {
+    const { folderId } = this.state;
     this.setState({
       data: {
         ...this.state.data,
@@ -175,9 +239,9 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
         this.setState({
           data: {
             ...this.state.data,
-            modelUuid: modelUuid + '-' + this.state.data.folderId
+            modelUuid: modelUuid + '-' + folderId
           },
-          folderName: modelUuid + '-' + this.state.data.folderId
+          folderName: modelUuid + '-' + folderId
         });
       });
     this.setState({ isSaved: false });
@@ -188,13 +252,13 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
    * @param e any
    */
   update3dModel = async (e: any) => {
+    e.preventDefault();
     const { data, deleteTheseFiles, modelId, joinFromInput } = this.state;
     const { modelUuid } = data;
     console.log('data', data);
     console.log('modelUuid', modelUuid);
+    let isThereAnyValidFile: boolean = false;
     try {
-      e.preventDefault();
-      let isThereAnyValidFile = false;
       DbEdit3dModel.imgArray = [];
       await axios.post(_CONFIG.url.deleteModelFiles, { deleteTheseFiles, modelId, modelUuid, deleteFolder: false }, {});
       console.log('joinFromInput', joinFromInput);
@@ -210,19 +274,48 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
           console.error('Error deleting image:', error);
         });
 
-      await axios.patch(_CONFIG.url.modelApi + modelId, data);
-      // await axios.patch(_CONFIG.url.imageApi + modelId, data);
       const { files } = this.state;
       const filesData = new FormData();
       for (const file in files) {
         if (files[file].length > 0) {
           isThereAnyValidFile = true;
         }
-        Object.values(files[file]).forEach((individualFile, index) => {
+        Object.values(files[file]).forEach((individualFile: any, index) => {
           const nameSeparatedByComma = data[file].split(',')[index];
           if (individualFile) filesData.append(modelUuid, individualFile as Blob, nameSeparatedByComma);
         });
       }
+      //await axios.patch(_CONFIG.url.modelApi + modelId, data);
+      await axios
+        .patch(_CONFIG.url.modelApi + modelId, data)
+        .then((response) => {
+          if (response.data.success === false) {
+            console.log(_CONFIG.msg.error.fetch.updating, response);
+          }
+        })
+        .catch((error) => {
+          console.error('Error updating model:', error);
+        });
+      let imgPush: any[] = [];
+      Object.keys(this.imgD).forEach((element: any, key: number) => {
+        this.imgD[element].forEach((e: any, k: number) => {
+          imgPush.push(this.imgD[element][k]);
+          this.imgD[element][k].joinFromTable = _CONFIG.db.tableName3d;
+
+          this.imgD[element][k].joinId = modelId;
+          this.imgD[element][k].joinUuid = data.modelUuid;
+        });
+      });
+      await axios
+        .post(_CONFIG.url.createImage, imgPush)
+        .then((response: any) => {
+          console.log('imgPush', imgPush);
+          console.log('imgPush response', response);
+        })
+        .catch((error: any) => {
+          console.log('Error:', error);
+        });
+
       if (isThereAnyValidFile) {
         this.setState({ isUploading: true });
         await axios
@@ -246,6 +339,7 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
               }, 2250);
             }
           });
+
         isThereAnyValidFile = false;
       } else {
         this.setState({ isUploading: false, isThankYou: false, isSaved: true });

@@ -182,7 +182,6 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
     try {
       this.imgD[elm] = [];
 
-      // TODO:: copy to edit model, and update alerts to real messages
       if (e.target.files.length > _CONFIG.validation.file.maxFiles) {
         alert(_CONFIG.msg.error.file.maxFileLimit);
         return;
@@ -194,7 +193,6 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
           let item = e.target.files.item(i);
           console.log('this.state.data', this.state.data.modelUuid);
           console.log('this.state.folderName', this.state.folderName);
-          // TODO:: azonos nevűnek kell lennie az adatoknak itt is és a mysql modelben is
           this.imgD[elm].push({
             ...this.state.data,
             imgFileType: item.name.split('.').pop().toLowerCase(),
@@ -252,10 +250,9 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
           ...this.state.data,
           [elm]: filesTxt.slice(0, -1) // comma separated list of files as mysql record
         },
-        imgData: this.imgD
+        imgData: this.imgD,
+        isSaved: false
       });
-
-      this.setState({ isSaved: false });
     } catch (error) {}
   };
 

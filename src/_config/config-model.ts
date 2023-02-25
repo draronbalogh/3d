@@ -40,6 +40,16 @@ export const modelConfig = [
     maxLength: 500
   },
   {
+    name: 'modelTitle',
+    label: 'Cím',
+    control: 'input',
+    inputType: 'text',
+    enableForAddEdit: true,
+    isRequired: true,
+    visibility: true,
+    maxLength: 255
+  },
+  {
     name: 'modelUuid',
     label: 'Egyedi azonosító',
     control: 'input',
@@ -59,16 +69,7 @@ export const modelConfig = [
     visibility: true,
     maxLength: 50
   },
-  {
-    name: 'modelTitle',
-    label: 'Cím',
-    control: 'input',
-    inputType: 'text',
-    enableForAddEdit: true,
-    isRequired: true,
-    visibility: true,
-    maxLength: 255
-  },
+
   {
     name: 'modelDescription',
     label: 'Leírás',
