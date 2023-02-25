@@ -16,7 +16,7 @@ export const seqConfigFor3dModels = {
   modelPolyCount: { type: DataTypes.STRING(255) },
   modelFormat: { type: DataTypes.STRING(255) },
   modelTags: { type: DataTypes.STRING(255) },
-  modelUrl: { type: DataTypes.STRING(255) },
+  modelUrl: { type: DataTypes.TEXT },
   modelFileName: { type: DataTypes.TEXT },
   modelImgs: { type: DataTypes.TEXT },
   modelSourceUrl: { type: DataTypes.TEXT },
