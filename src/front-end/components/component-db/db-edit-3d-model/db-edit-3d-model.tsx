@@ -36,6 +36,7 @@ interface Model3dState {
   modelUuid: string;
   folderId: string;
   folderName: string;
+  joinFromInput: string;
   deleteTheseFiles: string[];
 }
 declare module 'react' {
@@ -62,7 +63,8 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
       uploadingData: [],
       folderId: '',
       folderName: '',
-      modelUuid: ''
+      modelUuid: '',
+      joinFromInput: ''
     };
   }
   ///////////////////////////////////////////////////////////   LIFECYCLE METHODS
@@ -146,6 +148,7 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
           ...this.state.data,
           [elm]: filesTxt.slice(0, -1) // comma separated list of files as mysql record
         },
+        joinFromInput: elm,
         isSaved: false
       });
     } catch (error) {
@@ -185,7 +188,7 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
    * @param e any
    */
   update3dModel = async (e: any) => {
-    const { data, deleteTheseFiles, modelId } = this.state;
+    const { data, deleteTheseFiles, modelId, joinFromInput } = this.state;
     const { modelUuid } = data;
     console.log('data', data);
     console.log('modelUuid', modelUuid);
@@ -194,6 +197,19 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
       let isThereAnyValidFile = false;
       DbEdit3dModel.imgArray = [];
       await axios.post(_CONFIG.url.deleteModelFiles, { deleteTheseFiles, modelId, modelUuid, deleteFolder: false }, {});
+      console.log('joinFromInput', joinFromInput);
+      // delete records from image table where joinId = modelId and joinFromInput = modelUrl or modelImgs or modelMaterialUrl
+      await axios
+        .delete(_CONFIG.url.imageApi + modelId + '/' + joinFromInput)
+        .then((response) => {
+          if (response.data.success === false) {
+            console.log(_CONFIG.msg.error.file.deleting, response);
+          }
+        })
+        .catch((error) => {
+          console.error('Error deleting image:', error);
+        });
+
       await axios.patch(_CONFIG.url.modelApi + modelId, data);
       // await axios.patch(_CONFIG.url.imageApi + modelId, data);
       const { files } = this.state;

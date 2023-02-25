@@ -68,8 +68,6 @@ export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
       await axios.delete(_CONFIG.url.modelApi + modelId).then((response) => {
         if (response.data.success === false) {
           console.log(_CONFIG.msg.error.file.deleting, response);
-        } else {
-          this.get3dModel();
         }
       });
       await axios.delete(_CONFIG.url.imageApi + modelId).then((response) => {

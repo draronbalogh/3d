@@ -359,6 +359,15 @@ export const modelConfig = [
     maxLength: 255
   },
   {
+    name: 'joinFromInput',
+    label: 'Forrás input mező',
+    control: 'input',
+    inputType: 'text',
+    enableForAddEdit: false,
+    isRequired: false,
+    maxLength: 255
+  },
+  {
     name: 'joinId',
     label: 'Join Id',
     control: 'input',

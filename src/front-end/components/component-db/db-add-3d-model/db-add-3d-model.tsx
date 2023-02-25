@@ -123,6 +123,7 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
         this.imgD[element].forEach((e: any, k: number) => {
           imgPush.push(this.imgD[element][k]);
           this.imgD[element][k].joinFromTable = _CONFIG.db.tableName3d;
+
           this.imgD[element][k].joinId = modelId;
           this.imgD[element][k].joinUuid = data.modelUuid;
         });
@@ -206,7 +207,8 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
             imgUuid: nanoid(10).toLocaleLowerCase(),
             imgFileMimeType: item.type,
             imgFileLastModified: item.lastModified,
-            imgFileLastModifiedDate: item.lastModifiedDate
+            imgFileLastModifiedDate: item.lastModifiedDate,
+            joinFromInput: elm
           });
 
           if (!_CONFIG.validation.file.types.includes(this.imgD[elm][i].imgFileType)) {

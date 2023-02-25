@@ -35,6 +35,7 @@ export const seqConfigFor3dModels = {
   modelDownloaderUid: { type: DataTypes.STRING(50) },
   modelDownloadCount: { type: DataTypes.INTEGER },
   joinFromTable: { type: DataTypes.STRING(255) },
+  joinFromInput: { type: DataTypes.STRING(255) },
   joinId: { type: DataTypes.INTEGER },
   joinUuid: { type: DataTypes.STRING(100) }
 };
@@ -70,6 +71,7 @@ export const seqConfigForImgModels = {
   imgThumbnailFileName: { type: DataTypes.TEXT },
   imgThumbnailPath: { type: DataTypes.TEXT },
   joinFromTable: { type: DataTypes.STRING(255) },
+  joinFromInput: { type: DataTypes.STRING(255) },
   joinId: { type: DataTypes.INTEGER },
   joinUuid: { type: DataTypes.STRING(100) }
 };
