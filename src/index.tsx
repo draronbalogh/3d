@@ -8,7 +8,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './index.scss';
 ///////////////////////////////////////////////////////////   COMPONENTS
 import App from './front-end/App';
-// import reportWebVitals from './reportWebVitals';
+import reportWebVitals from './reportWebVitals';
 ///////////////////////////////////////////////////////////   RENDER
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 root.render(
@@ -18,4 +18,3 @@ root.render(
     </Router>
   </React.StrictMode>
 );
-// log performance: reportWebVitals();

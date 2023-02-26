@@ -113,6 +113,8 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
         if (response?.data.success === false) {
           throw new Error(_CONFIG.msg.error.file.uploading, response);
         }
+      } else {
+        this.setState({ isUploading: false, isThankYou: false, isSaved: true });
       }
     } catch (e: any) {
       logAxiosError(e, _CONFIG.msg.error.fetch.postingData);
