@@ -84,6 +84,53 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
   save3dModel = async (e: any) => {
     e.preventDefault();
     const { data, files, folderName } = this.state;
+    const filesData = new FormData();
+    let isThereAnyValidFile: boolean = false;
+
+    // Prepare filesData and check if there is at least one valid file
+    for (const file in files) {
+      Object.values(files[file]).forEach((individualFile: any, index) => {
+        const currentFileType = individualFile?.name?.split('.').pop()?.toLowerCase();
+        if (currentFileType && _CONFIG.validation.file.types.includes(currentFileType)) {
+          isThereAnyValidFile = true;
+          const nameSeparatedByComma: string = data[file].split(',')[index];
+          filesData.append(folderName, individualFile as Blob, nameSeparatedByComma);
+        }
+      });
+    }
+
+    try {
+      // Create model
+      const modelId = await this.createModel(data);
+
+      // Create images
+      await this.createImages(modelId);
+
+      // Upload files (if there is at least one valid file)
+      if (isThereAnyValidFile) {
+        this.setState({ isUploading: true });
+        const response: any = await this.uploadFiles(filesData);
+        if (response?.data.success === false) {
+          throw new Error(_CONFIG.msg.error.file.uploading, response);
+        }
+      }
+
+      // Set state
+      setTimeout(() => {
+        this.setState({ isUploading: false, isThankYou: true });
+      }, 1500);
+      setTimeout(() => {
+        this.setState({ isThankYou: false, isSaved: true });
+      }, 2250);
+    } catch (e: any) {
+      logAxiosError(e, _CONFIG.msg.error.fetch.postingData);
+    }
+  };
+
+  /*
+  save3dModel = async (e: any) => {
+    e.preventDefault();
+    const { data, files, folderName } = this.state;
     let isThereAnyValidFile: boolean = false;
     try {
       const filesData = new FormData();
@@ -125,6 +172,8 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
       logAxiosError(e, _CONFIG.msg.error.fetch.postingData);
     }
   };
+
+*/
   /**
    * Create 3d model in database
    * @param data
@@ -158,8 +207,6 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
       });
     });
     const response = await axios.post(_CONFIG.url.createImage, imgPush);
-    console.log('imgPush', imgPush);
-    console.log('imgPush response', response);
   };
 
   /**
@@ -213,8 +260,6 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
         //_CONFIG.validation.file.types.includes(currentFileType)
         for (let i = 0; i <= e.target.files.length - 1; i++) {
           let item = e.target.files.item(i);
-          console.log('this.state.data', this.state.data.modelUuid);
-          console.log('this.state.folderName', this.state.folderName);
           this.imgD[elm].push({
             ...this.state.data,
             imgFileType: item.name.split('.').pop().toLowerCase(),
@@ -251,7 +296,6 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
       let filesTxt: string = '';
       let filesTxtForImgs: string = '';
       Array.from(e.target.files).forEach((value: any, key: number) => {
-        console.log(`Index: ${key}, Value: ${value.name}`);
         const fileName: string = value.name;
         filesTxt += `${uuid()}-${fileName
           .normalize('NFD')
@@ -265,8 +309,6 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
           .replace(/[^a-zA-Z0-9.]/g, '-')}`;
         this.imgD[elm][key]['imgFileName'] = filesTxtForImgs;
       });
-      console.log('filesTxt>>>', filesTxt);
-      console.log('this.state.data22>>>', this.state.data);
       this.setState({
         data: {
           ...this.state.data,

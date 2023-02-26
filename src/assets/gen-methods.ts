@@ -5,10 +5,13 @@
  * @description Logs error when axios request fails
  */
 export const logAxiosError = (e: any, custMsg: string) => {
-  const statusCode = e.response.status,
-    statusText = e.response.statusText,
-    message = e.response.data.message[0];
-  console.log(`Custom error message: ${custMsg} \n StatusCode: ${statusCode} \n StatusText: ${statusText} \n Message: ${message}`);
+  console.log(e);
+  if (typeof e === 'object' && e.hasOwnProperty('response')) {
+    const statusCode = e.response.status,
+      statusText = e.response.statusText,
+      message = e.response.data.message[0];
+    console.log(`Custom error message: ${custMsg} \n StatusCode: ${statusCode} \n StatusText: ${statusText} \n Message: ${message} \n Complete: ${e}`);
+  }
 };
 
 /**
