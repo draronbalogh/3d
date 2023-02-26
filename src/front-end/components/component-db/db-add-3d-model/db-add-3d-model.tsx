@@ -127,53 +127,6 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
     }
   };
 
-  /*
-  save3dModel = async (e: any) => {
-    e.preventDefault();
-    const { data, files, folderName } = this.state;
-    let isThereAnyValidFile: boolean = false;
-    try {
-      const filesData = new FormData();
-      for (const file in files) {
-        Object.values(files[file]).forEach((individualFile: any, index) => {
-          let currentFileType = null;
-          if (individualFile.name) currentFileType = individualFile.name.split('.').pop().toLowerCase();
-          if (currentFileType && _CONFIG.validation.file.types.includes(currentFileType)) {
-            isThereAnyValidFile = true;
-            const nameSeparatedByComma: string = data[file].split(',')[index];
-            if (individualFile) filesData.append(folderName, individualFile as Blob, nameSeparatedByComma);
-          }
-        });
-      }
-      const modelId = await this.createModel(data);
-      await this.createImages(modelId);
-      if (isThereAnyValidFile) {
-        this.setState({ isUploading: true });
-        try {
-          const response: any = await this.uploadFiles(filesData);
-          if (response.data.success === false) {
-            throw new Error(_CONFIG.msg.error.file.uploading, response);
-          } else {
-            setTimeout(() => {
-              this.setState({ isUploading: false, isThankYou: true });
-            }, 1500);
-            setTimeout(() => {
-              this.setState({ isThankYou: false, isSaved: true });
-            }, 2250);
-          }
-        } catch (error) {
-          console.log('Error:', error);
-        }
-      } else {
-        this.setState({ isUploading: false, isThankYou: false, isSaved: true });
-      }
-      isThereAnyValidFile = false;
-    } catch (e: any) {
-      logAxiosError(e, _CONFIG.msg.error.fetch.postingData);
-    }
-  };
-
-*/
   /**
    * Create 3d model in database
    * @param data
