@@ -38,7 +38,7 @@ interface Model3dState {
   modelUuid: string;
   folderId: string;
   folderName: string;
-  joinFromInput: string;
+  joinFromInput: string[];
   deleteTheseFiles: string[];
 }
 interface imgDataType {
@@ -80,7 +80,7 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
       folderId: '',
       folderName: '',
       modelUuid: '',
-      joinFromInput: ''
+      joinFromInput: []
     };
   }
   ///////////////////////////////////////////////////////////   LIFECYCLE METHODS
@@ -151,8 +151,6 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
 
         for (let i = 0; i <= e.target.files.length - 1; i++) {
           let item = e.target.files.item(i);
-          console.log('EDIT: this.state.data', this.state.data.modelUuid);
-          console.log('EDIT: this.state.folderName', this.state.folderName);
           this.imgD[elm].push({
             ...this.state.data,
             imgFileType: item.name.split('.').pop().toLowerCase(),
@@ -211,7 +209,7 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
           [elm]: filesTxt.slice(0, -1) // comma separated list of files as mysql record
         },
         imgData: this.imgD,
-        joinFromInput: elm,
+        joinFromInput: [elm], // Originally it was an
         isSaved: false
       });
     } catch (error) {
@@ -255,24 +253,28 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
     e.preventDefault();
     const { data, deleteTheseFiles, modelId, joinFromInput } = this.state;
     const { modelUuid } = data;
-    console.log('data', data);
-    console.log('modelUuid', modelUuid);
     let isThereAnyValidFile: boolean = false;
     try {
       DbEdit3dModel.imgArray = [];
-      await axios.post(_CONFIG.url.deleteModelFiles, { deleteTheseFiles, modelId, modelUuid, deleteFolder: false }, {});
-      console.log('joinFromInput', joinFromInput);
-      // delete records from image table where joinId = modelId and joinFromInput = modelUrl or modelImgs or modelMaterialUrl
-      await axios
-        .delete(_CONFIG.url.imageApi + modelId + '/' + joinFromInput)
-        .then((response) => {
+      try {
+        const response = await axios.post(_CONFIG.url.deleteModelFiles, { deleteTheseFiles, modelId, modelUuid, deleteFolder: false }, {});
+        if (response.data.success === false) {
+          console.log(_CONFIG.msg.error.file.deleting, response);
+        }
+      } catch (error) {
+        console.error('Error deleting image:', error);
+      }
+      try {
+        for (const key in this.imgD) {
+          let joinFromInput = key;
+          const response = await axios.delete(_CONFIG.url.imageApi + modelId + '/' + joinFromInput);
           if (response.data.success === false) {
             console.log(_CONFIG.msg.error.file.deleting, response);
           }
-        })
-        .catch((error) => {
-          console.error('Error deleting image:', error);
-        });
+        }
+      } catch (error) {
+        console.error('Error deleting image:', error);
+      }
 
       const { files } = this.state;
       const filesData = new FormData();
@@ -286,16 +288,15 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
         });
       }
       //await axios.patch(_CONFIG.url.modelApi + modelId, data);
-      await axios
-        .patch(_CONFIG.url.modelApi + modelId, data)
-        .then((response) => {
-          if (response.data.success === false) {
-            console.log(_CONFIG.msg.error.fetch.updating, response);
-          }
-        })
-        .catch((error) => {
-          console.error('Error updating model:', error);
-        });
+      try {
+        const response = await axios.patch(_CONFIG.url.modelApi + modelId, data);
+        if (response.data.success === false) {
+          console.log(_CONFIG.msg.error.fetch.updating, response);
+        }
+      } catch (error) {
+        console.error('Error updating model:', error);
+      }
+
       let imgPush: any[] = [];
       Object.keys(this.imgD).forEach((element: any, key: number) => {
         this.imgD[element].forEach((e: any, k: number) => {
@@ -306,39 +307,39 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
           this.imgD[element][k].joinUuid = data.modelUuid;
         });
       });
-      await axios
-        .post(_CONFIG.url.createImage, imgPush)
-        .then((response: any) => {
-          console.log('imgPush', imgPush);
-          console.log('imgPush response', response);
-        })
-        .catch((error: any) => {
-          console.log('Error:', error);
-        });
-
+      try {
+        const response = await axios.post(_CONFIG.url.createImage, imgPush);
+        if (response.data.success === false) {
+          console.log(_CONFIG.msg.error.file.uploading, response);
+        }
+      } catch (error: any) {
+        console.log('Error:', error);
+      }
       if (isThereAnyValidFile) {
         this.setState({ isUploading: true });
-        await axios
-          .post(_CONFIG.url.uploadFiles, filesData, {
+        try {
+          const response: any = await axios.post(_CONFIG.url.uploadFiles, filesData, {
             headers: {
               'content-type': 'multipart/form-data'
             },
             onUploadProgress: (data) => {
               this.setState({ uploadingData: data });
             }
-          })
-          .then((response: any) => {
-            if (response.data.success === false) {
-              throw new Error(_CONFIG.msg.error.file.uploading, response);
-            } else {
-              setTimeout(() => {
-                this.setState({ isUploading: false, isThankYou: true });
-              }, 1500);
-              setTimeout(() => {
-                this.setState({ isThankYou: false, isSaved: true });
-              }, 2250);
-            }
           });
+
+          if (response.data.success === false) {
+            throw new Error(_CONFIG.msg.error.file.uploading, response);
+          } else {
+            setTimeout(() => {
+              this.setState({ isUploading: false, isThankYou: true });
+            }, 1500);
+            setTimeout(() => {
+              this.setState({ isThankYou: false, isSaved: true });
+            }, 2250);
+          }
+        } catch (error) {
+          console.log('Error:', error);
+        }
 
         isThereAnyValidFile = false;
       } else {
