@@ -114,14 +114,6 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
           throw new Error(_CONFIG.msg.error.file.uploading, response);
         }
       }
-
-      // Set state
-      setTimeout(() => {
-        this.setState({ isUploading: false, isThankYou: true });
-      }, 1500);
-      setTimeout(() => {
-        this.setState({ isThankYou: false, isSaved: true });
-      }, 2250);
     } catch (e: any) {
       logAxiosError(e, _CONFIG.msg.error.fetch.postingData);
     }
@@ -133,13 +125,14 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
    * @returns
    */
   createModel = async (data: any) => {
-    const response: any = await axios.post(_CONFIG.url.createModel, data, {});
+    const { url, msg } = _CONFIG;
+    const response: any = await axios.post(url.createModel, data, {});
     if (response.data.success === false) {
-      throw new Error(_CONFIG.msg.error.fetch.postingData, response);
+      throw new Error(msg.error.fetch.postingData, response);
     }
-    const response2: any = await axios.get(_CONFIG.url.getLastModelId);
+    const response2: any = await axios.get(url.getLastModelId);
     if (response2.data.success === false) {
-      throw new Error(_CONFIG.msg.error.fetch.postingData, response2);
+      throw new Error(msg.error.fetch.postingData, response2);
     }
     return response2.data[0].modelId;
   };
@@ -150,16 +143,17 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
    */
   createImages = async (modelId: number) => {
     const { data } = this.state;
+    const { db, url } = _CONFIG;
     let imgPush: any[] = [];
     Object.keys(this.imgD).forEach((element: any, key: number) => {
       this.imgD[element].forEach((e: any, k: number) => {
         imgPush.push(this.imgD[element][k]);
-        this.imgD[element][k].joinFromTable = _CONFIG.db.tableName3d;
+        this.imgD[element][k].joinFromTable = db.tableName3d;
         this.imgD[element][k].joinId = modelId;
         this.imgD[element][k].joinUuid = data.modelUuid;
       });
     });
-    const response = await axios.post(_CONFIG.url.createImage, imgPush);
+    const response = await axios.post(url.createImage, imgPush);
   };
 
   /**
@@ -167,8 +161,9 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
    * @param filesData
    */
   uploadFiles = async (filesData: FormData) => {
+    const { db, url, msg } = _CONFIG;
     try {
-      const response: any = await axios.post(_CONFIG.url.uploadFiles, filesData, {
+      const response: any = await axios.post(url.uploadFiles, filesData, {
         headers: { 'content-type': 'multipart/form-data' },
         onUploadProgress: (data) => {
           this.setState({ uploadingData: data });
@@ -176,7 +171,7 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
       });
 
       if (response.data.success === false) {
-        throw new Error(_CONFIG.msg.error.file.uploading, response);
+        throw new Error(msg.error.file.uploading, response);
       } else {
         setTimeout(() => {
           this.setState({ isUploading: false, isThankYou: true });
@@ -199,18 +194,18 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
    * @description
    * Update state with uuuid file names
    */
+  // TODO:: refactor this function
+
   inputFileDataUpdater = (elm: string, e: any) => {
     e.preventDefault();
+    const { validation, msg, url } = _CONFIG;
     try {
       this.imgD[elm] = [];
-
-      if (e.target.files.length > _CONFIG.validation.file.maxFiles) {
-        alert(_CONFIG.msg.error.file.maxFileLimit);
+      if (e.target.files.length > validation.file.maxFiles) {
+        alert(msg.error.file.maxFileLimit);
         return;
       }
-
       if (e.target.files.length > 0) {
-        //_CONFIG.validation.file.types.includes(currentFileType)
         for (let i = 0; i <= e.target.files.length - 1; i++) {
           let item = e.target.files.item(i);
           this.imgD[elm].push({
@@ -218,7 +213,7 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
             imgFileType: item.name.split('.').pop().toLowerCase(),
             imgFileSize: Math.round(item.size),
             imgOriginalFileName: item.name.toLocaleLowerCase(),
-            imgFolderPath: `${_CONFIG.url.uploadFolder}${this.state.folderName}`,
+            imgFolderPath: `${url.uploadFolder}${this.state.folderName}`,
             imgFileNameWithoutExtension: item.name.split('.').slice(0, -1).join('.').toLocaleLowerCase(),
             imgFileExtension: item.name.split('.').pop(),
             imgVisibility: 1,
@@ -228,26 +223,25 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
             imgFileLastModifiedDate: item.lastModifiedDate,
             joinFromInput: elm
           });
-
-          if (!_CONFIG.validation.file.types.includes(this.imgD[elm][i].imgFileType)) {
-            alert(_CONFIG.msg.error.file.notValid);
+          if (!validation.file.types.includes(this.imgD[elm][i].imgFileType)) {
+            alert(msg.error.file.notValid);
             return;
           }
-          if (this.imgD[elm][i].imgFileSize < _CONFIG.validation.file.minFileSize) {
-            alert(_CONFIG.msg.error.file.tooSmall);
+          if (this.imgD[elm][i].imgFileSize < validation.file.minFileSize) {
+            alert(msg.error.file.tooSmall);
             return;
           }
-          if (this.imgD[elm][i].imgFileSize > _CONFIG.validation.file.maxFileSize) {
-            alert(_CONFIG.msg.error.file.tooBig);
+          if (this.imgD[elm][i].imgFileSize > validation.file.maxFileSize) {
+            alert(msg.error.file.tooBig);
             return;
           }
         }
       }
-      let files = { ...this.state.files };
+      let files = { ...this.state.files },
+        filesTxt: string = '',
+        filesTxtForImgs: string = '';
       files[elm] = e.target.files;
       this.setState({ files });
-      let filesTxt: string = '';
-      let filesTxtForImgs: string = '';
       Array.from(e.target.files).forEach((value: any, key: number) => {
         const fileName: string = value.name;
         filesTxt += `${uuid()}-${fileName
@@ -347,7 +341,7 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
           </Form.Select>
         );
       case 'file':
-        return <Form.Control multiple type={ctr} name={folderId ? folderId : ''} onChange={(e) => this.inputFileDataUpdater(elm.name, e)} accept={_CONFIG.validation.file.forntendTypes}></Form.Control>;
+        return <Form.Control multiple type={ctr} name={folderId ? folderId : ''} onChange={(e) => this.inputFileDataUpdater(elm.name, e)} accept={_CONFIG.validation.file.imgTypes}></Form.Control>;
       case 'textarea':
         return <Form.Control as={ctr} rows={3} value={data?.hasOwnProperty(elm.name) ? data[elm.name] : ''} onChange={(e) => this.inputDataUpdater(elm.name, e.target.value)}></Form.Control>;
       default:

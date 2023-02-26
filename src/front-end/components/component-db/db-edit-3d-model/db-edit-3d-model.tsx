@@ -126,6 +126,7 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
    * @param elm string
    * @param e any
    */
+  // TODO:: refactor this function
   inputFileDataUpdater = async (elm: string, e: any) => {
     e.preventDefault();
     try {
@@ -440,7 +441,7 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
         );
       case 'file':
         //@ts-ignore
-        return <Form.Control multiple type={ctr} name='imageName' onChange={(e) => this.inputFileDataUpdater(elm, e)} accept={_CONFIG.validation.file.forntendTypes}></Form.Control>;
+        return <Form.Control multiple type={ctr} name='imageName' onChange={(e) => this.inputFileDataUpdater(elm, e)} accept={_CONFIG.validation.file.imgTypes}></Form.Control>;
       case 'textarea':
         return <Form.Control as={ctr} rows={3} value={element ? element : ''} onChange={(e) => this.inputDataUpdater(elm, e.target.value)}></Form.Control>;
       default:
