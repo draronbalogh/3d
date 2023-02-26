@@ -26,7 +26,6 @@ interface UploadFiles {
   modelMaterialUrl: [];
 }
 interface Model3dState {
-  modelId: number | undefined;
   data: any;
   imgData: imgDataType[];
   uploadingData: any;
@@ -40,6 +39,7 @@ interface Model3dState {
   folderName: string;
   joinFromInput: string[];
   deleteTheseFiles: string[];
+  modelId: any;
 }
 interface imgDataType {
   imgFileType: string;
@@ -251,6 +251,129 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
    */
   update3dModel = async (e: any) => {
     e.preventDefault();
+    const { data, deleteTheseFiles, modelId } = this.state;
+    const { modelUuid } = data;
+
+    try {
+      await this.deleteModelFiles(deleteTheseFiles, modelId, modelUuid);
+      await this.deleteModelImages(modelId);
+      await this.patchModel(modelId, data);
+      await this.createImages(modelId, modelUuid, this.imgD);
+      await this.uploadFiles(data, modelUuid, this.state.files, this.setState.bind(this));
+    } catch (error: any) {
+      logAxiosError(error, _CONFIG.msg.error.fetch.updating);
+    }
+  };
+
+  /**
+   * Delete model files
+   * @param deleteTheseFiles
+   * @param modelId
+   * @param modelUuid
+   */
+  deleteModelFiles = async (deleteTheseFiles: any, modelId: string, modelUuid: string) => {
+    const response = await axios.post(_CONFIG.url.deleteModelFiles, { deleteTheseFiles, modelId, modelUuid, deleteFolder: false }, {});
+    if (response.data.success === false) {
+      console.log(_CONFIG.msg.error.file.deleting, response);
+    }
+  };
+
+  /**
+   * Delete model images
+   * @param modelId
+   */
+  deleteModelImages = async (modelId: string) => {
+    for (const key in this.imgD) {
+      let joinFromInput = key;
+      const response = await axios.delete(_CONFIG.url.imageApi + modelId + '/' + joinFromInput);
+      if (response.data.success === false) {
+        console.log(_CONFIG.msg.error.file.deleting, response);
+      }
+    }
+  };
+
+  /**
+   * Patch model
+   * @param modelId
+   * @param data
+   */
+  patchModel = async (modelId: string, data: any) => {
+    const response = await axios.patch(_CONFIG.url.modelApi + modelId, data);
+    if (response.data.success === false) {
+      console.log(_CONFIG.msg.error.fetch.updating, response);
+    }
+  };
+
+  /**
+   * Create images
+   * @param modelId
+   * @param modelUuid
+   * @param imgD
+   */
+  createImages = async (modelId: string, modelUuid: string, imgD: any) => {
+    let imgPush: any[] = [];
+    Object.keys(imgD).forEach((element: any, key: number) => {
+      imgD[element].forEach((e: any, k: number) => {
+        imgPush.push(imgD[element][k]);
+        imgD[element][k].joinFromTable = _CONFIG.db.tableName3d;
+        imgD[element][k].joinId = modelId;
+        imgD[element][k].joinUuid = modelUuid;
+      });
+    });
+    const response = await axios.post(_CONFIG.url.createImage, imgPush);
+    if (response.data.success === false) {
+      console.log(_CONFIG.msg.error.file.uploading, response);
+    }
+  };
+  /**
+   * Upload files
+   * @param data
+   * @param modelUuid
+   * @param files
+   * @param setState
+   */
+  uploadFiles = async (data: any, modelUuid: string, files: any, setState: any) => {
+    const filesData = new FormData();
+    let isThereAnyValidFile: boolean = false;
+    for (const file in files) {
+      if (files[file].length > 0) {
+        isThereAnyValidFile = true;
+      }
+      Object.values(files[file]).forEach((individualFile: any, index) => {
+        const nameSeparatedByComma = data[file].split(',')[index];
+        if (individualFile) filesData.append(modelUuid, individualFile as Blob, nameSeparatedByComma);
+      });
+    }
+
+    if (isThereAnyValidFile) {
+      setState({ isUploading: true });
+      const response: any = await axios.post(_CONFIG.url.uploadFiles, filesData, {
+        headers: {
+          'content-type': 'multipart/form-data'
+        },
+        onUploadProgress: (data: any) => {
+          setState({ uploadingData: data });
+        }
+      });
+
+      if (response.data.success === false) {
+        console.log(_CONFIG.msg.error.file.uploading, response);
+      } else {
+        setTimeout(() => {
+          setState({ isUploading: false, isThankYou: true });
+        }, 1500);
+        setTimeout(() => {
+          setState({ isThankYou: false, isSaved: true });
+        }, 2250);
+      }
+    } else {
+      setState({ isUploading: false, isThankYou: false, isSaved: true });
+    }
+  };
+
+  /* ORIGINAL CODE
+  update3dModel = async (e: any) => {
+    e.preventDefault();
     const { data, deleteTheseFiles, modelId, joinFromInput } = this.state;
     const { modelUuid } = data;
     let isThereAnyValidFile: boolean = false;
@@ -349,7 +472,7 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
       logAxiosError(e, _CONFIG.msg.error.fetch.updating);
     }
   };
-
+*/
   /**
    * Get title from modelConfig
    * @param elm string

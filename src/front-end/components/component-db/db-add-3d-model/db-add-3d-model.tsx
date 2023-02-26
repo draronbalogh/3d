@@ -78,19 +78,9 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
   componentDidMount() {}
   ///////////////////////////////////////////////////////////   CLASS METHODS
   /**
-   * Save 3d model
-   * @param e
-   * @memberof DbAdd3dModel
-   * @description
-   * 1. Check if there is any valid file
-   * 2. Create folder
-   * 3. Upload files
-   * 4. Save data
-   * 5. Redirect to thank you page
-   * 6. Reset state
-   * 7. Reset form
+   * Save 3d model to database
+   * @param e: onclick event
    */
-
   save3dModel = async (e: any) => {
     e.preventDefault();
     const { data, files, folderName } = this.state;
@@ -135,7 +125,11 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
       logAxiosError(e, _CONFIG.msg.error.fetch.postingData);
     }
   };
-
+  /**
+   * Create 3d model in database
+   * @param data
+   * @returns
+   */
   createModel = async (data: any) => {
     const response: any = await axios.post(_CONFIG.url.createModel, data, {});
     if (response.data.success === false) {
@@ -148,6 +142,10 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
     return response2.data[0].modelId;
   };
 
+  /**
+   * Create images in database
+   * @param modelId
+   */
   createImages = async (modelId: number) => {
     const { data } = this.state;
     let imgPush: any[] = [];
@@ -164,6 +162,10 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
     console.log('imgPush response', response);
   };
 
+  /**
+   * Upload files to server
+   * @param filesData
+   */
   uploadFiles = async (filesData: FormData) => {
     try {
       const response: any = await axios.post(_CONFIG.url.uploadFiles, filesData, {
@@ -188,93 +190,6 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
       console.error('Error uploading files:', error);
     }
   };
-
-  /*
-  // ORIGINAL
-  save3dModel = async (e: any) => {
-    e.preventDefault();
-    const { data, files, folderName } = this.state;
-    let isThereAnyValidFile: boolean = false;
-    try {
-      const filesData = new FormData();
-      for (const file in files) {
-        Object.values(files[file]).forEach((individualFile: any, index) => {
-          let currentFileType = null;
-          if (individualFile.name) currentFileType = individualFile.name.split('.').pop().toLowerCase();
-          if (currentFileType && _CONFIG.validation.file.types.includes(currentFileType)) {
-            isThereAnyValidFile = true;
-            const nameSeparatedByComma: string = data[file].split(',')[index];
-            if (individualFile) filesData.append(folderName, individualFile as Blob, nameSeparatedByComma);
-          }
-        });
-      }
-      try {
-        const response: any = await axios.post(_CONFIG.url.createModel, data, {});
-        if (response.data.success === false) {
-          throw new Error(_CONFIG.msg.error.fetch.postingData, response);
-        }
-      } catch (error) {
-        console.error('Error creating model:', error);
-      }
-      let modelId: null = null;
-      try {
-        const response: any = await axios.get(_CONFIG.url.getLastModelId);
-        if (response.data.success === false) {
-          throw new Error(_CONFIG.msg.error.fetch.postingData, response);
-        }
-        modelId = response.data[0].modelId;
-      } catch (error) {
-        console.error('Error fetching last model id:', error);
-      }
-      let imgPush: any[] = [];
-      Object.keys(this.imgD).forEach((element: any, key: number) => {
-        this.imgD[element].forEach((e: any, k: number) => {
-          imgPush.push(this.imgD[element][k]);
-          this.imgD[element][k].joinFromTable = _CONFIG.db.tableName3d;
-
-          this.imgD[element][k].joinId = modelId;
-          this.imgD[element][k].joinUuid = data.modelUuid;
-        });
-      });
-
-      try {
-        const response = await axios.post(_CONFIG.url.createImage, imgPush);
-        console.log('imgPush', imgPush);
-        console.log('imgPush response', response);
-      } catch (error) {
-        console.log('Error:', error);
-      }
-
-      if (isThereAnyValidFile) {
-        this.setState({ isUploading: true });
-        try {
-          const response: any = await axios.post(_CONFIG.url.uploadFiles, filesData, {
-            headers: { 'content-type': 'multipart/form-data' },
-            onUploadProgress: (data) => {
-              this.setState({ uploadingData: data });
-            }
-          });
-          if (response.data.success === false) {
-            throw new Error(_CONFIG.msg.error.file.uploading, response);
-          } else {
-            setTimeout(() => {
-              this.setState({ isUploading: false, isThankYou: true });
-            }, 1500);
-            setTimeout(() => {
-              this.setState({ isThankYou: false, isSaved: true });
-            }, 2250);
-          }
-        } catch (error) {
-          console.log('Error:', error);
-        }
-      } else {
-        this.setState({ isUploading: false, isThankYou: false, isSaved: true });
-      }
-      isThereAnyValidFile = false;
-    } catch (e: any) {
-      logAxiosError(e, _CONFIG.msg.error.fetch.postingData);
-    }
-  };*/
 
   /**
    * Input file data updater
