@@ -203,6 +203,8 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
     const { validation, msg, url } = _CONFIG;
     try {
       this.imgD[elm] = [];
+      // TODO::  conntinue integrating videos
+      //  let a = elm==='modelVideos'? 'vid' : 'img';
       if (e.target.files.length > validation.file.maxFiles) {
         alert(msg.error.file.maxFileLimit);
         return;
