@@ -196,7 +196,7 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
    * @description
    * Update state with uuuid file names
    */
-  // TODO:: refactor this function
+  // TODO:: add videos to this function like images and continue integrating videos
 
   inputFileDataUpdater = (elm: string, e: any) => {
     e.preventDefault();

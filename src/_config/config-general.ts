@@ -22,6 +22,7 @@ export const _CONFIG = {
     deleteModelFiles: '/deleteModelFiles',
     routes3d: '/api/3dmodels',
     routesImages: '/api/images',
+    routesVideos: '/api/videos',
     error: 'Hibás URL cím, vagy nem létező oldal!'
   },
   theme: {

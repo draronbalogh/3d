@@ -4,70 +4,70 @@ import { _CONFIG } from '../../_config/config-general';
 ///////////////////////////////////////////////////////////   CONTROLLERS
 import { Request, Response } from 'express';
 import sequelize from 'sequelize';
-import { db, ModelCtrForImageTypes } from '../models/model-for-images';
+import { db, ModelCtrForVideoTypes } from '../models/model-for-videos';
 ///////////////////////////////////////////////////////////   ROUTES
 
 /**
- * Get all images
+ * Get all videos
  * @param req Request
  * @param res Response
  */
-export const getAllImages = async (req: Request, res: Response) => {
+export const getAllVideos = async (req: Request, res: Response) => {
   try {
-    const images = await ModelCtrForImageTypes.findAll();
-    res.json(images);
+    const videos = await ModelCtrForVideoTypes.findAll();
+    res.json(videos);
   } catch (error: any | unknown) {
     res.json({ message: error.message });
   }
 };
 
 /**
- * Get last image imageId
+ * Get last video videoId
  * @param req Request
  * @param res Response
  */
 export const getLastModelId = async (req: Request, res: Response) => {
   try {
-    const imageId = await ModelCtrForImageTypes.findAll({
+    const videoId = await ModelCtrForVideoTypes.findAll({
       limit: 1,
       where: {},
       order: [['createdAt', 'DESC']]
     });
-    console.log('imageId', imageId);
-    res.json(imageId);
+    console.log('videoId', videoId);
+    res.json(videoId);
   } catch (error: any | unknown) {
     res.json({ message: error.message });
   }
 };
 
 /**
- * Get images by imageId
+ * Get videos by videoId
  * @param req Request
  * @param res Response
  */
-export const getImagesById = async (req: Request, res: Response) => {
+export const getVideosById = async (req: Request, res: Response) => {
   try {
-    const imagels = await ModelCtrForImageTypes.findAll({
+    const videols = await ModelCtrForVideoTypes.findAll({
       where: {
-        joinId: req.params.imageId
+        joinId: req.params.videoId
       }
     });
-    res.json(imagels[0]);
+    res.json(videols[0]);
   } catch (error: any | unknown) {
     res.json({ message: error.message });
   }
 };
 
 /**
- * Create images
+ * Create videos
  * @param req Request
  * @param res Response
  * @param next NextFunction
  */
-export const createImages = async (req: Request, res: Response, next: any) => {
+export const createVideos = async (req: Request, res: Response, next: any) => {
   try {
     for (const element of req.body) {
-      await ModelCtrForImageTypes.create(element);
+      await ModelCtrForVideoTypes.create(element);
     }
 
     res.status(200).json('Records created successfully');
@@ -76,21 +76,21 @@ export const createImages = async (req: Request, res: Response, next: any) => {
   }
 };
 /**
- * Update images
+ * Update videos
  * @param req Request
  * @param res Response
  */
-export const updateImages = async (req: Request, res: Response) => {
+export const updateVideos = async (req: Request, res: Response) => {
   try {
     await db.query('SET sql_safe_updates = 0;');
-    await ModelCtrForImageTypes.update(req.body, {
+    await ModelCtrForVideoTypes.update(req.body, {
       where: {
-        joinId: req.params.imageId
+        joinId: req.params.videoId
       }
     });
     await db.query('SET sql_safe_updates = 1;');
     res.json({
-      message: 'ModelCtrForImageTypes Updated'
+      message: 'ModelCtrForVideoTypes Updated'
     });
   } catch (error: any | unknown) {
     res.json({ message: error.message });
@@ -98,21 +98,21 @@ export const updateImages = async (req: Request, res: Response) => {
 };
 
 /**
- * Detete images
+ * Detete videos
  * @param req Request
  * @param res Response
  */
-export const deleteImage = async (req: Request, res: Response) => {
+export const deleteVideo = async (req: Request, res: Response) => {
   try {
     await db.query('SET sql_safe_updates = 0;');
-    await ModelCtrForImageTypes.destroy({
+    await ModelCtrForVideoTypes.destroy({
       where: {
         joinId: req.params.modelId
       }
     });
     await db.query('SET sql_safe_updates = 1;');
     res.json({
-      message: 'ModelCtrForImageTypes Deleted'
+      message: 'ModelCtrForVideoTypes Deleted'
     });
   } catch (error: any | unknown) {
     res.json({ message: error.message });
@@ -120,14 +120,14 @@ export const deleteImage = async (req: Request, res: Response) => {
 };
 
 /**
- * Detete images
+ * Detete videos
  * @param req Request
  * @param res Response
  */
-export const deleteImageOnEditMenuInputChange = async (req: Request, res: Response) => {
+export const deleteVideoOnEditMenuInputChange = async (req: Request, res: Response) => {
   try {
     await db.query('SET sql_safe_updates = 0;');
-    await ModelCtrForImageTypes.destroy({
+    await ModelCtrForVideoTypes.destroy({
       where: {
         joinId: req.params.modelId,
         joinFromInput: req.params.joinFromInput
@@ -135,7 +135,7 @@ export const deleteImageOnEditMenuInputChange = async (req: Request, res: Respon
     });
     await db.query('SET sql_safe_updates = 1;');
     res.json({
-      message: 'ModelCtrForImageTypes Deleted'
+      message: 'ModelCtrForVideoTypes Deleted'
     });
   } catch (error: any | unknown) {
     res.json({ message: error.message });

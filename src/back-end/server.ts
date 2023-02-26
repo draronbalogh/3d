@@ -10,12 +10,13 @@ import { _CONFIG, PORT3D } from '../_config/config-general';
 ///////////////////////////////////////////////////////////   LIBS
 import formidable, { errors as formidableErrors } from 'formidable';
 ///////////////////////////////////////////////////////////   COMPS
-import routes3d from './routes/routes3d';
-import routesImages from './routes/routesImages';
+import routes3d from './routes/routes-3d';
+import routesImages from './routes/routes-images';
+import routesVideos from './routes/routes-videos';
 import db from '../_config/config-database';
 import { createNecessaryDirectoriesSync } from '../assets/file-methods';
 import { logAxiosError } from '../assets/gen-methods';
-
+const { validation, url, msg, routes } = _CONFIG;
 ///////////////////////////////////////////////////////////   FUNCTIONS
 /**
  * Connect to database and start server
@@ -24,9 +25,9 @@ import { logAxiosError } from '../assets/gen-methods';
 const connectToDb = async () => {
   try {
     await db.authenticate();
-    console.log(_CONFIG.msg.txt.db.success);
+    console.log(msg.txt.db.success);
   } catch (error) {
-    logAxiosError(error, _CONFIG.msg.error.db.connection);
+    logAxiosError(error, msg.error.db.connection);
   }
 };
 
@@ -41,15 +42,15 @@ const uploadModel = async (req: any, res: any, next: any) => {
     isValid = false;
   ////////////////////////////////////////////   FORM CONFIG
   const form = new formidable.IncomingForm({
-    uploadDir: _CONFIG.url.uploadFolder,
-    keepExtensions: _CONFIG.validation.file.keepExtensions,
-    allowEmptyFiles: _CONFIG.validation.file.allowEmptyFiles,
-    maxFiles: _CONFIG.validation.file.maxFiles,
-    minFileSize: _CONFIG.validation.file.minFileSize,
-    maxFileSize: _CONFIG.validation.file.maxFileSize,
-    maxTotalFileSize: _CONFIG.validation.file.maxTotalFileSize,
-    maxFields: _CONFIG.validation.file.maxFields,
-    maxFieldsSize: _CONFIG.validation.file.maxFieldsSize,
+    uploadDir: url.uploadFolder,
+    keepExtensions: validation.file.keepExtensions,
+    allowEmptyFiles: validation.file.allowEmptyFiles,
+    maxFiles: validation.file.maxFiles,
+    minFileSize: validation.file.minFileSize,
+    maxFileSize: validation.file.maxFileSize,
+    maxTotalFileSize: validation.file.maxTotalFileSize,
+    maxFields: validation.file.maxFields,
+    maxFieldsSize: validation.file.maxFieldsSize,
     enabledPlugins: ['octetstream', 'querystring', 'multipart', 'json'],
     encoding: 'utf-8', // encoding for incoming form fields
     multiples: true,
@@ -60,7 +61,7 @@ const uploadModel = async (req: any, res: any, next: any) => {
     filter: ({ name, originalFilename, mimetype }) => {
       if (originalFilename) {
         const currentFileType = originalFilename.split('.').pop();
-        if (currentFileType && _CONFIG.validation.file.types.includes(currentFileType)) isValid = true;
+        if (currentFileType && validation.file.types.includes(currentFileType)) isValid = true;
       }
       return isValid;
     }
@@ -94,8 +95,8 @@ const uploadModel = async (req: any, res: any, next: any) => {
    * Emitted whenever a new file is detected!
    */
   form.on('fileBegin', (formname, file) => {
-    createNecessaryDirectoriesSync(_CONFIG.url.uploadFolder + formname);
-    const cim = path.join(_CONFIG.url.uploadFolder + formname + '/' + file.originalFilename);
+    createNecessaryDirectoriesSync(url.uploadFolder + formname);
+    const cim = path.join(url.uploadFolder + formname + '/' + file.originalFilename);
     file.filepath = cim;
     folderId = formname;
   });
@@ -111,7 +112,7 @@ const uploadModel = async (req: any, res: any, next: any) => {
    * Emitted when an error occurs.
    */
   form.on('error', (err) => {
-    console.log(_CONFIG.msg.error.form.general, err);
+    console.log(msg.error.form.general, err);
   });
 
   /**
@@ -119,7 +120,7 @@ const uploadModel = async (req: any, res: any, next: any) => {
    * Emitted when the incoming form has been aborted by the user.
    */
   form.on('aborted', () => {
-    console.log(_CONFIG.msg.error.form.aborted);
+    console.log(msg.error.form.aborted);
   });
 
   /**
@@ -143,12 +144,12 @@ const uploadModel = async (req: any, res: any, next: any) => {
       if (!isValid) {
         return res.status(400).json({
           status: 'Failed',
-          message: _CONFIG.msg.error.form.parse
+          message: msg.error.form.parse
         });
       }
       return res.status(200).json({ stauts: 'success', fields, files });
     } catch (error) {
-      console.log(_CONFIG.msg.error.form.parse, error);
+      console.log(msg.error.form.parse, error);
     }
   });
 };
@@ -164,14 +165,14 @@ const deleteModelFiles = async (req: any, res: any, next: any) => {
     id = req.body.id,
     modelUuid = req.body.modelUuid,
     deleteFolder = req.body.deleteFolder,
-    folder = path.join(_CONFIG.url.uploadFolder + modelUuid + '/');
+    folder = path.join(url.uploadFolder + modelUuid + '/');
   arr.forEach((filePath) => {
     if (fs.existsSync(folder + filePath)) {
       fs.unlink(folder + filePath, (err) => {
         if (err) {
-          console.log(_CONFIG.msg.error.file.unlink, filePath);
+          console.log(msg.error.file.unlink, filePath);
         } else {
-          console.log(_CONFIG.msg.txt.file.removed, filePath);
+          console.log(msg.txt.file.removed, filePath);
         }
       });
     }
@@ -179,23 +180,12 @@ const deleteModelFiles = async (req: any, res: any, next: any) => {
       try {
         fs.rmdirSync(folder, { recursive: true });
       } catch (err) {
-        console.error(`${_CONFIG.msg.error.file.folder} ${folder}.`);
+        console.error(`${msg.error.file.folder} ${folder}.`);
       }
     }
   });
   const newTask = Object.assign({ id: id }, req.body);
-  res.json({ status: 200, message: _CONFIG.msg.txt.file.deleteOk, newTask: newTask });
-};
-
-/**
- * Create Model
- *
- */
-const createImage = async (req: any, res: any, next: any) => {
-  res.json({ status: 200, message: _CONFIG.msg.txt.server.imgDataUploaded });
-};
-const deleteImages = async (req: any, res: any, next: any) => {
-  res.json({ status: 200, message: 'okokokokokokolok' });
+  res.json({ status: 200, message: msg.txt.file.deleteOk, newTask: newTask });
 };
 
 ///////////////////////////////////////////////////////////   APP (pre)CONFIG
@@ -204,20 +194,19 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.raw());
-app.post(_CONFIG.routes.uploadModel, uploadModel);
-//app.post(_CONFIG.routes.createImage, createImage);
-app.post(_CONFIG.routes.deleteModelFiles, deleteModelFiles);
-//app.post(_CONFIG.routes.routes3d, deleteImages);
-app.use(_CONFIG.routes.routes3d, routes3d);
-app.use(_CONFIG.routes.routesImages, routesImages);
-app.listen(PORT3D, () => console.log(_CONFIG.msg.txt.server.started));
+app.post(routes.uploadModel, uploadModel);
+app.post(routes.deleteModelFiles, deleteModelFiles);
+app.use(routes.routes3d, routes3d);
+app.use(routes.routesImages, routesImages);
+app.use(routes.routesVideos, routesVideos);
+app.listen(PORT3D, () => console.log(msg.txt.server.started));
 
 ///////////////////////////////////////////////////////////   RUN APP
 try {
   console.clear();
-  console.log(_CONFIG.msg.txt.db.startDb);
+  console.log(msg.txt.db.startDb);
   connectToDb();
-  createNecessaryDirectoriesSync(_CONFIG.url.uploadFolder);
+  createNecessaryDirectoriesSync(url.uploadFolder);
 } catch (error) {
-  console.error(_CONFIG.msg.error.db.connection, error);
+  console.error(msg.error.db.connection, error);
 }

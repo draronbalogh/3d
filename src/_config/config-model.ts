@@ -20,26 +20,6 @@ export const modelConfig = [
     maxLength: 100
   },
   {
-    name: 'modelCreatedAt',
-    label: 'Létrehozva',
-    control: 'input',
-    inputType: 'text',
-    enableForAddEdit: false,
-    isRequired: false,
-    visibility: true,
-    maxLength: 500
-  },
-  {
-    name: 'modelUpdatedAt',
-    label: 'Frissítve',
-    control: 'input',
-    inputType: 'text',
-    enableForAddEdit: false,
-    isRequired: false,
-    visibility: true,
-    maxLength: 500
-  },
-  {
     name: 'modelTitle',
     label: 'Cím',
     control: 'input',
@@ -168,7 +148,7 @@ export const modelConfig = [
   },
   {
     name: 'modelUrl',
-    label: 'Modell url',
+    label: '3D modellek',
     control: 'file',
     inputType: 'text',
     enableForAddEdit: true,
@@ -180,6 +160,16 @@ export const modelConfig = [
     name: 'modelFileName',
     label: 'Fájl név',
     control: 'input',
+    inputType: 'text',
+    enableForAddEdit: true,
+    isRequired: false,
+    visibility: true,
+    maxLength: 3000
+  },
+  {
+    name: 'modelVideos',
+    label: 'Videók',
+    control: 'file',
     inputType: 'text',
     enableForAddEdit: true,
     isRequired: false,
@@ -230,7 +220,7 @@ export const modelConfig = [
   },
   {
     name: 'modelMaterialUrl',
-    label: 'Material urls',
+    label: 'Material-ok',
     control: 'file',
     inputType: 'text',
     enableForAddEdit: true,

@@ -1,7 +1,7 @@
-export const imageConfig = [
+export const videoConfig = [
   {
-    name: 'imgId',
-    label: 'imgId',
+    name: 'vidId',
+    label: 'vidId',
     control: 'number',
     inputType: 'input',
     enableForAddEdit: false,
@@ -10,8 +10,8 @@ export const imageConfig = [
     maxLength: 100
   },
   {
-    name: 'imgFileTitle',
-    label: 'imgFileTitle',
+    name: 'vidFileTitle',
+    label: 'vidFileTitle',
     control: 'input',
     inputType: 'text',
     enableForAddEdit: false,
@@ -20,7 +20,7 @@ export const imageConfig = [
     maxLength: 255
   },
   {
-    name: 'imgUuid',
+    name: 'vidUuid',
     label: 'Egyedi azonosító',
     control: 'input',
     inputType: 'text',
@@ -30,7 +30,7 @@ export const imageConfig = [
     maxLength: 100
   },
   {
-    name: 'imgUploaderUid',
+    name: 'vidUploaderUid',
     label: 'Feltöltő azonosító',
     control: 'input',
     inputType: 'text',
@@ -41,8 +41,8 @@ export const imageConfig = [
   },
 
   {
-    name: 'imgFileName',
-    label: 'imgFileName',
+    name: 'vidFileName',
+    label: 'vidFileName',
     control: 'input',
     inputType: 'text',
     enableForAddEdit: false,
@@ -51,8 +51,8 @@ export const imageConfig = [
     maxLength: 3000
   },
   {
-    name: 'imgOriginalFileName',
-    label: 'imgOriginalFileName',
+    name: 'vidOriginalFileName',
+    label: 'vidOriginalFileName',
     control: 'input',
     inputType: 'text',
     enableForAddEdit: false,
@@ -61,8 +61,8 @@ export const imageConfig = [
     maxLength: 3000
   },
   {
-    name: 'imgFileNameWithoutExtension',
-    label: 'imgFileNameWithoutExtension',
+    name: 'vidFileNameWithoutExtension',
+    label: 'vidFileNameWithoutExtension',
     control: 'input',
     inputType: 'text',
     enableForAddEdit: false,
@@ -71,8 +71,8 @@ export const imageConfig = [
     maxLength: 3000
   },
   {
-    name: 'imgFileExtension',
-    label: 'imgFileExtension',
+    name: 'vidFileExtension',
+    label: 'vidFileExtension',
     control: 'input',
     inputType: 'text',
     enableForAddEdit: false,
@@ -81,8 +81,8 @@ export const imageConfig = [
     maxLength: 100
   },
   {
-    name: 'imgFileSize',
-    label: 'imgFileSize',
+    name: 'vidFileSize',
+    label: 'vidFileSize',
     control: 'input',
     inputType: 'text',
     enableForAddEdit: false,
@@ -91,8 +91,8 @@ export const imageConfig = [
     maxLength: 100
   },
   {
-    name: 'imgFolderPath',
-    label: 'imgFolderPath',
+    name: 'vidFolderPath',
+    label: 'vidFolderPath',
     control: 'input',
     inputType: 'text',
     enableForAddEdit: false,
@@ -101,8 +101,8 @@ export const imageConfig = [
     maxLength: 3000
   },
   {
-    name: 'imgFileType',
-    label: 'imgFileType',
+    name: 'vidFileType',
+    label: 'vidFileType',
     control: 'input',
     inputType: 'text',
     enableForAddEdit: false,
@@ -111,8 +111,8 @@ export const imageConfig = [
     maxLength: 100
   },
   {
-    name: 'imgFileMimeType',
-    label: 'imgFileMimeType',
+    name: 'vidFileMimeType',
+    label: 'vidFileMimeType',
     control: 'input',
     inputType: 'text',
     enableForAddEdit: false,
@@ -121,8 +121,8 @@ export const imageConfig = [
     maxLength: 100
   },
   {
-    name: 'imgFileFormat',
-    label: 'imgFileFormat',
+    name: 'vidFileFormat',
+    label: 'vidFileFormat',
     control: 'input',
     inputType: 'text',
     enableForAddEdit: false,
@@ -131,8 +131,8 @@ export const imageConfig = [
     maxLength: 100
   },
   {
-    name: 'imgFileWidth',
-    label: 'imgFileWidth',
+    name: 'vidFileWidth',
+    label: 'vidFileWidth',
     control: 'input',
     inputType: 'text',
     enableForAddEdit: false,
@@ -141,8 +141,8 @@ export const imageConfig = [
     maxLength: 10
   },
   {
-    name: 'imgFileHeight',
-    label: 'imgFileHeight',
+    name: 'vidFileHeight',
+    label: 'vidFileHeight',
     control: 'input',
     inputType: 'text',
     enableForAddEdit: false,
@@ -151,8 +151,8 @@ export const imageConfig = [
     maxLength: 10
   },
   {
-    name: 'imgFileTags',
-    label: 'imgFileTags',
+    name: 'vidFileTags',
+    label: 'vidFileTags',
     control: 'input',
     inputType: 'text',
     enableForAddEdit: false,
@@ -161,8 +161,8 @@ export const imageConfig = [
     maxLength: 3000
   },
   {
-    name: 'imgFileDescription',
-    label: 'imgFileDescription',
+    name: 'vidFileDescription',
+    label: 'vidFileDescription',
     control: 'input',
     inputType: 'text',
     enableForAddEdit: false,
@@ -171,8 +171,8 @@ export const imageConfig = [
     maxLength: 3000
   },
   {
-    name: 'imgFileMeta',
-    label: 'imgFileMeta',
+    name: 'vidFileMeta',
+    label: 'vidFileMeta',
     control: 'input',
     inputType: 'text',
     enableForAddEdit: false,
@@ -181,8 +181,8 @@ export const imageConfig = [
     maxLength: 3000
   },
   {
-    name: 'imgFileCategory',
-    label: 'imgFileCategory',
+    name: 'vidFileCategory',
+    label: 'vidFileCategory',
     control: 'input',
     inputType: 'text',
     enableForAddEdit: false,
@@ -191,8 +191,8 @@ export const imageConfig = [
     maxLength: 255
   },
   {
-    name: 'imgVisibility',
-    label: 'imgVisibility',
+    name: 'vidVisibility',
+    label: 'vidVisibility',
     control: 'input',
     inputType: 'text',
     enableForAddEdit: false,
@@ -201,8 +201,8 @@ export const imageConfig = [
     maxLength: 1
   },
   {
-    name: 'imgLegality',
-    label: 'imgLegality',
+    name: 'vidLegality',
+    label: 'vidLegality',
     control: 'input',
     inputType: 'text',
     enableForAddEdit: false,
@@ -211,8 +211,8 @@ export const imageConfig = [
     maxLength: 255
   },
   {
-    name: 'imgViewerUid',
-    label: 'imgViewerUid',
+    name: 'vidViewerUid',
+    label: 'vidViewerUid',
     control: 'input',
     inputType: 'text',
     enableForAddEdit: false,
@@ -221,8 +221,8 @@ export const imageConfig = [
     maxLength: 50
   },
   {
-    name: 'imgViewCount',
-    label: 'imgViewCount',
+    name: 'vidViewCount',
+    label: 'vidViewCount',
     control: 'input',
     inputType: 'text',
     enableForAddEdit: false,
@@ -231,8 +231,8 @@ export const imageConfig = [
     maxLength: 100
   },
   {
-    name: 'imgDownloaderUid',
-    label: 'imgDownloaderUid',
+    name: 'vidDownloaderUid',
+    label: 'vidDownloaderUid',
     control: 'input',
     inputType: 'text',
     enableForAddEdit: false,
@@ -241,8 +241,8 @@ export const imageConfig = [
     maxLength: 50
   },
   {
-    name: 'imgDownloadCount',
-    label: 'imgDownloadCount',
+    name: 'vidDownloadCount',
+    label: 'vidDownloadCount',
     control: 'input',
     inputType: 'text',
     enableForAddEdit: false,
@@ -251,8 +251,8 @@ export const imageConfig = [
     maxLength: 100
   },
   {
-    name: 'imgThumbnailFileName',
-    label: 'imgThumbnailFileName',
+    name: 'vidThumbnailFileName',
+    label: 'vidThumbnailFileName',
     control: 'input',
     inputType: 'text',
     enableForAddEdit: false,
@@ -261,8 +261,8 @@ export const imageConfig = [
     maxLength: 3000
   },
   {
-    name: 'imgThumbnailPath',
-    label: 'imgThumbnailPath',
+    name: 'vidThumbnailPath',
+    label: 'vidThumbnailPath',
     control: 'input',
     inputType: 'text',
     enableForAddEdit: false,
