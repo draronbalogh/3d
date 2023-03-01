@@ -77,6 +77,13 @@ export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
           this.get3dModel();
         }
       });
+      await axios.delete(_CONFIG.url.videoApi + modelId).then((response) => {
+        if (response.data.success === false) {
+          console.log(_CONFIG.msg.error.file.deleting, response);
+        } else {
+          this.get3dModel();
+        }
+      });
     } catch (e: any) {
       const statusCode = e.response.status; // 400
       const statusText = e.response.statusText; // Bad Request

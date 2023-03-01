@@ -16,6 +16,7 @@ export const seqConfigFor3dModels = {
   modelTags: { type: DataTypes.STRING(255) },
   modelUrl: { type: DataTypes.TEXT },
   modelFileName: { type: DataTypes.TEXT },
+  modelVideos: { type: DataTypes.TEXT },
   modelImgs: { type: DataTypes.TEXT },
   modelSourceUrl: { type: DataTypes.TEXT },
   modelIframeUrl: { type: DataTypes.TEXT },

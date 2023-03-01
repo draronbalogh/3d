@@ -110,13 +110,14 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
    * Fetch 3D model data by modelId
    */
   fetchModelDataById = async () => {
+    const { url, msg } = _CONFIG;
     try {
       const { modelId } = this.state;
-      const response = await axios.get(_CONFIG.url.modelApi + modelId);
+      const response = await axios.get(url.modelApi + modelId);
       this.setState({ data: response.data });
       this.setState({ oldFilesToDel: response.data });
     } catch (e: any) {
-      logAxiosError(e, _CONFIG.msg.error.fetch.fetchById);
+      logAxiosError(e, msg.error.fetch.fetchById);
     }
   };
 
@@ -128,12 +129,13 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
    */
   // TODO:: refactor this function
   inputFileDataUpdater = async (elm: string, e: any) => {
+    const { db, url, msg, validation } = _CONFIG;
     e.preventDefault();
     try {
       this.imgD[elm] = [];
 
-      if (e.target.files.length > _CONFIG.validation.file.maxFiles) {
-        alert(_CONFIG.msg.error.file.maxFileLimit);
+      if (e.target.files.length > validation.file.maxFiles) {
+        alert(msg.error.file.maxFileLimit);
         return;
       }
 
@@ -157,7 +159,7 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
             imgFileType: item.name.split('.').pop().toLowerCase(),
             imgFileSize: Math.round(item.size),
             imgOriginalFileName: item.name.toLocaleLowerCase(),
-            imgFolderPath: `${_CONFIG.url.uploadFolder}${this.state.data.modelUuid}`,
+            imgFolderPath: `${url.uploadFolder}${this.state.data.modelUuid}`,
             imgFileNameWithoutExtension: item.name.split('.').slice(0, -1).join('.').toLocaleLowerCase(),
             imgFileExtension: item.name.split('.').pop(),
             imgVisibility: 1,
@@ -168,16 +170,16 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
             joinFromInput: elm
           });
 
-          if (!_CONFIG.validation.file.types.includes(this.imgD[elm][i].imgFileType)) {
-            alert(_CONFIG.msg.error.file.notValid);
+          if (!validation.file.types.includes(this.imgD[elm][i].imgFileType)) {
+            alert(msg.error.file.notValid);
             return;
           }
-          if (this.imgD[elm][i].imgFileSize < _CONFIG.validation.file.minFileSize) {
-            alert(_CONFIG.msg.error.file.tooSmall);
+          if (this.imgD[elm][i].imgFileSize < validation.file.minFileSize) {
+            alert(msg.error.file.tooSmall);
             return;
           }
-          if (this.imgD[elm][i].imgFileSize > _CONFIG.validation.file.maxFileSize) {
-            alert(_CONFIG.msg.error.file.tooBig);
+          if (this.imgD[elm][i].imgFileSize > validation.file.maxFileSize) {
+            alert(msg.error.file.tooBig);
             return;
           }
         }
@@ -259,7 +261,8 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
       await this.deleteModelFiles(deleteTheseFiles, modelId, modelUuid);
       await this.deleteModelImages(modelId);
       await this.patchModel(modelId, data);
-      await this.createImages(modelId, modelUuid, this.imgD);
+      await this.postForImageDb(modelId, modelUuid, this.imgD);
+      await this.postForVideoDb(modelId, modelUuid, this.imgD);
       await this.uploadFiles(data, modelUuid, this.state.files, this.setState.bind(this));
     } catch (error: any) {
       logAxiosError(error, _CONFIG.msg.error.fetch.updating);
@@ -273,9 +276,11 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
    * @param modelUuid
    */
   deleteModelFiles = async (deleteTheseFiles: any, modelId: string, modelUuid: string) => {
-    const response = await axios.post(_CONFIG.url.deleteModelFiles, { deleteTheseFiles, modelId, modelUuid, deleteFolder: false }, {});
+    const { url, msg } = _CONFIG;
+
+    const response = await axios.post(url.deleteModelFiles, { deleteTheseFiles, modelId, modelUuid, deleteFolder: false }, {});
     if (response.data.success === false) {
-      console.log(_CONFIG.msg.error.file.deleting, response);
+      console.log(msg.error.file.deleting, response);
     }
   };
 
@@ -284,11 +289,12 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
    * @param modelId
    */
   deleteModelImages = async (modelId: string) => {
+    const { url, msg } = _CONFIG;
     for (const key in this.imgD) {
       let joinFromInput = key;
-      const response = await axios.delete(_CONFIG.url.imageApi + modelId + '/' + joinFromInput);
+      const response = await axios.delete(url.imageApi + modelId + '/' + joinFromInput);
       if (response.data.success === false) {
-        console.log(_CONFIG.msg.error.file.deleting, response);
+        console.log(msg.error.file.deleting, response);
       }
     }
   };
@@ -299,9 +305,10 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
    * @param data
    */
   patchModel = async (modelId: string, data: any) => {
-    const response = await axios.patch(_CONFIG.url.modelApi + modelId, data);
+    const { url, msg } = _CONFIG;
+    const response = await axios.patch(url.modelApi + modelId, data);
     if (response.data.success === false) {
-      console.log(_CONFIG.msg.error.fetch.updating, response);
+      console.log(msg.error.fetch.updating, response);
     }
   };
 
@@ -311,21 +318,50 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
    * @param modelUuid
    * @param imgD
    */
-  createImages = async (modelId: string, modelUuid: string, imgD: any) => {
+  postForImageDb = async (modelId: string, modelUuid: string, imgD: any) => {
+    const { db, url, msg } = _CONFIG;
     let imgPush: any[] = [];
     Object.keys(imgD).forEach((element: any, key: number) => {
-      imgD[element].forEach((e: any, k: number) => {
-        imgPush.push(imgD[element][k]);
-        imgD[element][k].joinFromTable = _CONFIG.db.tableName3d;
-        imgD[element][k].joinId = modelId;
-        imgD[element][k].joinUuid = modelUuid;
-      });
+      if (element === 'modelImgs' || element === 'modelMaterialUrl') {
+        imgD[element].forEach((e: any, k: number) => {
+          imgPush.push(imgD[element][k]);
+          imgD[element][k].joinFromTable = db.tableName3d;
+          imgD[element][k].joinId = modelId;
+          imgD[element][k].joinUuid = modelUuid;
+        });
+      }
     });
-    const response = await axios.post(_CONFIG.url.createImage, imgPush);
+    const response = await axios.post(url.createImage, imgPush);
     if (response.data.success === false) {
-      console.log(_CONFIG.msg.error.file.uploading, response);
+      console.log(msg.error.file.uploading, response);
     }
   };
+
+  /**
+   * Create images
+   * @param modelId
+   * @param modelUuid
+   * @param imgD
+   */
+  postForVideoDb = async (modelId: string, modelUuid: string, imgD: any) => {
+    const { db, url, msg } = _CONFIG;
+    let imgPush: any[] = [];
+    Object.keys(imgD).forEach((element: any, key: number) => {
+      if (element === 'modelVideos') {
+        imgD[element].forEach((e: any, k: number) => {
+          imgPush.push(imgD[element][k]);
+          imgD[element][k].joinFromTable = db.tableName3d;
+          imgD[element][k].joinId = modelId;
+          imgD[element][k].joinUuid = modelUuid;
+        });
+      }
+    });
+    const response = await axios.post(url.createVideo, imgPush);
+    if (response.data.success === false) {
+      console.log(msg.error.file.uploading, response);
+    }
+  };
+
   /**
    * Upload files
    * @param data
@@ -334,6 +370,7 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
    * @param setState
    */
   uploadFiles = async (data: any, modelUuid: string, files: any, setState: any) => {
+    const { db, url, msg } = _CONFIG;
     const filesData = new FormData();
     let isThereAnyValidFile: boolean = false;
     for (const file in files) {
@@ -348,7 +385,7 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
 
     if (isThereAnyValidFile) {
       setState({ isUploading: true });
-      const response: any = await axios.post(_CONFIG.url.uploadFiles, filesData, {
+      const response: any = await axios.post(url.uploadFiles, filesData, {
         headers: {
           'content-type': 'multipart/form-data'
         },
@@ -358,7 +395,7 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
       });
 
       if (response.data.success === false) {
-        console.log(_CONFIG.msg.error.file.uploading, response);
+        console.log(msg.error.file.uploading, response);
       } else {
         setTimeout(() => {
           setState({ isUploading: false, isThankYou: true });
@@ -423,13 +460,14 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
    * @description This function is used to build the form
    */
   formBuilder = (i: number, elm: string, modelId: any) => {
+    const { validation } = _CONFIG;
     let { data } = this.state,
       element = data[elm],
       ctr = modelConfig[i].control,
       category = modelConfig[i].categories,
       isRequired = modelConfig[i].isRequired,
       label = modelConfig[i].label;
-    // console.log('element', element);
+
     switch (ctr) {
       case 'switch':
         return <Form.Check type={'switch'} id={`ctr${i}`} label={label} defaultChecked={element} onChange={(e) => this.switcher(elm, e.target.checked)} />;
@@ -441,7 +479,7 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
         );
       case 'file':
         //@ts-ignore
-        return <Form.Control multiple type={ctr} name='imageName' onChange={(e) => this.inputFileDataUpdater(elm, e)} accept={_CONFIG.validation.file.imgTypes}></Form.Control>;
+        return <Form.Control multiple type={ctr} name='imageName' onChange={(e) => this.inputFileDataUpdater(elm, e)} accept={elm === 'modelUrl' ? validation.file.web3dTypes : elm === 'modelImgs' || elm.name === 'modelMaterialUrl' ? validation.file.imgTypes : validation.file.vidTypes}></Form.Control>;
       case 'textarea':
         return <Form.Control as={ctr} rows={3} value={element ? element : ''} onChange={(e) => this.inputDataUpdater(elm, e.target.value)}></Form.Control>;
       default:

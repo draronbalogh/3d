@@ -15,6 +15,7 @@ export const _CONFIG = {
     uploadFiles: `${HOST3D}:${PORT3D}/uploadModel`,
     deleteModelFiles: `${HOST3D}:${PORT3D}/deleteModelFiles`,
     imageApi: `${HOST3D}:${PORT3D}/api/images/`,
+    videoApi: `${HOST3D}:${PORT3D}/api/videos/`,
     uploadFolder: 'c:/node/3d_uploads/'
   },
   routes: {
@@ -36,16 +37,18 @@ export const _CONFIG = {
     file: {
       numberOfFiles: 10,
       minFileSize: 1,
-      maxFileSize: 2000 * 1000 * 1000, // 2 GB per file
+      maxFileSize: 20000 * 1000 * 1000, // 2 GB per file
       maxTotalFileSize: 20000 * 1000 * 1000, // 20 GB total
       maxFiles: 20,
       maxFields: 0, // 0 = unlimited
       maxFieldsSize: 1000 * 1024 * 1024,
       keepExtensions: true,
       allowEmptyFiles: false,
-      types: ['jpg', 'jpeg', 'png', 'bmp', 'svg', 'gif', 'webp', 'gltf', 'glb', 'fbx', 'obj', 'max', 'ma', 'blend', 'aep', 'aep', 'mp4', 'mpeg', 'webm', 'mov', 'mxf', 'mp3', 'weba', 'aac', 'wav', 'mid', 'tga', 'tif', 'tiff', 'json', 'txt', 'rtf', 'pdf', 'ppt', 'pptx', 'doc', 'docx', 'xls', 'xlsx', 'zip', '7z', 'rar', 'ttf', 'otf', 'woff', 'woff2'],
+      types: ['jpg', 'jpeg', 'png', 'bmp', 'svg', 'gif', 'webp', 'gltf', 'glb', 'fbx', 'obj', 'max', 'ma', 'blend', 'aep', 'mp4', 'mpeg', 'webm', 'mov', 'mxf', 'mp3', 'weba', 'aac', 'wav', 'mid', 'tga', 'tif', 'tiff', 'json', 'txt', 'rtf', 'pdf', 'ppt', 'pptx', 'doc', 'docx', 'xls', 'xlsx', 'zip', '7z', 'rar', 'ttf', 'otf', 'woff', 'woff2'],
       forntendTypes: '.jpg, .jpeg, .png, .bmp, .svg, .gif, .webp, .gltf, .glb, .mp4, .mpeg, .webm, .mp3, .weba, .aac, .wav, .pdf, .zip, .7z, .rar',
-      imgTypes: '.jpg, .jpeg, .png, .bmp, .svg, .gif, .webp'
+      imgTypes: '.jpg, .jpeg, .png, .bmp, .svg, .gif, .webp',
+      vidTypes: '.mp4, .mpeg, .webm, .mov, .mxf',
+      web3dTypes: '.gltf, .glb,'
     },
     text: {
       maxTextLength: 1000
