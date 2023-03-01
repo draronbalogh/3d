@@ -24,6 +24,7 @@ interface UploadFiles {
   modelUrl: [];
   modelImgs: [];
   modelMaterialUrl: [];
+  modelVideos: [];
 }
 interface Model3dState {
   data: any;
@@ -73,7 +74,7 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
       isUploading: false,
       data: this.props.data,
       imgData: [],
-      files: { modelUrl: [], modelImgs: [], modelMaterialUrl: [] },
+      files: { modelUrl: [], modelImgs: [], modelMaterialUrl: [], modelVideos: [] },
       oldFilesToDel: null,
       deleteTheseFiles: [],
       uploadingData: [],
@@ -129,11 +130,14 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
    */
   // TODO:: refactor this function
   inputFileDataUpdater = async (elm: string, e: any) => {
-    const { db, url, msg, validation } = _CONFIG;
     e.preventDefault();
+    const { db, url, msg, validation } = _CONFIG;
     try {
       this.imgD[elm] = [];
-
+      const category = elm === 'modelVideos' ? 'vid' : 'img',
+        fT = category + 'FileType',
+        fS = category + 'FileSize',
+        fN = category + 'FileName';
       if (e.target.files.length > validation.file.maxFiles) {
         alert(msg.error.file.maxFileLimit);
         return;
@@ -144,52 +148,55 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
         let modelUrl = oldFilesToDel['modelUrl'] ? oldFilesToDel['modelUrl'] : '',
           modelImgs = oldFilesToDel['modelImgs'] ? oldFilesToDel['modelImgs'] : '',
           modelMaterialUrl = oldFilesToDel['modelMaterialUrl'] ? oldFilesToDel['modelMaterialUrl'] : '',
+          modelVideos = oldFilesToDel['modelVideos'] ? oldFilesToDel['modelVideos'] : '',
           modelUrlA = modelUrl.split(','),
           modelImgsA = modelImgs.split(','),
-          modelMaterialUrlA = modelMaterialUrl.split(',');
+          modelMaterialUrlA = modelMaterialUrl.split(','),
+          modelVideosA = modelVideos.split(',');
         if (elm === 'modelUrl') DbEdit3dModel.imgArray.push(modelUrlA);
         if (elm === 'modelImgs') DbEdit3dModel.imgArray.push(modelImgsA);
         if (elm === 'modelMaterialUrl') DbEdit3dModel.imgArray.push(modelMaterialUrlA);
+        if (elm === 'modelVideos') DbEdit3dModel.imgArray.push(modelVideosA);
+        console.log('DbEdit3dModel.imgArray.flat(1) ', DbEdit3dModel.imgArray.flat(1));
         this.setState({ deleteTheseFiles: DbEdit3dModel.imgArray.flat(1) });
 
         for (let i = 0; i <= e.target.files.length - 1; i++) {
           let item = e.target.files.item(i);
           this.imgD[elm].push({
             ...this.state.data,
-            imgFileType: item.name.split('.').pop().toLowerCase(),
-            imgFileSize: Math.round(item.size),
-            imgOriginalFileName: item.name.toLocaleLowerCase(),
-            imgFolderPath: `${url.uploadFolder}${this.state.data.modelUuid}`,
-            imgFileNameWithoutExtension: item.name.split('.').slice(0, -1).join('.').toLocaleLowerCase(),
-            imgFileExtension: item.name.split('.').pop(),
-            imgVisibility: 1,
-            imgUuid: nanoid(10).toLocaleLowerCase(),
-            imgFileMimeType: item.type,
-            imgFileLastModified: item.lastModified,
-            imgFileLastModifiedDate: item.lastModifiedDate,
+            [`${category}FileType`]: item.name.split('.').pop().toLowerCase(),
+            [`${category}FileSize`]: Math.round(item.size),
+            [`${category}OriginalFileName`]: item.name.toLocaleLowerCase(),
+            [`${category}FolderPath`]: `${url.uploadFolder}${this.state.data.modelUuid}`,
+            [`${category}FileNameWithoutExtension`]: item.name.split('.').slice(0, -1).join('.').toLocaleLowerCase(),
+            [`${category}FileExtension`]: item.name.split('.').pop(),
+            [`${category}Visibility`]: 1,
+            [`${category}Uuid`]: nanoid(10).toLocaleLowerCase(),
+            [`${category}FileMimeType`]: item.type,
+            [`${category}FileLastModified`]: item.lastModified,
+            [`${category}FileLastModifiedDate`]: item.lastModifiedDate,
             joinFromInput: elm
           });
 
-          if (!validation.file.types.includes(this.imgD[elm][i].imgFileType)) {
+          if (!validation.file.types.includes(this.imgD[elm][i][fT])) {
             alert(msg.error.file.notValid);
             return;
           }
-          if (this.imgD[elm][i].imgFileSize < validation.file.minFileSize) {
+          if (this.imgD[elm][i][fS] < validation.file.minFileSize) {
             alert(msg.error.file.tooSmall);
             return;
           }
-          if (this.imgD[elm][i].imgFileSize > validation.file.maxFileSize) {
+          if (this.imgD[elm][i][fS] > validation.file.maxFileSize) {
             alert(msg.error.file.tooBig);
             return;
           }
         }
       }
-      let files = { ...this.state.files };
-      let filesTxt: string = '';
-      let filesTxtForImgs: string = '';
+      let files = { ...this.state.files },
+        filesTxt: string = '',
+        filesTxtForImgs: string = '';
       files[elm] = e.target.files;
       this.setState({ files });
-
       Array.from(e.target.files).forEach((value: any, key: number) => {
         // loop through files with key and value
         const fileName: string = value.name;
@@ -204,7 +211,7 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
           .replace(/[\u0300-\u036f]/g, '')
           .toLowerCase()
           .replace(/[^a-zA-Z0-9.]/g, '-')}`;
-        this.imgD[elm][key]['imgFileName'] = filesTxtForImgs;
+        this.imgD[elm][key][fN] = filesTxtForImgs;
       });
       this.setState({
         data: {
@@ -260,6 +267,7 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
     try {
       await this.deleteModelFiles(deleteTheseFiles, modelId, modelUuid);
       await this.deleteModelImages(modelId);
+      await this.deleteModelVideos(modelId);
       await this.patchModel(modelId, data);
       await this.postForImageDb(modelId, modelUuid, this.imgD);
       await this.postForVideoDb(modelId, modelUuid, this.imgD);
@@ -277,7 +285,7 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
    */
   deleteModelFiles = async (deleteTheseFiles: any, modelId: string, modelUuid: string) => {
     const { url, msg } = _CONFIG;
-
+    console.log('>>', modelId, modelUuid);
     const response = await axios.post(url.deleteModelFiles, { deleteTheseFiles, modelId, modelUuid, deleteFolder: false }, {});
     if (response.data.success === false) {
       console.log(msg.error.file.deleting, response);
@@ -299,6 +307,20 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
     }
   };
 
+  /**
+   * Delete model videos
+   * @param modelId
+   */
+  deleteModelVideos = async (modelId: string) => {
+    const { url, msg } = _CONFIG;
+    for (const key in this.imgD) {
+      let joinFromInput = key;
+      const response = await axios.delete(url.videoApi + modelId + '/' + joinFromInput);
+      if (response.data.success === false) {
+        console.log(msg.error.file.deleting, response);
+      }
+    }
+  };
   /**
    * Patch model
    * @param modelId

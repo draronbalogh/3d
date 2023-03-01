@@ -34,6 +34,7 @@ interface UploadFiles {
   modelUrl: [];
   modelImgs: [];
   modelMaterialUrl: [];
+  modelVideos: [];
 }
 interface imgDataType {
   imgFileType: string;
@@ -67,7 +68,7 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
       uploadingData: null,
       data: {},
       imgData: [],
-      files: { modelUrl: [], modelImgs: [], modelMaterialUrl: [] },
+      files: { modelUrl: [], modelImgs: [], modelMaterialUrl: [], modelVideos: [] },
       folderName: '',
       modelUuid: '',
       folderId: nanoid(10).toLocaleLowerCase()
@@ -231,7 +232,7 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
     try {
       this.imgD[elm] = [];
       const category = elm === 'modelVideos' ? 'vid' : 'img',
-        fC = category + 'FileType',
+        fT = category + 'FileType',
         fS = category + 'FileSize',
         fN = category + 'FileName';
       if (e.target.files.length > validation.file.maxFiles) {
@@ -257,7 +258,7 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
             joinFromInput: elm
           });
 
-          if (!validation.file.types.includes(this.imgD[elm][i][fC])) {
+          if (!validation.file.types.includes(this.imgD[elm][i][fT])) {
             alert(msg.error.file.notValid);
             return;
           }

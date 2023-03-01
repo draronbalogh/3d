@@ -73,7 +73,7 @@ const uploadModel = async (req: any, res: any, next: any) => {
    * Emitted after each incoming chunk of data that has been parsed.
    * Reports the progress of the incoming form.
    */
-  form.on('progress', function (bytesReceived: any, bytesExpected: any) {
+  form.on('progress', (bytesReceived: any, bytesExpected: any) => {
     const perc = Math.round((100 * bytesReceived) / bytesExpected) + '%';
     // console.log('uploadModel', perc);
     return perc;
