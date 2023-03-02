@@ -1,6 +1,6 @@
 import { DataTypes } from 'sequelize';
 
-export const seqConfigFor3dModels = {
+export const seqConfigForRecords = {
   modelId: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
   modelUuid: { type: DataTypes.STRING(100) },
   modelUploaderUid: { type: DataTypes.STRING(50) },
