@@ -10,7 +10,7 @@ import { _CONFIG, PORT3D } from '../_config/config-general';
 ///////////////////////////////////////////////////////////   LIBS
 import formidable, { errors as formidableErrors } from 'formidable';
 ///////////////////////////////////////////////////////////   COMPS
-import routes3d from './routes/routes-3d';
+import routes3d from './routes/routes-records';
 import routesImages from './routes/routes-images';
 import routesVideos from './routes/routes-videos';
 import db from '../_config/config-database';

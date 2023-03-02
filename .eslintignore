@@ -7,7 +7,7 @@ webpack.config.js
 controllers/
 middleware/
 component-db/
-view-3d-model/
+view-record/
 server.ts
 # others
 gen-methods.ts

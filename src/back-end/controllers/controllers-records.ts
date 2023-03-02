@@ -3,7 +3,7 @@
 import { _CONFIG } from '../../_config/config-general';
 ///////////////////////////////////////////////////////////   CONTROLLERS
 import { Request, Response } from 'express';
-import { ModelCtrFor3dTypes } from '../models/model-for-3dmodels';
+import { ModelCtrFor3dTypes } from '../models/model-for-records';
 import { db, ModelCtrForImageTypes } from '../models/model-for-images';
 ///////////////////////////////////////////////////////////   ROUTES
 

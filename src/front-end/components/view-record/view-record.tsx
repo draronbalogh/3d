@@ -16,7 +16,7 @@ interface CompState {
   modelId: number | any;
 }
 //////////////////////////////////////////////////////////////////////////////////////    CLASS SETUP
-export class View3dModel extends React.Component<CompProps, CompState> {
+export class ViewRecord extends React.Component<CompProps, CompState> {
   constructor(props: CompProps) {
     super(props);
     this.state = {

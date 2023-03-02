@@ -1,7 +1,7 @@
 /* view layout with 3d */
-export { View3dModel } from './view-3d-model/view-3d-model';
+export { ViewRecord } from './view-record/view-record';
 
 /* manage 3d db (list, add, edit) */
-export { DbList3dModel } from './component-db/db-list-3d-model/db-list-3d-model';
-export { DbAdd3dModel } from './component-db/db-add-3d-model/db-add-3d-model';
-export { DbEdit3dModel } from './component-db/db-edit-3d-model/db-edit-3d-model';
+export { DbListRecord } from './component-db/db-list-record/db-list-record';
+export { DbAddRecord } from './component-db/db-add-record/db-add-record';
+export { DbEditRecord } from './component-db/db-edit-record/db-edit-record';

@@ -5,7 +5,7 @@ import { Routes, Route } from 'react-router-dom';
 ///////////////////////////////////////////////////////////   CONFIG
 import { _CONFIG } from '../_config/config-general';
 ///////////////////////////////////////////////////////////   LIBS
-import { View3dModel, DbList3dModel, DbAdd3dModel, DbEdit3dModel } from './components';
+import { ViewRecord, DbListRecord, DbAddRecord, DbEditRecord } from './components';
 ///////////////////////////////////////////////////////////   DOM
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
@@ -113,10 +113,10 @@ class App extends React.Component<unknown, State> {
         <Row>
           <Col xs={12}>
             <Routes>
-              <Route path='/' element={<DbList3dModel updateId={this.updateId} updateData={this.updateData} />} />
-              <Route path='/add' element={<DbAdd3dModel />} />
-              <Route path='/edit/:modelId' element={<DbEdit3dModel data={data} />} />
-              <Route path='/view/:modelId' element={<View3dModel data={data} />} />
+              <Route path='/' element={<DbListRecord updateId={this.updateId} updateData={this.updateData} />} />
+              <Route path='/add' element={<DbAddRecord />} />
+              <Route path='/edit/:modelId' element={<DbEditRecord data={data} />} />
+              <Route path='/view/:modelId' element={<ViewRecord data={data} />} />
               {
                 //  <Route path='/getLastModelId' element={<>asdsad {console.log(data)}</>} />
               }

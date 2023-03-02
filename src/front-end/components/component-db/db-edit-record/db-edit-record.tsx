@@ -21,12 +21,12 @@ interface ModelProps {
   data: any;
 }
 interface UploadFiles {
-  modelUrl: [];
+  recordUrl: [];
   modelImgs: [];
   modelMaterialUrl: [];
   modelVideos: [];
 }
-interface Model3dState {
+interface RecordState {
   data: any;
   imgData: imgDataType[];
   uploadingData: any;
@@ -62,7 +62,7 @@ declare module 'react' {
   }
 }
 //////////////////////////////////////////////////////////////////////////////////////    CLASS SETUP
-export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
+export class DbEditRecord extends React.Component<ModelProps, RecordState> {
   static imgArray: any[] = [];
   private imgD: any = [];
   constructor(props: any) {
@@ -74,7 +74,7 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
       isUploading: false,
       data: this.props.data,
       imgData: [],
-      files: { modelUrl: [], modelImgs: [], modelMaterialUrl: [], modelVideos: [] },
+      files: { recordUrl: [], modelImgs: [], modelMaterialUrl: [], modelVideos: [] },
       oldFilesToDel: null,
       deleteTheseFiles: [],
       uploadingData: [],
@@ -93,7 +93,7 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
   componentDidUpdate(prevProps: any, prevState: any) {
     if (JSON.stringify(this.props.data) !== JSON.stringify(prevProps.data)) {
       this.setState({ data: this.props.data });
-      DbEdit3dModel.imgArray = [];
+      DbEditRecord.imgArray = [];
     }
   }
   ///////////////////////////////////////////////////////////   CLASS METHODS
@@ -145,20 +145,20 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
 
       if (e.target.files.length > 0) {
         const { oldFilesToDel } = this.state;
-        let modelUrl = oldFilesToDel['modelUrl'] ? oldFilesToDel['modelUrl'] : '',
+        let recordUrl = oldFilesToDel['recordUrl'] ? oldFilesToDel['recordUrl'] : '',
           modelImgs = oldFilesToDel['modelImgs'] ? oldFilesToDel['modelImgs'] : '',
           modelMaterialUrl = oldFilesToDel['modelMaterialUrl'] ? oldFilesToDel['modelMaterialUrl'] : '',
           modelVideos = oldFilesToDel['modelVideos'] ? oldFilesToDel['modelVideos'] : '',
-          modelUrlA = modelUrl.split(','),
+          modelUrlA = recordUrl.split(','),
           modelImgsA = modelImgs.split(','),
           modelMaterialUrlA = modelMaterialUrl.split(','),
           modelVideosA = modelVideos.split(',');
-        if (elm === 'modelUrl') DbEdit3dModel.imgArray.push(modelUrlA);
-        if (elm === 'modelImgs') DbEdit3dModel.imgArray.push(modelImgsA);
-        if (elm === 'modelMaterialUrl') DbEdit3dModel.imgArray.push(modelMaterialUrlA);
-        if (elm === 'modelVideos') DbEdit3dModel.imgArray.push(modelVideosA);
-        console.log('DbEdit3dModel.imgArray.flat(1) ', DbEdit3dModel.imgArray.flat(1));
-        this.setState({ deleteTheseFiles: DbEdit3dModel.imgArray.flat(1) });
+        if (elm === 'recordUrl') DbEditRecord.imgArray.push(modelUrlA);
+        if (elm === 'modelImgs') DbEditRecord.imgArray.push(modelImgsA);
+        if (elm === 'modelMaterialUrl') DbEditRecord.imgArray.push(modelMaterialUrlA);
+        if (elm === 'modelVideos') DbEditRecord.imgArray.push(modelVideosA);
+        console.log('DbEditRecord.imgArray.flat(1) ', DbEditRecord.imgArray.flat(1));
+        this.setState({ deleteTheseFiles: DbEditRecord.imgArray.flat(1) });
 
         for (let i = 0; i <= e.target.files.length - 1; i++) {
           let item = e.target.files.item(i);
@@ -501,7 +501,7 @@ export class DbEdit3dModel extends React.Component<ModelProps, Model3dState> {
         );
       case 'file':
         //@ts-ignore
-        return <Form.Control multiple type={ctr} name='imageName' onChange={(e) => this.inputFileDataUpdater(elm, e)} accept={elm === 'modelUrl' ? validation.file.web3dTypes : elm === 'modelImgs' || elm.name === 'modelMaterialUrl' ? validation.file.imgTypes : validation.file.vidTypes}></Form.Control>;
+        return <Form.Control multiple type={ctr} name='imageName' onChange={(e) => this.inputFileDataUpdater(elm, e)} accept={elm === 'recordUrl' ? validation.file.web3dTypes : elm === 'modelImgs' || elm === 'modelMaterialUrl' ? validation.file.imgTypes : validation.file.vidTypes}></Form.Control>;
       case 'textarea':
         return <Form.Control as={ctr} rows={3} value={element ? element : ''} onChange={(e) => this.inputDataUpdater(elm, e.target.value)}></Form.Control>;
       default:

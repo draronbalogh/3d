@@ -147,7 +147,7 @@ export const modelConfig = [
     maxLength: 255
   },
   {
-    name: 'modelUrl',
+    name: 'recordUrl',
     label: '3D modellek',
     control: 'file',
     inputType: 'text',

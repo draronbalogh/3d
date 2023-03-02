@@ -18,7 +18,7 @@ import { ProgressViewer } from '../db-shared/progress-viewer/progress-viewer-com
 import 'react-circular-progressbar/dist/styles.css';
 import { forEachChild } from 'typescript';
 ///////////////////////////////////////////////////////////   INTERFACE
-interface Model3dState {
+interface RecordState {
   data: any;
   imgData: imgDataType[];
   isUploading: boolean;
@@ -31,7 +31,7 @@ interface Model3dState {
   folderId: string;
 }
 interface UploadFiles {
-  modelUrl: [];
+  recordUrl: [];
   modelImgs: [];
   modelMaterialUrl: [];
   modelVideos: [];
@@ -51,12 +51,12 @@ interface imgDataType {
 }
 
 interface ModelMethods {
-  save3dModel: (e: any) => Promise<void>;
+  saveRecod: (e: any) => Promise<void>;
   formBuilder: (i: number, elm: any) => JSX.Element;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////    CLASS SETUP
-export class DbAdd3dModel extends React.Component<any, Model3dState> implements ModelMethods {
+export class DbAddRecord extends React.Component<any, RecordState> implements ModelMethods {
   form: React.RefObject<any>;
   private imgD: any = [];
   constructor(props: any) {
@@ -68,7 +68,7 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
       uploadingData: null,
       data: {},
       imgData: [],
-      files: { modelUrl: [], modelImgs: [], modelMaterialUrl: [], modelVideos: [] },
+      files: { recordUrl: [], modelImgs: [], modelMaterialUrl: [], modelVideos: [] },
       folderName: '',
       modelUuid: '',
       folderId: nanoid(10).toLocaleLowerCase()
@@ -82,7 +82,7 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
    * Save 3d model to database
    * @param e: onclick event
    */
-  save3dModel = async (e: any) => {
+  saveRecod = async (e: any) => {
     e.preventDefault();
     const { data, files, folderName } = this.state;
     const filesData = new FormData();
@@ -152,7 +152,6 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
     const { db, url } = _CONFIG;
     let postArr: any[] = [];
     Object.keys(this.imgD).forEach((element: any, key: number) => {
-      console.log('element', element);
       if (element === 'modelImgs' || element === 'modelMaterialUrl') {
         this.imgD[element].forEach((e: any, k: number) => {
           postArr.push(this.imgD[element][k]);
@@ -220,7 +219,7 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
    * Input file data updater
    * @param elm string
    * @param e file data
-   * @memberof DbAdd3dModel
+   * @memberof DbAddRecord
    * @description
    * Update state with uuuid file names
    */
@@ -291,7 +290,6 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
           .replace(/[^a-zA-Z0-9.]/g, '-')}`;
         this.imgD[elm][key][fN] = filesTxtForImgs;
       });
-      console.log('this.imgD', this.imgD);
       this.setState({
         data: {
           ...this.state.data,
@@ -308,7 +306,7 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
    * @param elm string
    * @param e any
    * @returns void
-   * @memberof DbAdd3dModel
+   * @memberof DbAddRecord
    */
   inputDataUpdater = (elm: string, e: any) => {
     const { folderId } = this.state;
@@ -337,7 +335,7 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
    * @param elm any
    * @param trgVal any
    * @returns
-   * @memberof DbAdd3dModel
+   * @memberof DbAddRecord
    */
   switcher = (elm: any, trgVal: any) => {
     this.setState({
@@ -378,7 +376,7 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
           </Form.Select>
         );
       case 'file':
-        return <Form.Control multiple type={ctr} name={folderId ? folderId : ''} onChange={(e) => this.inputFileDataUpdater(elm.name, e)} accept={elm.name === 'modelUrl' ? validation.file.web3dTypes : elm.name === 'modelImgs' || elm.name === 'modelMaterialUrl' ? validation.file.imgTypes : validation.file.vidTypes}></Form.Control>;
+        return <Form.Control multiple type={ctr} name={folderId ? folderId : ''} onChange={(e) => this.inputFileDataUpdater(elm.name, e)} accept={elm.name === 'recordUrl' ? validation.file.web3dTypes : elm.name === 'modelImgs' || elm.name === 'modelMaterialUrl' ? validation.file.imgTypes : validation.file.vidTypes}></Form.Control>;
       case 'textarea':
         return <Form.Control as={ctr} rows={3} value={data?.hasOwnProperty(elm.name) ? data[elm.name] : ''} onChange={(e) => this.inputDataUpdater(elm.name, e.target.value)}></Form.Control>;
       default:
@@ -396,7 +394,7 @@ export class DbAdd3dModel extends React.Component<any, Model3dState> implements 
     ) : isUploading ? (
       <ProgressViewer uploadingData={uploadingData} />
     ) : (
-      <Form onSubmit={this.save3dModel} ref={this.form}>
+      <Form onSubmit={this.saveRecod} ref={this.form}>
         {modelConfig
           ? modelConfig.map((elm: any, i: number) => {
               const enableForAddEdit: boolean = modelConfig[i].enableForAddEdit;

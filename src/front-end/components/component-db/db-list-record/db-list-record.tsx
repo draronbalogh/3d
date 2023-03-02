@@ -15,12 +15,12 @@ interface Model3dProps {
   updateId: any;
   updateData: any;
 }
-interface Model3dState {
+interface RecordState {
   data: any[];
   isDeleted: boolean;
 }
 //////////////////////////////////////////////////////////////////////////////////////    CLASS SETUP
-export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
+export class DbListRecord extends React.Component<Model3dProps, RecordState> {
   constructor(props: Model3dProps) {
     super(props);
     this.state = {
@@ -60,9 +60,9 @@ export class DbList3dModel extends React.Component<Model3dProps, Model3dState> {
     try {
       let modelImgs: string[] = ob['modelImgs'] ? ob['modelImgs']?.split(',') : [],
         modelMaterialUrl: string[] = ob['modelMaterialUrl'] ? ob['modelMaterialUrl']?.split(',') : [],
-        modelUrl: string[] = ob['modelUrl'] ? ob['modelUrl']?.split(',') : [],
+        recordUrl: string[] = ob['recordUrl'] ? ob['recordUrl']?.split(',') : [],
         modelVideos: string[] = ob['modelVideos'] ? ob['modelVideos']?.split(',') : [],
-        deleteTheseFiles: string[] = [...modelImgs, ...modelMaterialUrl, ...modelUrl, ...modelVideos];
+        deleteTheseFiles: string[] = [...modelImgs, ...modelMaterialUrl, ...recordUrl, ...modelVideos];
       await axios.post(_CONFIG.url.deleteModelFiles, { deleteTheseFiles, modelId: ob['modelId'], modelUuid: ob['modelUuid'], deleteFolder: true }, {}).then((response) => {
         if (response.data.success === false) console.log(_CONFIG.msg.error.file.deleting, response);
       });
