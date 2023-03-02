@@ -2,27 +2,27 @@ export const PORT3D = 5000;
 export const HOST3D = 'http://127.0.0.1'; // TODO: Change proxy in package.json to this
 export const _CONFIG = {
   db: {
-    tableName3d: 'models',
+    tableNameRecords: 'records',
     tableNameImages: 'images',
     tableNameVideos: 'videos'
   },
   url: {
-    modelApi: `${HOST3D}:${PORT3D}/api/3dmodels/`,
-    createModel: `${HOST3D}:${PORT3D}/api/3dmodels/createModel`,
-    createImage: `${HOST3D}:${PORT3D}/api/3dmodels/createImage`,
-    createVideo: `${HOST3D}:${PORT3D}/api/3dmodels/createVideo`,
-    getLastModelId: `${HOST3D}:${PORT3D}/api/3dmodels/getLastModelId`,
-    uploadFiles: `${HOST3D}:${PORT3D}/uploadModel`,
-    deleteModelFiles: `${HOST3D}:${PORT3D}/deleteModelFiles`,
+    modelApi: `${HOST3D}:${PORT3D}/api/records/`,
+    createRecord: `${HOST3D}:${PORT3D}/api/records/createRecord`,
+    createImage: `${HOST3D}:${PORT3D}/api/records/createImage`,
+    createVideo: `${HOST3D}:${PORT3D}/api/records/createVideo`,
+    getLastModelId: `${HOST3D}:${PORT3D}/api/records/getLastModelId`,
+    uploadFiles: `${HOST3D}:${PORT3D}/uploadRecord`,
+    deleteRecordFiles: `${HOST3D}:${PORT3D}/deleteRecordFiles`,
     imageApi: `${HOST3D}:${PORT3D}/api/images/`,
     videoApi: `${HOST3D}:${PORT3D}/api/videos/`,
     uploadFolder: 'c:/node/3d_uploads/'
   },
   routes: {
-    uploadModel: '/uploadModel',
+    uploadRecord: '/uploadRecord',
     createImage: '/createImage',
-    deleteModelFiles: '/deleteModelFiles',
-    routes3d: '/api/3dmodels',
+    deleteRecordFiles: '/deleteRecordFiles',
+    routesRecord: '/api/records',
     routesImages: '/api/images',
     routesVideos: '/api/videos',
     error: 'Hibás URL cím, vagy nem létező oldal!'

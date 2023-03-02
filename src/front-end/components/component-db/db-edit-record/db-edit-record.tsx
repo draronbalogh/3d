@@ -22,9 +22,9 @@ interface ModelProps {
 }
 interface UploadFiles {
   recordUrl: [];
-  modelImgs: [];
-  modelMaterialUrl: [];
-  modelVideos: [];
+  recordImgs: [];
+  recordMaterialUrl: [];
+  recordVideos: [];
 }
 interface RecordState {
   data: any;
@@ -35,12 +35,12 @@ interface RecordState {
   isSaved: boolean;
   isThankYou: boolean;
   oldFilesToDel: any;
-  modelUuid: string;
+  recordUuid: string;
   folderId: string;
   folderName: string;
   joinFromInput: string[];
   deleteTheseFiles: string[];
-  modelId: any;
+  recordId: any;
 }
 interface imgDataType {
   imgFileType: string;
@@ -52,8 +52,8 @@ interface imgDataType {
   imgFileMimeType: string;
   imgFileLastModified: string;
   imgFileLastModifiedDate: string;
-  modelTitle: string;
-  modelUuid: string;
+  recordTitle: string;
+  recordUuid: string;
 }
 declare module 'react' {
   interface HTMLAttributes<T> {
@@ -68,19 +68,19 @@ export class DbEditRecord extends React.Component<ModelProps, RecordState> {
   constructor(props: any) {
     super(props);
     this.state = {
-      modelId: Number(window.location.pathname.split('/').pop()),
+      recordId: Number(window.location.pathname.split('/').pop()),
       isSaved: false,
       isThankYou: false,
       isUploading: false,
       data: this.props.data,
       imgData: [],
-      files: { recordUrl: [], modelImgs: [], modelMaterialUrl: [], modelVideos: [] },
+      files: { recordUrl: [], recordImgs: [], recordMaterialUrl: [], recordVideos: [] },
       oldFilesToDel: null,
       deleteTheseFiles: [],
       uploadingData: [],
       folderId: '',
       folderName: '',
-      modelUuid: '',
+      recordUuid: '',
       joinFromInput: []
     };
   }
@@ -98,23 +98,23 @@ export class DbEditRecord extends React.Component<ModelProps, RecordState> {
   }
   ///////////////////////////////////////////////////////////   CLASS METHODS
   /**
-   * Find data by modelId
+   * Find data by recordId
    */
   findDataById = () => {
-    const { data, modelId } = this.state;
-    const obj = data.find((o: { modelId: any }) => o.modelId === modelId);
+    const { data, recordId } = this.state;
+    const obj = data.find((o: { recordId: any }) => o.recordId === recordId);
     this.setState({ data: obj });
     this.setState({ oldFilesToDel: obj });
   };
 
   /**
-   * Fetch 3D model data by modelId
+   * Fetch 3D model data by recordId
    */
   fetchModelDataById = async () => {
     const { url, msg } = _CONFIG;
     try {
-      const { modelId } = this.state;
-      const response = await axios.get(url.modelApi + modelId);
+      const { recordId } = this.state;
+      const response = await axios.get(url.modelApi + recordId);
       this.setState({ data: response.data });
       this.setState({ oldFilesToDel: response.data });
     } catch (e: any) {
@@ -134,7 +134,7 @@ export class DbEditRecord extends React.Component<ModelProps, RecordState> {
     const { db, url, msg, validation } = _CONFIG;
     try {
       this.imgD[elm] = [];
-      const category = elm === 'modelVideos' ? 'vid' : 'img',
+      const category = elm === 'recordVideos' ? 'vid' : 'img',
         fT = category + 'FileType',
         fS = category + 'FileSize',
         fN = category + 'FileName';
@@ -146,17 +146,17 @@ export class DbEditRecord extends React.Component<ModelProps, RecordState> {
       if (e.target.files.length > 0) {
         const { oldFilesToDel } = this.state;
         let recordUrl = oldFilesToDel['recordUrl'] ? oldFilesToDel['recordUrl'] : '',
-          modelImgs = oldFilesToDel['modelImgs'] ? oldFilesToDel['modelImgs'] : '',
-          modelMaterialUrl = oldFilesToDel['modelMaterialUrl'] ? oldFilesToDel['modelMaterialUrl'] : '',
-          modelVideos = oldFilesToDel['modelVideos'] ? oldFilesToDel['modelVideos'] : '',
+          recordImgs = oldFilesToDel['recordImgs'] ? oldFilesToDel['recordImgs'] : '',
+          recordMaterialUrl = oldFilesToDel['recordMaterialUrl'] ? oldFilesToDel['recordMaterialUrl'] : '',
+          recordVideos = oldFilesToDel['recordVideos'] ? oldFilesToDel['recordVideos'] : '',
           modelUrlA = recordUrl.split(','),
-          modelImgsA = modelImgs.split(','),
-          modelMaterialUrlA = modelMaterialUrl.split(','),
-          modelVideosA = modelVideos.split(',');
+          modelImgsA = recordImgs.split(','),
+          modelMaterialUrlA = recordMaterialUrl.split(','),
+          modelVideosA = recordVideos.split(',');
         if (elm === 'recordUrl') DbEditRecord.imgArray.push(modelUrlA);
-        if (elm === 'modelImgs') DbEditRecord.imgArray.push(modelImgsA);
-        if (elm === 'modelMaterialUrl') DbEditRecord.imgArray.push(modelMaterialUrlA);
-        if (elm === 'modelVideos') DbEditRecord.imgArray.push(modelVideosA);
+        if (elm === 'recordImgs') DbEditRecord.imgArray.push(modelImgsA);
+        if (elm === 'recordMaterialUrl') DbEditRecord.imgArray.push(modelMaterialUrlA);
+        if (elm === 'recordVideos') DbEditRecord.imgArray.push(modelVideosA);
         console.log('DbEditRecord.imgArray.flat(1) ', DbEditRecord.imgArray.flat(1));
         this.setState({ deleteTheseFiles: DbEditRecord.imgArray.flat(1) });
 
@@ -167,7 +167,7 @@ export class DbEditRecord extends React.Component<ModelProps, RecordState> {
             [`${category}FileType`]: item.name.split('.').pop().toLowerCase(),
             [`${category}FileSize`]: Math.round(item.size),
             [`${category}OriginalFileName`]: item.name.toLocaleLowerCase(),
-            [`${category}FolderPath`]: `${url.uploadFolder}${this.state.data.modelUuid}`,
+            [`${category}FolderPath`]: `${url.uploadFolder}${this.state.data.recordUuid}`,
             [`${category}FileNameWithoutExtension`]: item.name.split('.').slice(0, -1).join('.').toLocaleLowerCase(),
             [`${category}FileExtension`]: item.name.split('.').pop(),
             [`${category}Visibility`]: 1,
@@ -241,15 +241,15 @@ export class DbEditRecord extends React.Component<ModelProps, RecordState> {
       },
       isSaved: false
     });
-    if (elm === 'modelTitle')
-      this.setState({ modelUuid: removeHunChars(e) }, () => {
-        const { modelUuid } = this.state;
+    if (elm === 'recordTitle')
+      this.setState({ recordUuid: removeHunChars(e) }, () => {
+        const { recordUuid } = this.state;
         this.setState({
           data: {
             ...this.state.data,
-            modelUuid: modelUuid + '-' + folderId
+            recordUuid: recordUuid + '-' + folderId
           },
-          folderName: modelUuid + '-' + folderId
+          folderName: recordUuid + '-' + folderId
         });
       });
     this.setState({ isSaved: false });
@@ -261,17 +261,17 @@ export class DbEditRecord extends React.Component<ModelProps, RecordState> {
    */
   update3dModel = async (e: any) => {
     e.preventDefault();
-    const { data, deleteTheseFiles, modelId } = this.state;
-    const { modelUuid } = data;
+    const { data, deleteTheseFiles, recordId } = this.state;
+    const { recordUuid } = data;
 
     try {
-      await this.deleteModelFiles(deleteTheseFiles, modelId, modelUuid);
-      await this.deleteModelImages(modelId);
-      await this.deleteModelVideos(modelId);
-      await this.patchModel(modelId, data);
-      await this.postForImageDb(modelId, modelUuid, this.imgD);
-      await this.postForVideoDb(modelId, modelUuid, this.imgD);
-      await this.uploadFiles(data, modelUuid, this.state.files, this.setState.bind(this));
+      await this.deleteRecordFiles(deleteTheseFiles, recordId, recordUuid);
+      await this.deleteModelImages(recordId);
+      await this.deleteModelVideos(recordId);
+      await this.patchModel(recordId, data);
+      await this.postForImageDb(recordId, recordUuid, this.imgD);
+      await this.postForVideoDb(recordId, recordUuid, this.imgD);
+      await this.uploadFiles(data, recordUuid, this.state.files, this.setState.bind(this));
     } catch (error: any) {
       logAxiosError(error, _CONFIG.msg.error.fetch.updating);
     }
@@ -280,13 +280,13 @@ export class DbEditRecord extends React.Component<ModelProps, RecordState> {
   /**
    * Delete model files
    * @param deleteTheseFiles
-   * @param modelId
-   * @param modelUuid
+   * @param recordId
+   * @param recordUuid
    */
-  deleteModelFiles = async (deleteTheseFiles: any, modelId: string, modelUuid: string) => {
+  deleteRecordFiles = async (deleteTheseFiles: any, recordId: string, recordUuid: string) => {
     const { url, msg } = _CONFIG;
-    console.log('>>', modelId, modelUuid);
-    const response = await axios.post(url.deleteModelFiles, { deleteTheseFiles, modelId, modelUuid, deleteFolder: false }, {});
+    console.log('>>', recordId, recordUuid);
+    const response = await axios.post(url.deleteRecordFiles, { deleteTheseFiles, recordId, recordUuid, deleteFolder: false }, {});
     if (response.data.success === false) {
       console.log(msg.error.file.deleting, response);
     }
@@ -294,13 +294,13 @@ export class DbEditRecord extends React.Component<ModelProps, RecordState> {
 
   /**
    * Delete model images
-   * @param modelId
+   * @param recordId
    */
-  deleteModelImages = async (modelId: string) => {
+  deleteModelImages = async (recordId: string) => {
     const { url, msg } = _CONFIG;
     for (const key in this.imgD) {
       let joinFromInput = key;
-      const response = await axios.delete(url.imageApi + modelId + '/' + joinFromInput);
+      const response = await axios.delete(url.imageApi + recordId + '/' + joinFromInput);
       if (response.data.success === false) {
         console.log(msg.error.file.deleting, response);
       }
@@ -309,13 +309,13 @@ export class DbEditRecord extends React.Component<ModelProps, RecordState> {
 
   /**
    * Delete model videos
-   * @param modelId
+   * @param recordId
    */
-  deleteModelVideos = async (modelId: string) => {
+  deleteModelVideos = async (recordId: string) => {
     const { url, msg } = _CONFIG;
     for (const key in this.imgD) {
       let joinFromInput = key;
-      const response = await axios.delete(url.videoApi + modelId + '/' + joinFromInput);
+      const response = await axios.delete(url.videoApi + recordId + '/' + joinFromInput);
       if (response.data.success === false) {
         console.log(msg.error.file.deleting, response);
       }
@@ -323,12 +323,12 @@ export class DbEditRecord extends React.Component<ModelProps, RecordState> {
   };
   /**
    * Patch model
-   * @param modelId
+   * @param recordId
    * @param data
    */
-  patchModel = async (modelId: string, data: any) => {
+  patchModel = async (recordId: string, data: any) => {
     const { url, msg } = _CONFIG;
-    const response = await axios.patch(url.modelApi + modelId, data);
+    const response = await axios.patch(url.modelApi + recordId, data);
     if (response.data.success === false) {
       console.log(msg.error.fetch.updating, response);
     }
@@ -336,20 +336,20 @@ export class DbEditRecord extends React.Component<ModelProps, RecordState> {
 
   /**
    * Create images
-   * @param modelId
-   * @param modelUuid
+   * @param recordId
+   * @param recordUuid
    * @param imgD
    */
-  postForImageDb = async (modelId: string, modelUuid: string, imgD: any) => {
+  postForImageDb = async (recordId: string, recordUuid: string, imgD: any) => {
     const { db, url, msg } = _CONFIG;
     let imgPush: any[] = [];
     Object.keys(imgD).forEach((element: any, key: number) => {
-      if (element === 'modelImgs' || element === 'modelMaterialUrl') {
+      if (element === 'recordImgs' || element === 'recordMaterialUrl') {
         imgD[element].forEach((e: any, k: number) => {
           imgPush.push(imgD[element][k]);
-          imgD[element][k].joinFromTable = db.tableName3d;
-          imgD[element][k].joinId = modelId;
-          imgD[element][k].joinUuid = modelUuid;
+          imgD[element][k].joinFromTable = db.tableNameRecords;
+          imgD[element][k].joinId = recordId;
+          imgD[element][k].joinUuid = recordUuid;
         });
       }
     });
@@ -361,20 +361,20 @@ export class DbEditRecord extends React.Component<ModelProps, RecordState> {
 
   /**
    * Create images
-   * @param modelId
-   * @param modelUuid
+   * @param recordId
+   * @param recordUuid
    * @param imgD
    */
-  postForVideoDb = async (modelId: string, modelUuid: string, imgD: any) => {
+  postForVideoDb = async (recordId: string, recordUuid: string, imgD: any) => {
     const { db, url, msg } = _CONFIG;
     let imgPush: any[] = [];
     Object.keys(imgD).forEach((element: any, key: number) => {
-      if (element === 'modelVideos') {
+      if (element === 'recordVideos') {
         imgD[element].forEach((e: any, k: number) => {
           imgPush.push(imgD[element][k]);
-          imgD[element][k].joinFromTable = db.tableName3d;
-          imgD[element][k].joinId = modelId;
-          imgD[element][k].joinUuid = modelUuid;
+          imgD[element][k].joinFromTable = db.tableNameRecords;
+          imgD[element][k].joinId = recordId;
+          imgD[element][k].joinUuid = recordUuid;
         });
       }
     });
@@ -387,11 +387,11 @@ export class DbEditRecord extends React.Component<ModelProps, RecordState> {
   /**
    * Upload files
    * @param data
-   * @param modelUuid
+   * @param recordUuid
    * @param files
    * @param setState
    */
-  uploadFiles = async (data: any, modelUuid: string, files: any, setState: any) => {
+  uploadFiles = async (data: any, recordUuid: string, files: any, setState: any) => {
     const { db, url, msg } = _CONFIG;
     const filesData = new FormData();
     let isThereAnyValidFile: boolean = false;
@@ -401,7 +401,7 @@ export class DbEditRecord extends React.Component<ModelProps, RecordState> {
       }
       Object.values(files[file]).forEach((individualFile: any, index) => {
         const nameSeparatedByComma = data[file].split(',')[index];
-        if (individualFile) filesData.append(modelUuid, individualFile as Blob, nameSeparatedByComma);
+        if (individualFile) filesData.append(recordUuid, individualFile as Blob, nameSeparatedByComma);
       });
     }
 
@@ -481,7 +481,7 @@ export class DbEditRecord extends React.Component<ModelProps, RecordState> {
    * @returns
    * @description This function is used to build the form
    */
-  formBuilder = (i: number, elm: string, modelId: any) => {
+  formBuilder = (i: number, elm: string, recordId: any) => {
     const { validation } = _CONFIG;
     let { data } = this.state,
       element = data[elm],
@@ -501,11 +501,11 @@ export class DbEditRecord extends React.Component<ModelProps, RecordState> {
         );
       case 'file':
         //@ts-ignore
-        return <Form.Control multiple type={ctr} name='imageName' onChange={(e) => this.inputFileDataUpdater(elm, e)} accept={elm === 'recordUrl' ? validation.file.web3dTypes : elm === 'modelImgs' || elm === 'modelMaterialUrl' ? validation.file.imgTypes : validation.file.vidTypes}></Form.Control>;
+        return <Form.Control multiple type={ctr} name='imageName' onChange={(e) => this.inputFileDataUpdater(elm, e)} accept={elm === 'recordUrl' ? validation.file.web3dTypes : elm === 'recordImgs' || elm === 'recordMaterialUrl' ? validation.file.imgTypes : validation.file.vidTypes}></Form.Control>;
       case 'textarea':
         return <Form.Control as={ctr} rows={3} value={element ? element : ''} onChange={(e) => this.inputDataUpdater(elm, e.target.value)}></Form.Control>;
       default:
-        return <Form.Control disabled={elm === 'modelTitle' || elm === 'modelUuid' ? true : false} type={ctr} value={element ? element : ''} onChange={(e) => this.inputDataUpdater(elm, e.target.value)} required={isRequired}></Form.Control>;
+        return <Form.Control disabled={elm === 'recordTitle' || elm === 'recordUuid' ? true : false} type={ctr} value={element ? element : ''} onChange={(e) => this.inputDataUpdater(elm, e.target.value)} required={isRequired}></Form.Control>;
     }
   };
 
@@ -527,7 +527,7 @@ export class DbEditRecord extends React.Component<ModelProps, RecordState> {
               return enableForAddEdit ? (
                 <Form.Group key={i}>
                   {<Form.Label>{elm.label}</Form.Label>}
-                  {this.formBuilder(i, elm.name, data.modelId)}
+                  {this.formBuilder(i, elm.name, data.recordId)}
                 </Form.Group>
               ) : null;
             })

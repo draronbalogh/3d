@@ -2,9 +2,9 @@
 import express from 'express';
 import { deleteImage, deleteImageOnEditMenuInputChange, updateImages } from '../controllers/controllers-images';
 const router = express.Router();
-// router.delete('/routesImages/:modelId', deleteImage);
-// router.delete('/:modelId', delete3dModel);
-router.delete('/:modelId', deleteImage);
-router.delete('/:modelId/:joinFromInput', deleteImageOnEditMenuInputChange);
-router.patch('/:modelId', updateImages);
+// router.delete('/routesImages/:recordId', deleteImage);
+// router.delete('/:recordId', delete3dModel);
+router.delete('/:recordId', deleteImage);
+router.delete('/:recordId/:joinFromInput', deleteImageOnEditMenuInputChange);
+router.patch('/:recordId', updateImages);
 export default router;

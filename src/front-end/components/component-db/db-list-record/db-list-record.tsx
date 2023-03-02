@@ -52,33 +52,33 @@ export class DbListRecord extends React.Component<Model3dProps, RecordState> {
 
   /**
    * Delete 3d model data from database and also delete files from server
-   * @param modelId number
-   * @param modelUuid string
+   * @param recordId number
+   * @param recordUuid string
    * @param ob object
    */
-  delete3dModel = async (modelId: number, modelUuid: string, ob: any) => {
+  delete3dModel = async (recordId: number, recordUuid: string, ob: any) => {
     try {
-      let modelImgs: string[] = ob['modelImgs'] ? ob['modelImgs']?.split(',') : [],
-        modelMaterialUrl: string[] = ob['modelMaterialUrl'] ? ob['modelMaterialUrl']?.split(',') : [],
+      let recordImgs: string[] = ob['recordImgs'] ? ob['recordImgs']?.split(',') : [],
+        recordMaterialUrl: string[] = ob['recordMaterialUrl'] ? ob['recordMaterialUrl']?.split(',') : [],
         recordUrl: string[] = ob['recordUrl'] ? ob['recordUrl']?.split(',') : [],
-        modelVideos: string[] = ob['modelVideos'] ? ob['modelVideos']?.split(',') : [],
-        deleteTheseFiles: string[] = [...modelImgs, ...modelMaterialUrl, ...recordUrl, ...modelVideos];
-      await axios.post(_CONFIG.url.deleteModelFiles, { deleteTheseFiles, modelId: ob['modelId'], modelUuid: ob['modelUuid'], deleteFolder: true }, {}).then((response) => {
+        recordVideos: string[] = ob['recordVideos'] ? ob['recordVideos']?.split(',') : [],
+        deleteTheseFiles: string[] = [...recordImgs, ...recordMaterialUrl, ...recordUrl, ...recordVideos];
+      await axios.post(_CONFIG.url.deleteRecordFiles, { deleteTheseFiles, recordId: ob['recordId'], recordUuid: ob['recordUuid'], deleteFolder: true }, {}).then((response) => {
         if (response.data.success === false) console.log(_CONFIG.msg.error.file.deleting, response);
       });
-      await axios.delete(_CONFIG.url.modelApi + modelId).then((response) => {
+      await axios.delete(_CONFIG.url.modelApi + recordId).then((response) => {
         if (response.data.success === false) {
           console.log(_CONFIG.msg.error.file.deleting, response);
         }
       });
-      await axios.delete(_CONFIG.url.imageApi + modelId).then((response) => {
+      await axios.delete(_CONFIG.url.imageApi + recordId).then((response) => {
         if (response.data.success === false) {
           console.log(_CONFIG.msg.error.file.deleting, response);
         } else {
           this.get3dModel();
         }
       });
-      await axios.delete(_CONFIG.url.videoApi + modelId).then((response) => {
+      await axios.delete(_CONFIG.url.videoApi + recordId).then((response) => {
         if (response.data.success === false) {
           console.log(_CONFIG.msg.error.file.deleting, response);
         } else {
@@ -88,17 +88,17 @@ export class DbListRecord extends React.Component<Model3dProps, RecordState> {
     } catch (e: any) {
       const statusCode = e.response.status; // 400
       const statusText = e.response.statusText; // Bad Request
-      const message = e.response.data.message[0]; // modelId should not be empty
+      const message = e.response.data.message[0]; // recordId should not be empty
       console.log(`${statusCode} - ${statusText} - ${message}`);
     }
   };
 
   /**
-   * Update modelId in parent component
-   * @param modelId number
+   * Update recordId in parent component
+   * @param recordId number
    */
-  updateId = (modelId: number) => {
-    this.props.updateId(modelId);
+  updateId = (recordId: number) => {
+    this.props.updateId(recordId);
   };
 
   /**
@@ -146,13 +146,13 @@ export class DbListRecord extends React.Component<Model3dProps, RecordState> {
   printEditorBtns = (elm: any) => {
     return (
       <span>
-        <Link to={`/edit/${elm.modelId}`} className='button is-small is-info'>
+        <Link to={`/edit/${elm.recordId}`} className='button is-small is-info'>
           Szerkesztés
         </Link>{' '}
-        <a onClick={() => this.delete3dModel(elm.modelId, elm.modelUuid, elm)} className='button is-small is-danger'>
+        <a onClick={() => this.delete3dModel(elm.recordId, elm.recordUuid, elm)} className='button is-small is-danger'>
           Törlés
         </a>{' '}
-        <Link to={`/view/${elm.modelId}`} className='button is-small is-info'>
+        <Link to={`/view/${elm.recordId}`} className='button is-small is-info'>
           Megjelenítés
         </Link>
       </span>

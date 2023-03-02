@@ -10,8 +10,8 @@ export const modelConfig = [
     maxLength: 100
   },
   {
-    name: 'modelId',
-    label: 'modelId',
+    name: 'recordId',
+    label: 'recordId',
     control: 'number',
     inputType: 'input',
     enableForAddEdit: false,
@@ -20,7 +20,7 @@ export const modelConfig = [
     maxLength: 100
   },
   {
-    name: 'modelTitle',
+    name: 'recordTitle',
     label: 'Cím',
     control: 'input',
     inputType: 'text',
@@ -30,7 +30,7 @@ export const modelConfig = [
     maxLength: 255
   },
   {
-    name: 'modelUuid',
+    name: 'recordUuid',
     label: 'Egyedi azonosító',
     control: 'input',
     inputType: 'text',
@@ -40,7 +40,7 @@ export const modelConfig = [
     maxLength: 100
   },
   {
-    name: 'modelUploaderUid',
+    name: 'recordUploaderUid',
     label: 'Feltöltő aznosítója',
     control: 'input',
     inputType: 'text',
@@ -51,7 +51,7 @@ export const modelConfig = [
   },
 
   {
-    name: 'modelDescription',
+    name: 'recordDescription',
     label: 'Leírás',
     control: 'textarea',
     inputType: 'text',
@@ -62,7 +62,7 @@ export const modelConfig = [
     maxLength: 3000
   },
   {
-    name: 'modelMeta',
+    name: 'recordMeta',
     label: 'Meta',
     control: 'textarea',
     inputType: 'text',
@@ -73,7 +73,7 @@ export const modelConfig = [
     maxLength: 3000
   },
   {
-    name: 'modelChannel',
+    name: 'recordChannel',
     label: 'Csatorna',
     control: 'select',
     categories: ['Válassz kategóriát', '1', '2', '3'],
@@ -84,7 +84,7 @@ export const modelConfig = [
     maxLength: 50
   },
   {
-    name: 'modelCategory',
+    name: 'recordCategory',
     label: 'Kategória',
     control: 'select',
     categories: ['Válassz kategóriát', 'Ember', 'Állat', 'Gép', 'Egyéb'],
@@ -95,7 +95,7 @@ export const modelConfig = [
     maxLength: 50
   },
   {
-    name: 'modelRenderEngine',
+    name: 'recordRenderEngine',
     label: 'Render engine',
     control: 'input',
     inputType: 'text',
@@ -105,7 +105,7 @@ export const modelConfig = [
     maxLength: 255
   },
   {
-    name: 'modelPolyCategory',
+    name: 'recordPolyCategory',
     label: 'Polygon kategória',
     categories: ['Válassz kategóriát', 'Alacsony', 'Közepes', 'Magas'],
     control: 'select',
@@ -116,7 +116,7 @@ export const modelConfig = [
     maxLength: 50
   },
   {
-    name: 'modelPolyCount',
+    name: 'recordPolyCount',
     label: 'Polygon szám',
     control: 'input',
     inputType: 'text',
@@ -126,7 +126,7 @@ export const modelConfig = [
     maxLength: 255
   },
   {
-    name: 'modelFormat',
+    name: 'recordFormat',
     label: 'Formátum',
     control: 'input',
     categories: ['Válassz kategóriát', 'obj', 'fbx'],
@@ -137,7 +137,7 @@ export const modelConfig = [
     maxLength: 255
   },
   {
-    name: 'modelTags',
+    name: 'recordTags',
     label: 'Tag-ek',
     control: 'input',
     inputType: 'text',
@@ -157,7 +157,7 @@ export const modelConfig = [
     maxLength: 255
   },
   {
-    name: 'modelFileName',
+    name: 'recordFileName',
     label: 'Fájl név',
     control: 'input',
     inputType: 'text',
@@ -167,7 +167,7 @@ export const modelConfig = [
     maxLength: 3000
   },
   {
-    name: 'modelVideos',
+    name: 'recordVideos',
     label: 'Videók',
     control: 'file',
     inputType: 'text',
@@ -177,7 +177,7 @@ export const modelConfig = [
     maxLength: 3000
   },
   {
-    name: 'modelImgs',
+    name: 'recordImgs',
     label: 'Képek',
     control: 'file',
     inputType: 'text',
@@ -187,7 +187,7 @@ export const modelConfig = [
     maxLength: 3000
   },
   {
-    name: 'modelSourceUrl',
+    name: 'recordSourceUrl',
     label: 'Modell forrása',
     control: 'textarea',
     inputType: 'text',
@@ -198,7 +198,7 @@ export const modelConfig = [
     maxLength: 3000
   },
   {
-    name: 'modelIframeUrl',
+    name: 'recordIframeUrl',
     label: 'Iframe url',
     control: 'input',
     inputType: 'text',
@@ -208,7 +208,7 @@ export const modelConfig = [
     maxLength: 30000
   },
   {
-    name: 'modelExtraLinks',
+    name: 'recordExtraLinks',
     label: 'Extra linkek',
     control: 'textarea',
     inputType: 'text',
@@ -219,7 +219,7 @@ export const modelConfig = [
     maxLength: 3000
   },
   {
-    name: 'modelMaterialUrl',
+    name: 'recordMaterialUrl',
     label: 'Material-ok',
     control: 'file',
     inputType: 'text',
@@ -229,7 +229,7 @@ export const modelConfig = [
     maxLength: 3000
   },
   {
-    name: 'modelState',
+    name: 'recordState',
     label: 'Állapot',
     categories: ['Válassz kategóriát', 'Elérhető', 'Nem elérhető'],
     control: 'select',
@@ -240,7 +240,7 @@ export const modelConfig = [
     maxLength: 255
   },
   {
-    name: 'modelVisibility',
+    name: 'recordVisibility',
     label: 'Láthatóság',
     control: 'switch',
     inputType: 'FormCheckType ',
@@ -250,7 +250,7 @@ export const modelConfig = [
     maxLength: 1
   },
   {
-    name: 'modelRigged',
+    name: 'recordRigged',
     label: 'Riggelve',
     control: 'switch',
     inputType: 'FormCheckType ',
@@ -260,7 +260,7 @@ export const modelConfig = [
     maxLength: 1
   },
   {
-    name: 'modelAnimated',
+    name: 'recordAnimated',
     label: 'Animálva',
     control: 'switch',
     inputType: 'FormCheckType ',
@@ -270,7 +270,7 @@ export const modelConfig = [
     maxLength: 1
   },
   {
-    name: 'modelUv',
+    name: 'recordUv',
     label: 'UV',
     control: 'input',
     inputType: 'text',
@@ -280,7 +280,7 @@ export const modelConfig = [
     maxLength: 3000
   },
   {
-    name: 'modelLegality',
+    name: 'recordLegality',
     label: 'Jogállás',
     categories: ['Válassz kategóriát', 'Jogtiszta modell', 'Ingyenes modell', 'Nem ismert forrás'],
     control: 'select',
@@ -291,7 +291,7 @@ export const modelConfig = [
     maxLength: 255
   },
   {
-    name: 'modelScript',
+    name: 'recordScript',
     label: 'Script',
     control: 'textarea',
     inputType: 'text',
@@ -302,7 +302,7 @@ export const modelConfig = [
     maxLength: 30000
   },
   {
-    name: 'modelViewerUid',
+    name: 'recordViewerUid',
     label: 'Viewed by',
     control: 'input',
     inputType: 'text',
@@ -312,7 +312,7 @@ export const modelConfig = [
     maxLength: 50
   },
   {
-    name: 'modelViewCount',
+    name: 'recordViewCount',
     label: 'Viewed count',
     control: 'input',
     inputType: 'text',
@@ -322,7 +322,7 @@ export const modelConfig = [
     maxLength: 1024
   },
   {
-    name: 'modelDownloaderUid',
+    name: 'recordDownloaderUid',
     label: 'Downloaded by',
     control: 'input',
     inputType: 'text',
@@ -332,7 +332,7 @@ export const modelConfig = [
     maxLength: 50
   },
   {
-    name: 'modelDownloadCount',
+    name: 'recordDownloadCount',
     label: 'Download count',
     control: 'input',
     inputType: 'text',

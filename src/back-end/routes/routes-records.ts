@@ -6,11 +6,11 @@ import { createVideos } from '../controllers/controllers-videos';
 const router = express.Router();
 router.get('/', getAllModels3ds);
 router.get('/getLastModelId', getLastModelId);
-router.get('/:modelId', getModels3dById);
-router.post('/createModel', createModels3d);
+router.get('/:recordId', getModels3dById);
+router.post('/createRecord', createModels3d);
 router.post('/createImage', createImages);
 router.post('/createVideo', createVideos);
-router.patch('/:modelId', updateModels3d);
-router.delete('/:modelId', delete3dModel);
+router.patch('/:recordId', updateModels3d);
+router.delete('/:recordId', delete3dModel);
 
 export default router;

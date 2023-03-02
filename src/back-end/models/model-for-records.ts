@@ -6,8 +6,9 @@ import { _CONFIG } from '../../_config/config-general';
 
 ///////////////////////////////////////////////////////////   CONTROLLERS
 // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-const ModelCtrFor3dTypes = db.define(_CONFIG.db.tableName3d, seqConfigForRecords, {
-  tableName: _CONFIG.db.tableName3d,
+const ModelCtrFor3dTypes = db.define(_CONFIG.db.tableNameRecords, seqConfigForRecords, {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  tableName: _CONFIG.db.tableNameRecords,
   freezeTableName: true
 });
 

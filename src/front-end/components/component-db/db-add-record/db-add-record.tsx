@@ -26,15 +26,15 @@ interface RecordState {
   isThankYou: boolean;
   uploadingData: any;
   folderName: string;
-  modelUuid: string;
+  recordUuid: string;
   files: UploadFiles | any;
   folderId: string;
 }
 interface UploadFiles {
   recordUrl: [];
-  modelImgs: [];
-  modelMaterialUrl: [];
-  modelVideos: [];
+  recordImgs: [];
+  recordMaterialUrl: [];
+  recordVideos: [];
 }
 interface imgDataType {
   imgFileType: string;
@@ -46,8 +46,8 @@ interface imgDataType {
   imgFileMimeType: string;
   imgFileLastModified: string;
   imgFileLastModifiedDate: string;
-  modelTitle: string;
-  modelUuid: string;
+  recordTitle: string;
+  recordUuid: string;
 }
 
 interface ModelMethods {
@@ -68,9 +68,9 @@ export class DbAddRecord extends React.Component<any, RecordState> implements Mo
       uploadingData: null,
       data: {},
       imgData: [],
-      files: { recordUrl: [], modelImgs: [], modelMaterialUrl: [], modelVideos: [] },
+      files: { recordUrl: [], recordImgs: [], recordMaterialUrl: [], recordVideos: [] },
       folderName: '',
-      modelUuid: '',
+      recordUuid: '',
       folderId: nanoid(10).toLocaleLowerCase()
     };
     this.form = React.createRef();
@@ -102,13 +102,13 @@ export class DbAddRecord extends React.Component<any, RecordState> implements Mo
 
     try {
       // Create model
-      const modelId = await this.postForModelDb(data);
+      const recordId = await this.postForModelDb(data);
 
       // Create images
-      await this.postForImageDb(modelId);
+      await this.postForImageDb(recordId);
 
       // Create images
-      await this.postForVideoDb(modelId);
+      await this.postForVideoDb(recordId);
 
       // Upload files (if there is at least one valid file)
       if (isThereAnyValidFile) {
@@ -132,7 +132,7 @@ export class DbAddRecord extends React.Component<any, RecordState> implements Mo
    */
   postForModelDb = async (data: any) => {
     const { url, msg } = _CONFIG;
-    const response: any = await axios.post(url.createModel, data, {});
+    const response: any = await axios.post(url.createRecord, data, {});
     if (response.data.success === false) {
       throw new Error(msg.error.fetch.postingData, response);
     }
@@ -140,24 +140,24 @@ export class DbAddRecord extends React.Component<any, RecordState> implements Mo
     if (response2.data.success === false) {
       throw new Error(msg.error.fetch.postingData, response2);
     }
-    return response2.data[0].modelId;
+    return response2.data[0].recordId;
   };
 
   /**
    * Create images in database
-   * @param modelId
+   * @param recordId
    */
-  postForImageDb = async (modelId: number) => {
+  postForImageDb = async (recordId: number) => {
     const { data } = this.state;
     const { db, url } = _CONFIG;
     let postArr: any[] = [];
     Object.keys(this.imgD).forEach((element: any, key: number) => {
-      if (element === 'modelImgs' || element === 'modelMaterialUrl') {
+      if (element === 'recordImgs' || element === 'recordMaterialUrl') {
         this.imgD[element].forEach((e: any, k: number) => {
           postArr.push(this.imgD[element][k]);
-          this.imgD[element][k].joinFromTable = db.tableName3d;
-          this.imgD[element][k].joinId = modelId;
-          this.imgD[element][k].joinUuid = data.modelUuid;
+          this.imgD[element][k].joinFromTable = db.tableNameRecords;
+          this.imgD[element][k].joinId = recordId;
+          this.imgD[element][k].joinUuid = data.recordUuid;
         });
       }
     });
@@ -165,20 +165,20 @@ export class DbAddRecord extends React.Component<any, RecordState> implements Mo
   };
   /**
    * Create videos in database
-   * @param modelId
+   * @param recordId
    */
-  postForVideoDb = async (modelId: number) => {
+  postForVideoDb = async (recordId: number) => {
     const { data } = this.state;
     const { db, url } = _CONFIG;
     let postArr: any[] = [];
     Object.keys(this.imgD).forEach((element: any, key: number) => {
       console.log('element', element);
-      if (element === 'modelVideos') {
+      if (element === 'recordVideos') {
         this.imgD[element].forEach((e: any, k: number) => {
           postArr.push(this.imgD[element][k]);
-          this.imgD[element][k].joinFromTable = db.tableName3d;
-          this.imgD[element][k].joinId = modelId;
-          this.imgD[element][k].joinUuid = data.modelUuid;
+          this.imgD[element][k].joinFromTable = db.tableNameRecords;
+          this.imgD[element][k].joinId = recordId;
+          this.imgD[element][k].joinUuid = data.recordUuid;
         });
       }
     });
@@ -230,7 +230,7 @@ export class DbAddRecord extends React.Component<any, RecordState> implements Mo
     const { validation, msg, url } = _CONFIG;
     try {
       this.imgD[elm] = [];
-      const category = elm === 'modelVideos' ? 'vid' : 'img',
+      const category = elm === 'recordVideos' ? 'vid' : 'img',
         fT = category + 'FileType',
         fS = category + 'FileSize',
         fN = category + 'FileName';
@@ -316,15 +316,15 @@ export class DbAddRecord extends React.Component<any, RecordState> implements Mo
         [elm]: e
       }
     });
-    if (elm === 'modelTitle')
-      this.setState({ modelUuid: removeHunChars(e) }, () => {
-        const { modelUuid } = this.state;
+    if (elm === 'recordTitle')
+      this.setState({ recordUuid: removeHunChars(e) }, () => {
+        const { recordUuid } = this.state;
         this.setState({
           data: {
             ...this.state.data,
-            modelUuid: modelUuid + '-' + folderId
+            recordUuid: recordUuid + '-' + folderId
           },
-          folderName: modelUuid + '-' + folderId
+          folderName: recordUuid + '-' + folderId
         });
       });
     this.setState({ isSaved: false });
@@ -362,7 +362,7 @@ export class DbAddRecord extends React.Component<any, RecordState> implements Mo
       category: string[] | undefined = modelConfig[i].categories;
     switch (ctr) {
       case 'switch':
-        return <Form.Check type={'switch'} id={`ctr${i}`} label={elm.label} defaultChecked={elm.name === 'modelVisibility' ? true : false} onChange={(e) => this.switcher(elm.name, e.target.checked)} />;
+        return <Form.Check type={'switch'} id={`ctr${i}`} label={elm.label} defaultChecked={elm.name === 'recordVisibility' ? true : false} onChange={(e) => this.switcher(elm.name, e.target.checked)} />;
       case 'select':
         return (
           <Form.Select onChange={(e) => this.inputDataUpdater(elm.name, e.target.value)}>
@@ -376,11 +376,11 @@ export class DbAddRecord extends React.Component<any, RecordState> implements Mo
           </Form.Select>
         );
       case 'file':
-        return <Form.Control multiple type={ctr} name={folderId ? folderId : ''} onChange={(e) => this.inputFileDataUpdater(elm.name, e)} accept={elm.name === 'recordUrl' ? validation.file.web3dTypes : elm.name === 'modelImgs' || elm.name === 'modelMaterialUrl' ? validation.file.imgTypes : validation.file.vidTypes}></Form.Control>;
+        return <Form.Control multiple type={ctr} name={folderId ? folderId : ''} onChange={(e) => this.inputFileDataUpdater(elm.name, e)} accept={elm.name === 'recordUrl' ? validation.file.web3dTypes : elm.name === 'recordImgs' || elm.name === 'recordMaterialUrl' ? validation.file.imgTypes : validation.file.vidTypes}></Form.Control>;
       case 'textarea':
         return <Form.Control as={ctr} rows={3} value={data?.hasOwnProperty(elm.name) ? data[elm.name] : ''} onChange={(e) => this.inputDataUpdater(elm.name, e.target.value)}></Form.Control>;
       default:
-        return <Form.Control maxLength={elm.maxLength} disabled={elm.name === 'modelUuid' ? true : false} type={ctr} value={data?.hasOwnProperty(elm.name) ? data[elm.name] : ''} onChange={(e) => this.inputDataUpdater(elm.name, e.target.value)} required={elm.isRequired}></Form.Control>;
+        return <Form.Control maxLength={elm.maxLength} disabled={elm.name === 'recordUuid' ? true : false} type={ctr} value={data?.hasOwnProperty(elm.name) ? data[elm.name] : ''} onChange={(e) => this.inputDataUpdater(elm.name, e.target.value)} required={elm.isRequired}></Form.Control>;
     }
   };
 

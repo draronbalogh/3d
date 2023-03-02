@@ -107,7 +107,7 @@ export const deleteVideo = async (req: Request, res: Response) => {
     await db.query('SET sql_safe_updates = 0;');
     await ModelCtrForVideoTypes.destroy({
       where: {
-        joinId: req.params.modelId
+        joinId: req.params.recordId
       }
     });
     await db.query('SET sql_safe_updates = 1;');
@@ -129,7 +129,7 @@ export const deleteVideoOnEditMenuInputChange = async (req: Request, res: Respon
     await db.query('SET sql_safe_updates = 0;');
     await ModelCtrForVideoTypes.destroy({
       where: {
-        joinId: req.params.modelId,
+        joinId: req.params.recordId,
         joinFromInput: req.params.joinFromInput
       }
     });

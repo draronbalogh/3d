@@ -13,14 +13,14 @@ interface CompProps {
 }
 interface CompState {
   data: any;
-  modelId: number | any;
+  recordId: number | any;
 }
 //////////////////////////////////////////////////////////////////////////////////////    CLASS SETUP
 export class ViewRecord extends React.Component<CompProps, CompState> {
   constructor(props: CompProps) {
     super(props);
     this.state = {
-      modelId: Number(window.location.pathname.split('/').pop()),
+      recordId: Number(window.location.pathname.split('/').pop()),
       data: this.props.data
     };
   }
@@ -34,21 +34,21 @@ export class ViewRecord extends React.Component<CompProps, CompState> {
 
   ///////////////////////////////////////////////////////////   CLASS METHODS
   /**
-   * Find data by modelId
+   * Find data by recordId
    */
   findDataById = () => {
-    const { data, modelId } = this.state;
-    const obj = data.find((o: { modelId: any }) => o.modelId === modelId);
+    const { data, recordId } = this.state;
+    const obj = data.find((o: { recordId: any }) => o.recordId === recordId);
     this.setState({ data: obj });
   };
 
   /**
-   * Fetch data by modelId
+   * Fetch data by recordId
    */
   fetchModelDataById = async () => {
     try {
-      const { modelId } = this.state;
-      const response = await axios.get(_CONFIG.url.modelApi + modelId);
+      const { recordId } = this.state;
+      const response = await axios.get(_CONFIG.url.modelApi + recordId);
       this.setState({ data: response.data });
     } catch (e: any) {
       logAxiosError(e, _CONFIG.msg.error.fetch.getData);
@@ -81,12 +81,12 @@ export class ViewRecord extends React.Component<CompProps, CompState> {
 
   //////////////////////////////////////////////////////////////////////////////////////    RENDER
   render() {
-    const { modelId } = this.state;
+    const { recordId } = this.state;
     return (
       <table>
         <thead>
           <tr>
-            <th>3d component ({modelId})</th>
+            <th>3d component ({recordId})</th>
           </tr>
           <tr>{this.getTitle()}</tr>
         </thead>

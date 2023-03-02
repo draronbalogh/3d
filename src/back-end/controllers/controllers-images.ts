@@ -107,7 +107,7 @@ export const deleteImage = async (req: Request, res: Response) => {
     await db.query('SET sql_safe_updates = 0;');
     await ModelCtrForImageTypes.destroy({
       where: {
-        joinId: req.params.modelId
+        joinId: req.params.recordId
       }
     });
     await db.query('SET sql_safe_updates = 1;');
@@ -129,7 +129,7 @@ export const deleteImageOnEditMenuInputChange = async (req: Request, res: Respon
     await db.query('SET sql_safe_updates = 0;');
     await ModelCtrForImageTypes.destroy({
       where: {
-        joinId: req.params.modelId,
+        joinId: req.params.recordId,
         joinFromInput: req.params.joinFromInput
       }
     });

@@ -10,7 +10,7 @@ import { _CONFIG, PORT3D } from '../_config/config-general';
 ///////////////////////////////////////////////////////////   LIBS
 import formidable, { errors as formidableErrors } from 'formidable';
 ///////////////////////////////////////////////////////////   COMPS
-import routes3d from './routes/routes-records';
+import routesRecord from './routes/routes-records';
 import routesImages from './routes/routes-images';
 import routesVideos from './routes/routes-videos';
 import db from '../_config/config-database';
@@ -37,7 +37,7 @@ const connectToDb = async () => {
  * @param res
  * @param next
  */
-const uploadModel = async (req: any, res: any, next: any) => {
+const uploadRecord = async (req: any, res: any, next: any) => {
   let folderId = '',
     isValid = false;
   ////////////////////////////////////////////   FORM CONFIG
@@ -75,7 +75,7 @@ const uploadModel = async (req: any, res: any, next: any) => {
    */
   form.on('progress', (bytesReceived: any, bytesExpected: any) => {
     const perc = Math.round((100 * bytesReceived) / bytesExpected) + '%';
-    // console.log('uploadModel', perc);
+    // console.log('uploadRecord', perc);
     return perc;
   });
 
@@ -160,12 +160,12 @@ const uploadModel = async (req: any, res: any, next: any) => {
  * @param res
  * @param next
  */
-const deleteModelFiles = async (req: any, res: any, next: any) => {
+const deleteRecordFiles = async (req: any, res: any, next: any) => {
   const arr: string[] = req.body.deleteTheseFiles || [],
     id = req.body.id,
-    modelUuid = req.body.modelUuid,
+    recordUuid = req.body.recordUuid,
     deleteFolder = req.body.deleteFolder,
-    folder = path.join(url.uploadFolder + modelUuid + '/');
+    folder = path.join(url.uploadFolder + recordUuid + '/');
   arr.forEach((filePath) => {
     if (fs.existsSync(folder + filePath)) {
       fs.unlink(folder + filePath, (err) => {
@@ -194,9 +194,9 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.raw());
-app.post(routes.uploadModel, uploadModel);
-app.post(routes.deleteModelFiles, deleteModelFiles);
-app.use(routes.routes3d, routes3d);
+app.post(routes.uploadRecord, uploadRecord);
+app.post(routes.deleteRecordFiles, deleteRecordFiles);
+app.use(routes.routesRecord, routesRecord);
 app.use(routes.routesImages, routesImages);
 app.use(routes.routesVideos, routesVideos);
 app.listen(PORT3D, () => console.log(msg.txt.server.started));
