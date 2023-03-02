@@ -4,7 +4,7 @@ import React, { useRef } from 'react';
 import { Navigate } from 'react-router-dom';
 ///////////////////////////////////////////////////////////   CONFIG
 import { _CONFIG } from '../../../../_config/config-general';
-import { modelConfig } from '../../../../_config/config-model';
+import { modelConfig } from '../../../../_config/config-records';
 ///////////////////////////////////////////////////////////   LIBS
 import axios from 'axios';
 import { v4 as uuid } from 'uuid';

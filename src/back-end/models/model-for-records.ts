@@ -6,22 +6,22 @@ import { _CONFIG } from '../../_config/config-general';
 
 ///////////////////////////////////////////////////////////   CONTROLLERS
 // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-const ModelCtrFor3dTypes = db.define(_CONFIG.db.tableNameRecords, seqConfigForRecords, {
+const ModelCtrForRecordTypes = db.define(_CONFIG.db.tableNameRecords, seqConfigForRecords, {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   tableName: _CONFIG.db.tableNameRecords,
   freezeTableName: true
 });
 
-const create3dModelTable = async () => {
+const createRecordModelTable = async () => {
   try {
-    await ModelCtrFor3dTypes.sync({ force: true }); // TODO:: make it force: false
-    console.log('ModelCtrFor3dTypes table created');
+    await ModelCtrForRecordTypes.sync({ force: true }); // TODO:: make it force: false
+    console.log('ModelCtrForRecordTypes table created');
   } catch (error) {
-    console.error('Error creating 3d model table:', error);
+    console.error('Error creating record model table:', error);
   }
 };
 
-create3dModelTable();
+createRecordModelTable();
 
 ///////////////////////////////////////////////////////////   EXPORT
-export { ModelCtrFor3dTypes };
+export { ModelCtrForRecordTypes };

@@ -3,19 +3,19 @@
 import { _CONFIG } from '../../_config/config-general';
 ///////////////////////////////////////////////////////////   CONTROLLERS
 import { Request, Response } from 'express';
-import { ModelCtrFor3dTypes } from '../models/model-for-records';
+import { ModelCtrForRecordTypes } from '../models/model-for-records';
 import { db, ModelCtrForImageTypes } from '../models/model-for-images';
 ///////////////////////////////////////////////////////////   ROUTES
 
 /**
- * Get all models 3d
+ * Get all Records
  * @param req Request
  * @param res Response
  */
-export const getAllModels3ds = async (req: Request, res: Response) => {
+export const getAllRecords = async (req: Request, res: Response) => {
   try {
-    const models = await ModelCtrFor3dTypes.findAll();
-    res.json(models);
+    const records = await ModelCtrForRecordTypes.findAll();
+    res.json(records);
   } catch (error: any | unknown) {
     res.json({ message: error.message });
   }
@@ -26,9 +26,9 @@ export const getAllModels3ds = async (req: Request, res: Response) => {
  * @param req Request
  * @param res Response
  */
-export const getLastModelId = async (req: Request, res: Response) => {
+export const getLastRecordById = async (req: Request, res: Response) => {
   try {
-    const recordId = await ModelCtrFor3dTypes.findAll({
+    const recordId = await ModelCtrForRecordTypes.findAll({
       limit: 1,
       where: {},
       order: [['createdAt', 'DESC']]
@@ -41,13 +41,13 @@ export const getLastModelId = async (req: Request, res: Response) => {
 };
 
 /**
- * Get model 3d by recordId
+ * Get model record by recordId
  * @param req Request
  * @param res Response
  */
-export const getModels3dById = async (req: Request, res: Response) => {
+export const getRecordsById = async (req: Request, res: Response) => {
   try {
-    const modells = await ModelCtrFor3dTypes.findAll({
+    const modells = await ModelCtrForRecordTypes.findAll({
       where: {
         recordId: req.params.recordId
       }
@@ -59,14 +59,14 @@ export const getModels3dById = async (req: Request, res: Response) => {
 };
 
 /**
- * Create model 3d
+ * Create model record
  * @param req Request
  * @param res Response
  * @param next NextFunction
  */
-export const createModels3d = async (req: Request, res: Response, next: any) => {
+export const createRecords = async (req: Request, res: Response, next: any) => {
   try {
-    const a = await ModelCtrFor3dTypes.create(req.body);
+    const a = await ModelCtrForRecordTypes.create(req.body);
     await res.status(200).json('Record created');
   } catch (error: any | unknown) {
     res.json({ message: error.message });
@@ -74,19 +74,19 @@ export const createModels3d = async (req: Request, res: Response, next: any) => 
 };
 
 /**
- * Update model 3d
+ * Update model record
  * @param req Request
  * @param res Response
  */
-export const updateModels3d = async (req: Request, res: Response) => {
+export const updateRecords = async (req: Request, res: Response) => {
   try {
-    await ModelCtrFor3dTypes.update(req.body, {
+    await ModelCtrForRecordTypes.update(req.body, {
       where: {
         recordId: req.params.recordId
       }
     });
     res.json({
-      message: 'ModelCtrFor3dTypes Updated'
+      message: 'ModelCtrForRecordTypes Updated'
     });
   } catch (error: any | unknown) {
     res.json({ message: error.message });
@@ -94,13 +94,13 @@ export const updateModels3d = async (req: Request, res: Response) => {
 };
 
 /**
- * Detete model 3d
+ * Detete model record
  * @param req Request
  * @param res Response
  */
-export const delete3dModel = async (req: Request, res: Response) => {
+export const deleteRecords = async (req: Request, res: Response) => {
   try {
-    await ModelCtrFor3dTypes.destroy({
+    await ModelCtrForRecordTypes.destroy({
       where: {
         recordId: req.params.recordId
       }
@@ -112,7 +112,7 @@ export const delete3dModel = async (req: Request, res: Response) => {
     });*/
 
     res.json({
-      message: 'ModelCtrFor3dTypes Deleted'
+      message: 'ModelCtrForRecordTypes Deleted'
     });
   } catch (error: any | unknown) {
     res.json({ message: error.message });

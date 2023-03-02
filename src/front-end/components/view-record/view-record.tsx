@@ -3,7 +3,7 @@
 import React from 'react';
 ///////////////////////////////////////////////////////////   CONFIG
 import { _CONFIG } from '../../../_config/config-general';
-import { modelConfig } from '../../../_config/config-model';
+import { modelConfig } from '../../../_config/config-records';
 ///////////////////////////////////////////////////////////   LIBS
 import axios from 'axios';
 import { logAxiosError } from '../../../assets/gen-methods';
