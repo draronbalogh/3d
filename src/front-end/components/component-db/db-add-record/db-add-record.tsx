@@ -105,10 +105,10 @@ export class DbAddRecord extends React.Component<any, RecordState> implements Mo
       const recordId = await this.postForModelDb(data);
 
       // Create images
-      await this.postForImageDb(recordId);
+      //   await this.postForImageDb(recordId);
 
       // Create images
-      await this.postForVideoDb(recordId);
+      //   await this.postForVideoDb(recordId);
 
       // Upload files (if there is at least one valid file)
       if (isThereAnyValidFile) {
@@ -131,16 +131,16 @@ export class DbAddRecord extends React.Component<any, RecordState> implements Mo
    * @returns
    */
   postForModelDb = async (data: any) => {
-    const { url, msg } = _CONFIG;
-    const response: any = await axios.post(url.createRecord, data, {});
-    if (response.data.success === false) {
-      throw new Error(msg.error.fetch.postingData, response);
+    try {
+      const { url, msg } = _CONFIG;
+      const response: any = await axios.post(url.createRecord, data, {});
+      if (response.data.success === false) throw new Error(msg.error.fetch.postingData, response);
+      const response2: any = await axios.get(url.getLastRecordId);
+      if (response2.data.success === false) throw new Error(msg.error.fetch.postingData, response2);
+      return response2.data[0].recordId;
+    } catch (error) {
+      console.log(error);
     }
-    const response2: any = await axios.get(url.getLastModelId);
-    if (response2.data.success === false) {
-      throw new Error(msg.error.fetch.postingData, response2);
-    }
-    return response2.data[0].recordId;
   };
 
   /**
@@ -192,7 +192,7 @@ export class DbAddRecord extends React.Component<any, RecordState> implements Mo
   uploadFiles = async (filesData: FormData) => {
     const { db, url, msg } = _CONFIG;
     try {
-      const response: any = await axios.post(url.uploadFiles, filesData, {
+      const response: any = await axios.post(url.uploadRecordFiles, filesData, {
         headers: { 'content-type': 'multipart/form-data' },
         onUploadProgress: (data) => {
           this.setState({ uploadingData: data });

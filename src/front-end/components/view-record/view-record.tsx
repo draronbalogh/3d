@@ -48,7 +48,7 @@ export class ViewRecord extends React.Component<CompProps, CompState> {
   fetchModelDataById = async () => {
     try {
       const { recordId } = this.state;
-      const response = await axios.get(_CONFIG.url.modelApi + recordId);
+      const response = await axios.get(_CONFIG.url.recordApi + recordId);
       this.setState({ data: response.data });
     } catch (e: any) {
       logAxiosError(e, _CONFIG.msg.error.fetch.getData);

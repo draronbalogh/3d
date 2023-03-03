@@ -3,30 +3,39 @@ export const HOST3D = 'http://127.0.0.1'; // TODO: Change proxy in package.json 
 export const _CONFIG = {
   db: {
     tableNameRecords: 'records',
+    tableName3dModels: 'models',
     tableNameImages: 'images',
-    tableNameVideos: 'videos'
+    tableNameVideos: 'videos',
+    tableNameMixed: 'mixed'
   },
   url: {
-    modelApi: `${HOST3D}:${PORT3D}/api/records/`,
-    createRecord: `${HOST3D}:${PORT3D}/api/records/createRecord`,
-    createImage: `${HOST3D}:${PORT3D}/api/records/createImage`,
-    createVideo: `${HOST3D}:${PORT3D}/api/records/createVideo`,
-    getLastModelId: `${HOST3D}:${PORT3D}/api/records/getLastModelId`,
-    uploadFiles: `${HOST3D}:${PORT3D}/uploadRecord`,
-    deleteRecordFiles: `${HOST3D}:${PORT3D}/deleteRecordFiles`,
+    recordApi: `${HOST3D}:${PORT3D}/api/records/`,
     imageApi: `${HOST3D}:${PORT3D}/api/images/`,
     videoApi: `${HOST3D}:${PORT3D}/api/videos/`,
+    createRecord: `${HOST3D}:${PORT3D}/api/records/createRecord`,
+    getLastRecordId: `${HOST3D}:${PORT3D}/api/records/`,
+    uploadRecordFiles: `${HOST3D}:${PORT3D}/uploadRecord`,
+    deleteRecordFiles: `${HOST3D}:${PORT3D}/deleteRecordFiles`,
+    createImage: `${HOST3D}:${PORT3D}/api/records/createImage`,
+    createVideo: `${HOST3D}:${PORT3D}/api/records/createVideo`,
     uploadFolder: 'c:/node/3d_uploads/'
   },
   routes: {
+    routesRecord: '/api/records',
+    routesImages: '/api/images',
+    routesVideos: '/api/videos',
     uploadRecord: '/uploadRecord',
+    deleteRecordFiles: '/deleteRecordFiles',
+    createImage: '/createImage',
+    error: 'Hibás URL cím, vagy nem létező oldal!'
+  },
+  /*   uploadRecord: '/uploadRecord',
     createImage: '/createImage',
     deleteRecordFiles: '/deleteRecordFiles',
     routesRecord: '/api/records',
     routesImages: '/api/images',
     routesVideos: '/api/videos',
-    error: 'Hibás URL cím, vagy nem létező oldal!'
-  },
+    error: 'Hibás URL cím, vagy nem létező oldal!'*/
   theme: {
     domTrg: 'data-bs-theme',
     light: 'light',

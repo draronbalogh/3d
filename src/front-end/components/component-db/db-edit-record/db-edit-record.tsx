@@ -114,7 +114,7 @@ export class DbEditRecord extends React.Component<ModelProps, RecordState> {
     const { url, msg } = _CONFIG;
     try {
       const { recordId } = this.state;
-      const response = await axios.get(url.modelApi + recordId);
+      const response = await axios.get(url.recordApi + recordId);
       this.setState({ data: response.data });
       this.setState({ oldFilesToDel: response.data });
     } catch (e: any) {
@@ -328,7 +328,7 @@ export class DbEditRecord extends React.Component<ModelProps, RecordState> {
    */
   patchModel = async (recordId: string, data: any) => {
     const { url, msg } = _CONFIG;
-    const response = await axios.patch(url.modelApi + recordId, data);
+    const response = await axios.patch(url.recordApi + recordId, data);
     if (response.data.success === false) {
       console.log(msg.error.fetch.updating, response);
     }
@@ -353,9 +353,13 @@ export class DbEditRecord extends React.Component<ModelProps, RecordState> {
         });
       }
     });
-    const response = await axios.post(url.createImage, imgPush);
-    if (response.data.success === false) {
-      console.log(msg.error.file.uploading, response);
+    try {
+      const response = await axios.post(url.createImage, imgPush);
+      if (response.data.success === false) {
+        console.log(msg.error.file.uploading, response);
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -407,7 +411,7 @@ export class DbEditRecord extends React.Component<ModelProps, RecordState> {
 
     if (isThereAnyValidFile) {
       setState({ isUploading: true });
-      const response: any = await axios.post(url.uploadFiles, filesData, {
+      const response: any = await axios.post(url.uploadRecordFiles, filesData, {
         headers: {
           'content-type': 'multipart/form-data'
         },

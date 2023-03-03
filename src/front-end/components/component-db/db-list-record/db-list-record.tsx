@@ -39,7 +39,7 @@ export class DbListRecord extends React.Component<Model3dProps, RecordState> {
    */
   get3dModel = async () => {
     try {
-      const response = await axios.get<any>(_CONFIG.url.modelApi);
+      const response = await axios.get<any>(_CONFIG.url.recordApi);
       const resp = response?.data;
       if (resp) {
         this.setState({ data: resp, isDeleted: false });
@@ -66,7 +66,7 @@ export class DbListRecord extends React.Component<Model3dProps, RecordState> {
       await axios.post(_CONFIG.url.deleteRecordFiles, { deleteTheseFiles, recordId: ob['recordId'], recordUuid: ob['recordUuid'], deleteFolder: true }, {}).then((response) => {
         if (response.data.success === false) console.log(_CONFIG.msg.error.file.deleting, response);
       });
-      await axios.delete(_CONFIG.url.modelApi + recordId).then((response) => {
+      await axios.delete(_CONFIG.url.recordApi + recordId).then((response) => {
         if (response.data.success === false) {
           console.log(_CONFIG.msg.error.file.deleting, response);
         }
