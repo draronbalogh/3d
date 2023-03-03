@@ -140,15 +140,15 @@ https://docs.pmnd.rs/react-three-fiber/getting-started/introduction
 # Login
 https://jodiss-tri.medium.com/build-a-login-system-in-node-js-using-passport-js-and-mysql-52667cf3cc40
 
-
-
 # mysql workbench fiyes
 0. Go to taskmanager -services tab -> look for 'MySQL3d'..or so and stop process
 1. Start with start menu-> "mysql installer" -> select the mysql installer - Community 
 2. Click on reconfiguring options
+3. In mysql workbench check server availability
+4. In server menu -> reverse engineer
 
 Other solutions: 
-0. Refresh mysql 
+1. Refresh mysql 
 https://dev.mysql.com/downloads/file/?id=516926
 On refresh page, press try again, and download the file a couple times... 
 
