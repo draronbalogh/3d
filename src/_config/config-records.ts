@@ -1,3 +1,4 @@
+// TODO:: add zip files and mixed types recordAudio, recordMix. Check every model type in config-controller-data-types.ts
 export const modelConfig = [
   {
     name: 'editBtns',

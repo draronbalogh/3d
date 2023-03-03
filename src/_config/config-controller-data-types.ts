@@ -22,6 +22,8 @@ export const seqConfigForRecords = {
   recordFileName: { type: DataTypes.TEXT },
   recordVideos: { type: DataTypes.TEXT },
   recordImgs: { type: DataTypes.TEXT },
+  recordAudio: { type: DataTypes.TEXT },
+  recordMixed: { type: DataTypes.TEXT },
   recordSourceUrl: { type: DataTypes.TEXT },
   recordIframeUrl: { type: DataTypes.TEXT },
   recordViewerEmbedCode: { type: DataTypes.TEXT },
