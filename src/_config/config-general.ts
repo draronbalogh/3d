@@ -2,6 +2,9 @@ export const PORT3D = 5000;
 export const HOST3D = 'http://127.0.0.1'; // TODO: Change proxy in package.json to this
 export const _CONFIG = {
   db: {
+    host: '3d',
+    user: 'root',
+    pass: 'Asdqwe123',
     tableNameRecords: 'records',
     tableName3dModels: 'models',
     tableNameImages: 'images',
@@ -29,13 +32,6 @@ export const _CONFIG = {
     createImage: '/createImage',
     error: 'Hibás URL cím, vagy nem létező oldal!'
   },
-  /*   uploadRecord: '/uploadRecord',
-    createImage: '/createImage',
-    deleteRecordFiles: '/deleteRecordFiles',
-    routesRecord: '/api/records',
-    routesImages: '/api/images',
-    routesVideos: '/api/videos',
-    error: 'Hibás URL cím, vagy nem létező oldal!'*/
   theme: {
     domTrg: 'data-bs-theme',
     light: 'light',

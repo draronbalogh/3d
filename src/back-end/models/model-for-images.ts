@@ -1,10 +1,10 @@
 //////////////////////////////////////////////////////////////////////////////////////   IMPORT
 ///////////////////////////////////////////////////////////   CONFIG
-import db from '../../_config/config-database';
+import dbC from '../../_config/config-database';
 import { seqConfigForImgModels } from '../../_config/config-controller-data-types';
 import { _CONFIG } from '../../_config/config-general';
 ///////////////////////////////////////////////////////////   CONTROLLERS
-const ModelCtrForImageTypes = db.define(_CONFIG.db.tableNameImages, seqConfigForImgModels, {
+const ModelCtrForImageTypes = dbC.define(_CONFIG.db.tableNameImages, seqConfigForImgModels, {
   tableName: _CONFIG.db.tableNameImages,
   freezeTableName: true
 });
@@ -20,4 +20,4 @@ const createImagesTable = async () => {
 
 createImagesTable();
 ///////////////////////////////////////////////////////////   EXPORT
-export { ModelCtrForImageTypes, db };
+export { ModelCtrForImageTypes, dbC };

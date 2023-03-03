@@ -1,13 +1,11 @@
 //////////////////////////////////////////////////////////////////////////////////////   IMPORT
 ///////////////////////////////////////////////////////////   CONFIG
-import db from '../../_config/config-database';
+import dbC from '../../_config/config-database';
 import { seqConfigForRecords } from '../../_config/config-controller-data-types';
 import { _CONFIG } from '../../_config/config-general';
 
 ///////////////////////////////////////////////////////////   CONTROLLERS
-// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-const ModelCtrForRecordTypes = db.define(_CONFIG.db.tableNameRecords, seqConfigForRecords, {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+const ModelCtrForRecordTypes = dbC.define(_CONFIG.db.tableNameRecords, seqConfigForRecords, {
   tableName: _CONFIG.db.tableNameRecords,
   freezeTableName: true
 });

@@ -4,7 +4,7 @@ import { _CONFIG } from '../../_config/config-general';
 ///////////////////////////////////////////////////////////   CONTROLLERS
 import { Request, Response } from 'express';
 import sequelize from 'sequelize';
-import { db, ModelCtrForVideoTypes } from '../models/model-for-videos';
+import { dbC, ModelCtrForVideoTypes } from '../models/model-for-videos';
 ///////////////////////////////////////////////////////////   ROUTES
 
 /**
@@ -82,13 +82,13 @@ export const createVideos = async (req: Request, res: Response, next: any) => {
  */
 export const updateVideos = async (req: Request, res: Response) => {
   try {
-    await db.query('SET sql_safe_updates = 0;');
+    await dbC.query('SET sql_safe_updates = 0;');
     await ModelCtrForVideoTypes.update(req.body, {
       where: {
         joinId: req.params.videoId
       }
     });
-    await db.query('SET sql_safe_updates = 1;');
+    await dbC.query('SET sql_safe_updates = 1;');
     res.json({
       message: 'ModelCtrForVideoTypes Updated'
     });
@@ -104,13 +104,13 @@ export const updateVideos = async (req: Request, res: Response) => {
  */
 export const deleteVideo = async (req: Request, res: Response) => {
   try {
-    await db.query('SET sql_safe_updates = 0;');
+    await dbC.query('SET sql_safe_updates = 0;');
     await ModelCtrForVideoTypes.destroy({
       where: {
         joinId: req.params.recordId
       }
     });
-    await db.query('SET sql_safe_updates = 1;');
+    await dbC.query('SET sql_safe_updates = 1;');
     res.json({
       message: 'ModelCtrForVideoTypes Deleted'
     });
@@ -126,14 +126,14 @@ export const deleteVideo = async (req: Request, res: Response) => {
  */
 export const deleteVideoOnEditMenuInputChange = async (req: Request, res: Response) => {
   try {
-    await db.query('SET sql_safe_updates = 0;');
+    await dbC.query('SET sql_safe_updates = 0;');
     await ModelCtrForVideoTypes.destroy({
       where: {
         joinId: req.params.recordId,
         joinFromInput: req.params.joinFromInput
       }
     });
-    await db.query('SET sql_safe_updates = 1;');
+    await dbC.query('SET sql_safe_updates = 1;');
     res.json({
       message: 'ModelCtrForVideoTypes Deleted'
     });

@@ -4,7 +4,7 @@ import { _CONFIG } from '../../_config/config-general';
 ///////////////////////////////////////////////////////////   CONTROLLERS
 import { Request, Response } from 'express';
 import { ModelCtrForRecordTypes } from '../models/model-for-records';
-import { db, ModelCtrForImageTypes } from '../models/model-for-images';
+import { dbC, ModelCtrForImageTypes } from '../models/model-for-images';
 ///////////////////////////////////////////////////////////   ROUTES
 
 /**

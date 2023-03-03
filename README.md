@@ -96,7 +96,7 @@ netstat -ano | findstr :3000
 netstat -ano | findstr :5000 // vagy PORT3D in config
 
 ahol fut:
-tskill 5196   // change tskill for taskkill in git bash
+tskill 5196   // change tskill for !!!!  taskkill in git bash !!!!
 
 
 
@@ -139,3 +139,18 @@ https://docs.pmnd.rs/react-three-fiber/getting-started/introduction
 
 # Login
 https://jodiss-tri.medium.com/build-a-login-system-in-node-js-using-passport-js-and-mysql-52667cf3cc40
+
+
+
+# mysql workbench fiyes
+0. Go to taskmanager -services tab -> look for 'MySQL3d'..or so and stop process
+1. Start with start menu-> "mysql installer" -> select the mysql installer - Community 
+2. Click on reconfiguring options
+
+Other solutions: 
+0. Refresh mysql 
+https://dev.mysql.com/downloads/file/?id=516926
+On refresh page, press try again, and download the file a couple times... 
+
+# send sms
+https://developer.vonage.com/en/blog/send-and-receive-sms-messages-with-node-js-and-express

@@ -13,7 +13,7 @@ import formidable, { errors as formidableErrors } from 'formidable';
 import routesRecord from './routes/routes-records';
 import routesImages from './routes/routes-images';
 import routesVideos from './routes/routes-videos';
-import db from '../_config/config-database';
+import dbC from '../_config/config-database';
 import { createNecessaryDirectoriesSync } from '../assets/file-methods';
 import { logAxiosError } from '../assets/gen-methods';
 const { validation, url, msg, routes } = _CONFIG;
@@ -24,7 +24,7 @@ const { validation, url, msg, routes } = _CONFIG;
  */
 const connectToDb = async () => {
   try {
-    await db.authenticate();
+    await dbC.authenticate();
     console.log(msg.txt.db.success);
   } catch (error) {
     logAxiosError(error, msg.error.db.connection);
@@ -205,8 +205,8 @@ app.listen(PORT3D, () => console.log(msg.txt.server.started));
 try {
   console.clear();
   console.log(msg.txt.db.startDb);
-  connectToDb();
-  createNecessaryDirectoriesSync(url.uploadFolder);
+  //connectToDb();
+  // createNecessaryDirectoriesSync(url.uploadFolder);
 } catch (error) {
   console.error(msg.error.db.connection, error);
 }

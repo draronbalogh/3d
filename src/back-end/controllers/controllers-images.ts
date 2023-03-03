@@ -4,7 +4,7 @@ import { _CONFIG } from '../../_config/config-general';
 ///////////////////////////////////////////////////////////   CONTROLLERS
 import { Request, Response } from 'express';
 import sequelize from 'sequelize';
-import { db, ModelCtrForImageTypes } from '../models/model-for-images';
+import { dbC, ModelCtrForImageTypes } from '../models/model-for-images';
 ///////////////////////////////////////////////////////////   ROUTES
 
 /**
@@ -82,13 +82,13 @@ export const createImages = async (req: Request, res: Response, next: any) => {
  */
 export const updateImages = async (req: Request, res: Response) => {
   try {
-    await db.query('SET sql_safe_updates = 0;');
+    await dbC.query('SET sql_safe_updates = 0;');
     await ModelCtrForImageTypes.update(req.body, {
       where: {
         joinId: req.params.imageId
       }
     });
-    await db.query('SET sql_safe_updates = 1;');
+    await dbC.query('SET sql_safe_updates = 1;');
     res.json({
       message: 'ModelCtrForImageTypes Updated'
     });
@@ -104,13 +104,13 @@ export const updateImages = async (req: Request, res: Response) => {
  */
 export const deleteImage = async (req: Request, res: Response) => {
   try {
-    await db.query('SET sql_safe_updates = 0;');
+    await dbC.query('SET sql_safe_updates = 0;');
     await ModelCtrForImageTypes.destroy({
       where: {
         joinId: req.params.recordId
       }
     });
-    await db.query('SET sql_safe_updates = 1;');
+    await dbC.query('SET sql_safe_updates = 1;');
     res.json({
       message: 'ModelCtrForImageTypes Deleted'
     });
@@ -126,14 +126,14 @@ export const deleteImage = async (req: Request, res: Response) => {
  */
 export const deleteImageOnEditMenuInputChange = async (req: Request, res: Response) => {
   try {
-    await db.query('SET sql_safe_updates = 0;');
+    await dbC.query('SET sql_safe_updates = 0;');
     await ModelCtrForImageTypes.destroy({
       where: {
         joinId: req.params.recordId,
         joinFromInput: req.params.joinFromInput
       }
     });
-    await db.query('SET sql_safe_updates = 1;');
+    await dbC.query('SET sql_safe_updates = 1;');
     res.json({
       message: 'ModelCtrForImageTypes Deleted'
     });
