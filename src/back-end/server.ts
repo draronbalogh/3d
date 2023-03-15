@@ -13,6 +13,7 @@ import formidable, { errors as formidableErrors } from 'formidable';
 import routesRecord from './routes/routes-records';
 import routesImages from './routes/routes-images';
 import routesVideos from './routes/routes-videos';
+import routesModels3d from './routes/routes-models3d';
 import dbC from '../_config/config-database';
 import { createNecessaryDirectoriesSync } from '../assets/file-methods';
 import { logAxiosError } from '../assets/gen-methods';
@@ -199,6 +200,7 @@ app.post(routes.deleteRecordFiles, deleteRecordFiles);
 app.use(routes.routesRecord, routesRecord);
 app.use(routes.routesImages, routesImages);
 app.use(routes.routesVideos, routesVideos);
+app.use(routes.routesModels3d, routesModels3d);
 app.listen(PORT3D, () => console.log(msg.txt.server.started));
 
 ///////////////////////////////////////////////////////////   RUN APP

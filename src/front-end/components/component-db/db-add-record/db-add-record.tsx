@@ -4,7 +4,7 @@ import React, { useRef } from 'react';
 import { Navigate } from 'react-router-dom';
 ///////////////////////////////////////////////////////////   CONFIG
 import { _CONFIG } from '../../../../_config/config-general';
-import { modelConfig } from '../../../../_config/config-records';
+import { recordConfig } from '../../../../_config/config-records';
 ///////////////////////////////////////////////////////////   LIBS
 import axios from 'axios';
 import { v4 as uuid } from 'uuid';
@@ -31,7 +31,7 @@ interface RecordState {
   folderId: string;
 }
 interface UploadFiles {
-  recordUrl: [];
+  recordModels3d: [];
   recordImgs: [];
   recordMaterialUrl: [];
   recordVideos: [];
@@ -68,7 +68,7 @@ export class DbAddRecord extends React.Component<any, RecordState> implements Mo
       uploadingData: null,
       data: {},
       imgData: [],
-      files: { recordUrl: [], recordImgs: [], recordMaterialUrl: [], recordVideos: [] },
+      files: { recordModels3d: [], recordImgs: [], recordMaterialUrl: [], recordVideos: [] },
       folderName: '',
       recordUuid: '',
       folderId: nanoid(10).toLocaleLowerCase()
@@ -79,7 +79,7 @@ export class DbAddRecord extends React.Component<any, RecordState> implements Mo
   componentDidMount() {}
   ///////////////////////////////////////////////////////////   CLASS METHODS
   /**
-   * Save 3d model to database
+   * Save record to database
    * @param e: onclick event
    */
   saveRecod = async (e: any) => {
@@ -87,7 +87,6 @@ export class DbAddRecord extends React.Component<any, RecordState> implements Mo
     const { data, files, folderName } = this.state;
     const filesData = new FormData();
     let isThereAnyValidFile: boolean = false;
-
     // Prepare filesData and check if there is at least one valid file
     for (const file in files) {
       Object.values(files[file]).forEach((individualFile: any, index) => {
@@ -102,13 +101,16 @@ export class DbAddRecord extends React.Component<any, RecordState> implements Mo
 
     try {
       // Create model
-      const recordId = await this.postForModelDb(data);
+      const recordId = await this.postForRecordlDb(data);
 
       // Create images
-      //   await this.postForImageDb(recordId);
+      await this.postForModels3dDb(recordId);
 
       // Create images
-      //   await this.postForVideoDb(recordId);
+      await this.postForImageDb(recordId);
+
+      // Create images
+      await this.postForVideoDb(recordId);
 
       // Upload files (if there is at least one valid file)
       if (isThereAnyValidFile) {
@@ -130,16 +132,42 @@ export class DbAddRecord extends React.Component<any, RecordState> implements Mo
    * @param data
    * @returns
    */
-  postForModelDb = async (data: any) => {
+  postForRecordlDb = async (data: any) => {
     try {
       const { url, msg } = _CONFIG;
       const response: any = await axios.post(url.createRecord, data, {});
       if (response.data.success === false) throw new Error(msg.error.fetch.postingData, response);
       const response2: any = await axios.get(url.getLastRecordId);
       if (response2.data.success === false) throw new Error(msg.error.fetch.postingData2, response2);
-      const recordId = response2.data[0]?.recordId;
+      const recordId = response2.data[response2.data.length - 1]?.recordId;
       if (!recordId) throw new Error('Unable to retrieve record ID');
       return recordId;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  /**
+   * Create videos in database
+   * @param recordId
+   */
+  postForModels3dDb = async (recordId: number) => {
+    const { data } = this.state;
+    const { db, url } = _CONFIG;
+    try {
+      let postArr: any[] = [];
+      console.log(this.imgD);
+      Object.keys(this.imgD).forEach((element: any, key: number) => {
+        console.log('element: ', element);
+        if (element === 'recordModels3d') {
+          this.imgD[element].forEach((e: any, k: number) => {
+            postArr.push(this.imgD[element][k]);
+            this.imgD[element][k].joinFromTable = db.tableNameRecords;
+            this.imgD[element][k].joinId = recordId;
+            this.imgD[element][k].joinUuid = data.recordUuid;
+          });
+        }
+      });
+      const response = await axios.post(url.createModels3d, postArr);
     } catch (error) {
       console.log(error);
     }
@@ -152,18 +180,22 @@ export class DbAddRecord extends React.Component<any, RecordState> implements Mo
   postForImageDb = async (recordId: number) => {
     const { data } = this.state;
     const { db, url } = _CONFIG;
-    let postArr: any[] = [];
-    Object.keys(this.imgD).forEach((element: any, key: number) => {
-      if (element === 'recordImgs' || element === 'recordMaterialUrl') {
-        this.imgD[element].forEach((e: any, k: number) => {
-          postArr.push(this.imgD[element][k]);
-          this.imgD[element][k].joinFromTable = db.tableNameRecords;
-          this.imgD[element][k].joinId = recordId;
-          this.imgD[element][k].joinUuid = data.recordUuid;
-        });
-      }
-    });
-    const response = await axios.post(url.createImage, postArr);
+    try {
+      let postArr: any[] = [];
+      Object.keys(this.imgD).forEach((element: any, key: number) => {
+        if (element === 'recordImgs' || element === 'recordMaterialUrl') {
+          this.imgD[element].forEach((e: any, k: number) => {
+            postArr.push(this.imgD[element][k]);
+            this.imgD[element][k].joinFromTable = db.tableNameRecords;
+            this.imgD[element][k].joinId = recordId;
+            this.imgD[element][k].joinUuid = data.recordUuid;
+          });
+        }
+      });
+      const response = await axios.post(url.createImage, postArr);
+    } catch (error) {
+      console.log(error);
+    }
   };
   /**
    * Create videos in database
@@ -172,19 +204,24 @@ export class DbAddRecord extends React.Component<any, RecordState> implements Mo
   postForVideoDb = async (recordId: number) => {
     const { data } = this.state;
     const { db, url } = _CONFIG;
-    let postArr: any[] = [];
-    Object.keys(this.imgD).forEach((element: any, key: number) => {
-      console.log('element', element);
-      if (element === 'recordVideos') {
-        this.imgD[element].forEach((e: any, k: number) => {
-          postArr.push(this.imgD[element][k]);
-          this.imgD[element][k].joinFromTable = db.tableNameRecords;
-          this.imgD[element][k].joinId = recordId;
-          this.imgD[element][k].joinUuid = data.recordUuid;
-        });
-      }
-    });
-    const response = await axios.post(url.createVideo, postArr);
+    try {
+      let postArr: any[] = [];
+      console.log(this.imgD);
+      Object.keys(this.imgD).forEach((element: any, key: number) => {
+        if (element === 'recordVideos') {
+          this.imgD[element].forEach((e: any, k: number) => {
+            console.log('element: ', element);
+            postArr.push(this.imgD[element][k]);
+            this.imgD[element][k].joinFromTable = db.tableNameRecords;
+            this.imgD[element][k].joinId = recordId;
+            this.imgD[element][k].joinUuid = data.recordUuid;
+          });
+        }
+      });
+      const response = await axios.post(url.createVideo, postArr);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   /**
@@ -230,10 +267,30 @@ export class DbAddRecord extends React.Component<any, RecordState> implements Mo
   inputFileDataUpdater = (elm: string, e: any) => {
     e.preventDefault();
     const { validation, msg, url } = _CONFIG;
+    let category = 'img';
     try {
       this.imgD[elm] = [];
-      const category = elm === 'recordVideos' ? 'vid' : 'img',
-        fT = category + 'FileType',
+      // const category = elm === 'recordVideos' ? 'vid' : 'img';
+      switch (elm) {
+        case 'record':
+          category = 'record';
+          break;
+        case 'recordModels3d':
+          category = 'model3d';
+          break;
+        case 'recordVideos':
+          category = 'vid';
+          break;
+        case 'recordImgs':
+          category = 'img';
+          break;
+        case 'recordMaterialUrl':
+          category = 'img';
+          break;
+        default:
+          return 'img';
+      }
+      const fT = category + 'FileType',
         fS = category + 'FileSize',
         fN = category + 'FileName';
       if (e.target.files.length > validation.file.maxFiles) {
@@ -355,13 +412,13 @@ export class DbAddRecord extends React.Component<any, RecordState> implements Mo
    * @param i number
    * @param elm any
    * @returns
-   * @description Build form from modelConfig
+   * @description Build form from recordConfig
    */
   formBuilder = (i: number, elm: any) => {
     const { validation } = _CONFIG;
     let { data, folderId } = this.state,
-      ctr: string = modelConfig[i].control,
-      category: string[] | undefined = modelConfig[i].categories;
+      ctr: string = recordConfig[i].control,
+      category: string[] | undefined = recordConfig[i].categories;
     switch (ctr) {
       case 'switch':
         return <Form.Check type={'switch'} id={`ctr${i}`} label={elm.label} defaultChecked={elm.name === 'recordVisibility' ? true : false} onChange={(e) => this.switcher(elm.name, e.target.checked)} />;
@@ -378,7 +435,7 @@ export class DbAddRecord extends React.Component<any, RecordState> implements Mo
           </Form.Select>
         );
       case 'file':
-        return <Form.Control multiple type={ctr} name={folderId ? folderId : ''} onChange={(e) => this.inputFileDataUpdater(elm.name, e)} accept={elm.name === 'recordUrl' ? validation.file.web3dTypes : elm.name === 'recordImgs' || elm.name === 'recordMaterialUrl' ? validation.file.imgTypes : validation.file.vidTypes}></Form.Control>;
+        return <Form.Control multiple type={ctr} name={folderId ? folderId : ''} onChange={(e) => this.inputFileDataUpdater(elm.name, e)} accept={elm.name === 'recordModels3d' ? validation.file.web3dTypes : elm.name === 'recordImgs' || elm.name === 'recordMaterialUrl' ? validation.file.imgTypes : validation.file.vidTypes}></Form.Control>;
       case 'textarea':
         return <Form.Control as={ctr} rows={3} value={data?.hasOwnProperty(elm.name) ? data[elm.name] : ''} onChange={(e) => this.inputDataUpdater(elm.name, e.target.value)}></Form.Control>;
       default:
@@ -397,9 +454,9 @@ export class DbAddRecord extends React.Component<any, RecordState> implements Mo
       <ProgressViewer uploadingData={uploadingData} />
     ) : (
       <Form onSubmit={this.saveRecod} ref={this.form}>
-        {modelConfig
-          ? modelConfig.map((elm: any, i: number) => {
-              const enableForAddEdit: boolean = modelConfig[i].enableForAddEdit;
+        {recordConfig
+          ? recordConfig.map((elm: any, i: number) => {
+              const enableForAddEdit: boolean = recordConfig[i].enableForAddEdit;
               return enableForAddEdit ? (
                 <Form.Group key={i}>
                   {<Form.Label>{elm.label}</Form.Label>}

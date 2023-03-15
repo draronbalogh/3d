@@ -1,18 +1,8 @@
-// TODO:: add zip files and mixed types recordAudio, recordMix. Check every model type in config-controller-data-types.ts
-export const recordConfig = [
+// TODO:: add zip files and mixed types model3dAudio, model3dMix. Check every model type in config-controller-data-types.ts
+export const model3dConfig = [
   {
-    name: 'editBtns',
-    label: 'Btns',
-    control: '',
-    inputType: '',
-    enableForAddEdit: false,
-    isRequired: false,
-    visibility: true,
-    maxLength: 100
-  },
-  {
-    name: 'recordId',
-    label: 'recordId',
+    name: 'model3dId',
+    label: 'model3dId',
     control: 'number',
     inputType: 'input',
     enableForAddEdit: false,
@@ -21,7 +11,7 @@ export const recordConfig = [
     maxLength: 100
   },
   {
-    name: 'recordTitle',
+    name: 'model3dTitle',
     label: 'Cím',
     control: 'input',
     inputType: 'text',
@@ -31,7 +21,7 @@ export const recordConfig = [
     maxLength: 255
   },
   {
-    name: 'recordUuid',
+    name: 'model3dUuid',
     label: 'Egyedi azonosító',
     control: 'input',
     inputType: 'text',
@@ -41,7 +31,7 @@ export const recordConfig = [
     maxLength: 100
   },
   {
-    name: 'recordUploaderUid',
+    name: 'model3dUploaderUid',
     label: 'Feltöltő aznosítója',
     control: 'input',
     inputType: 'text',
@@ -52,7 +42,7 @@ export const recordConfig = [
   },
 
   {
-    name: 'recordDescription',
+    name: 'model3dDescription',
     label: 'Leírás',
     control: 'textarea',
     inputType: 'text',
@@ -63,7 +53,7 @@ export const recordConfig = [
     maxLength: 3000
   },
   {
-    name: 'recordMeta',
+    name: 'model3dMeta',
     label: 'Meta',
     control: 'textarea',
     inputType: 'text',
@@ -74,7 +64,7 @@ export const recordConfig = [
     maxLength: 3000
   },
   {
-    name: 'recordChannel',
+    name: 'model3dChannel',
     label: 'Csatorna',
     control: 'select',
     categories: ['Válassz kategóriát', '1', '2', '3'],
@@ -85,7 +75,7 @@ export const recordConfig = [
     maxLength: 50
   },
   {
-    name: 'recordCategory',
+    name: 'model3dCategory',
     label: 'Kategória',
     control: 'select',
     categories: ['Válassz kategóriát', 'Ember', 'Állat', 'Gép', 'Egyéb'],
@@ -96,7 +86,7 @@ export const recordConfig = [
     maxLength: 50
   },
   {
-    name: 'recordRenderEngine',
+    name: 'model3dRenderEngine',
     label: 'Render engine',
     control: 'input',
     inputType: 'text',
@@ -106,7 +96,37 @@ export const recordConfig = [
     maxLength: 255
   },
   {
-    name: 'recordPolyCategory',
+    name: 'model3dGeometryType',
+    label: 'Geometria típusa',
+    control: 'input',
+    inputType: 'text',
+    enableForAddEdit: true,
+    isRequired: false,
+    visibility: true,
+    maxLength: 255
+  },
+  {
+    name: 'model3dUvMapping',
+    label: 'UV mappek',
+    control: 'input',
+    inputType: 'text',
+    enableForAddEdit: true,
+    isRequired: false,
+    visibility: true,
+    maxLength: 255
+  },
+  {
+    name: 'model3dTextureMaps',
+    label: 'Textúra mappek',
+    control: 'input',
+    inputType: 'text',
+    enableForAddEdit: true,
+    isRequired: false,
+    visibility: true,
+    maxLength: 255
+  },
+  {
+    name: 'model3dPolyCategory',
     label: 'Polygon kategória',
     categories: ['Válassz kategóriát', 'Alacsony', 'Közepes', 'Magas'],
     control: 'select',
@@ -117,7 +137,7 @@ export const recordConfig = [
     maxLength: 50
   },
   {
-    name: 'recordPolyCount',
+    name: 'model3dPolyCount',
     label: 'Polygon szám',
     control: 'input',
     inputType: 'text',
@@ -127,7 +147,7 @@ export const recordConfig = [
     maxLength: 255
   },
   {
-    name: 'recordFormat',
+    name: 'model3dFormat',
     label: 'Formátum',
     control: 'input',
     categories: ['Válassz kategóriát', 'obj', 'fbx'],
@@ -138,7 +158,7 @@ export const recordConfig = [
     maxLength: 255
   },
   {
-    name: 'recordTags',
+    name: 'model3dTags',
     label: 'Tag-ek',
     control: 'input',
     inputType: 'text',
@@ -148,17 +168,27 @@ export const recordConfig = [
     maxLength: 255
   },
   {
-    name: 'recordModels3d',
+    name: 'model3dUrl',
     label: '3D modellek',
     control: 'file',
     inputType: 'text',
     enableForAddEdit: true,
     isRequired: false,
     visibility: true,
-    maxLength: 255
+    maxLength: 3000
   },
   {
-    name: 'recordFileName',
+    name: 'model3dDownloadUrl',
+    label: 'Letöltési link',
+    control: 'file',
+    inputType: 'text',
+    enableForAddEdit: true,
+    isRequired: false,
+    visibility: true,
+    maxLength: 3000
+  },
+  {
+    name: 'model3dFileName',
     label: 'Fájl név',
     control: 'input',
     inputType: 'text',
@@ -168,7 +198,7 @@ export const recordConfig = [
     maxLength: 3000
   },
   {
-    name: 'recordVideos',
+    name: 'model3dVideos',
     label: 'Videók',
     control: 'file',
     inputType: 'text',
@@ -178,7 +208,7 @@ export const recordConfig = [
     maxLength: 3000
   },
   {
-    name: 'recordImgs',
+    name: 'model3dImgs',
     label: 'Képek',
     control: 'file',
     inputType: 'text',
@@ -188,7 +218,7 @@ export const recordConfig = [
     maxLength: 3000
   },
   {
-    name: 'recordSourceUrl',
+    name: 'model3dSourceUrl',
     label: 'Modell forrása',
     control: 'textarea',
     inputType: 'text',
@@ -199,7 +229,7 @@ export const recordConfig = [
     maxLength: 3000
   },
   {
-    name: 'recordIframeUrl',
+    name: 'model3dIframeUrl',
     label: 'Iframe url',
     control: 'input',
     inputType: 'text',
@@ -209,7 +239,17 @@ export const recordConfig = [
     maxLength: 30000
   },
   {
-    name: 'recordExtraLinks',
+    name: 'model3dViewerEmbedCode',
+    label: 'Viewer embed code',
+    control: 'input',
+    inputType: 'text',
+    enableForAddEdit: true,
+    isRequired: false,
+    visibility: true,
+    maxLength: 30000
+  },
+  {
+    name: 'model3dExtraLinks',
     label: 'Extra linkek',
     control: 'textarea',
     inputType: 'text',
@@ -220,7 +260,7 @@ export const recordConfig = [
     maxLength: 3000
   },
   {
-    name: 'recordMaterialUrl',
+    name: 'model3dMaterialUrl',
     label: 'Material-ok',
     control: 'file',
     inputType: 'text',
@@ -230,7 +270,7 @@ export const recordConfig = [
     maxLength: 3000
   },
   {
-    name: 'recordState',
+    name: 'model3dState',
     label: 'Állapot',
     categories: ['Válassz kategóriát', 'Elérhető', 'Nem elérhető'],
     control: 'select',
@@ -241,7 +281,7 @@ export const recordConfig = [
     maxLength: 255
   },
   {
-    name: 'recordVisibility',
+    name: 'model3dVisibility',
     label: 'Láthatóság',
     control: 'switch',
     inputType: 'FormCheckType ',
@@ -251,7 +291,7 @@ export const recordConfig = [
     maxLength: 1
   },
   {
-    name: 'recordRigged',
+    name: 'model3dRigged',
     label: 'Riggelve',
     control: 'switch',
     inputType: 'FormCheckType ',
@@ -261,7 +301,17 @@ export const recordConfig = [
     maxLength: 1
   },
   {
-    name: 'recordAnimated',
+    name: 'model3dRigging',
+    label: 'Riggelés',
+    control: 'input',
+    inputType: 'text',
+    enableForAddEdit: true,
+    isRequired: false,
+    visibility: true,
+    maxLength: 255
+  },
+  {
+    name: 'model3dAnimated',
     label: 'Animálva',
     control: 'switch',
     inputType: 'FormCheckType ',
@@ -271,7 +321,7 @@ export const recordConfig = [
     maxLength: 1
   },
   {
-    name: 'recordUv',
+    name: 'model3dUv',
     label: 'UV',
     control: 'input',
     inputType: 'text',
@@ -281,7 +331,17 @@ export const recordConfig = [
     maxLength: 3000
   },
   {
-    name: 'recordLegality',
+    name: 'model3dLightingSetup',
+    label: 'Animáció típusa',
+    control: 'input',
+    inputType: 'text',
+    enableForAddEdit: true,
+    isRequired: false,
+    visibility: true,
+    maxLength: 255
+  },
+  {
+    name: 'model3dLegality',
     label: 'Jogállás',
     categories: ['Válassz kategóriát', 'Jogtiszta modell', 'Ingyenes modell', 'Nem ismert forrás'],
     control: 'select',
@@ -292,7 +352,7 @@ export const recordConfig = [
     maxLength: 255
   },
   {
-    name: 'recordScript',
+    name: 'model3dScript',
     label: 'Script',
     control: 'textarea',
     inputType: 'text',
@@ -303,7 +363,17 @@ export const recordConfig = [
     maxLength: 30000
   },
   {
-    name: 'recordViewerUid',
+    name: 'model3dWebLib',
+    label: 'Web library',
+    control: 'input',
+    inputType: 'text',
+    enableForAddEdit: true,
+    isRequired: false,
+    visibility: true,
+    maxLength: 255
+  },
+  {
+    name: 'model3dViewerUid',
     label: 'Viewed by',
     control: 'input',
     inputType: 'text',
@@ -313,7 +383,7 @@ export const recordConfig = [
     maxLength: 50
   },
   {
-    name: 'recordViewCount',
+    name: 'model3dViewCount',
     label: 'Viewed count',
     control: 'input',
     inputType: 'text',
@@ -323,7 +393,7 @@ export const recordConfig = [
     maxLength: 1024
   },
   {
-    name: 'recordDownloaderUid',
+    name: 'model3dDownloaderUid',
     label: 'Downloaded by',
     control: 'input',
     inputType: 'text',
@@ -333,7 +403,7 @@ export const recordConfig = [
     maxLength: 50
   },
   {
-    name: 'recordDownloadCount',
+    name: 'model3dDownloadCount',
     label: 'Download count',
     control: 'input',
     inputType: 'text',

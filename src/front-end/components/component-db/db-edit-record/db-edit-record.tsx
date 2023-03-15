@@ -4,7 +4,7 @@ import React from 'react';
 import { Navigate } from 'react-router-dom';
 ///////////////////////////////////////////////////////////   CONFIG
 import { _CONFIG } from '../../../../_config/config-general';
-import { modelConfig } from '../../../../_config/config-records';
+import { recordConfig } from '../../../../_config/config-records';
 ///////////////////////////////////////////////////////////   LIBS
 import axios, { AxiosResponse } from 'axios';
 import { v4 as uuid } from 'uuid';
@@ -21,7 +21,7 @@ interface ModelProps {
   data: any;
 }
 interface UploadFiles {
-  recordUrl: [];
+  recordModels3d: [];
   recordImgs: [];
   recordMaterialUrl: [];
   recordVideos: [];
@@ -74,7 +74,7 @@ export class DbEditRecord extends React.Component<ModelProps, RecordState> {
       isUploading: false,
       data: this.props.data,
       imgData: [],
-      files: { recordUrl: [], recordImgs: [], recordMaterialUrl: [], recordVideos: [] },
+      files: { recordModels3d: [], recordImgs: [], recordMaterialUrl: [], recordVideos: [] },
       oldFilesToDel: null,
       deleteTheseFiles: [],
       uploadingData: [],
@@ -145,15 +145,15 @@ export class DbEditRecord extends React.Component<ModelProps, RecordState> {
 
       if (e.target.files.length > 0) {
         const { oldFilesToDel } = this.state;
-        let recordUrl = oldFilesToDel['recordUrl'] ? oldFilesToDel['recordUrl'] : '',
+        let recordModels3d = oldFilesToDel['recordModels3d'] ? oldFilesToDel['recordModels3d'] : '',
           recordImgs = oldFilesToDel['recordImgs'] ? oldFilesToDel['recordImgs'] : '',
           recordMaterialUrl = oldFilesToDel['recordMaterialUrl'] ? oldFilesToDel['recordMaterialUrl'] : '',
           recordVideos = oldFilesToDel['recordVideos'] ? oldFilesToDel['recordVideos'] : '',
-          modelUrlA = recordUrl.split(','),
+          modelUrlA = recordModels3d.split(','),
           modelImgsA = recordImgs.split(','),
           modelMaterialUrlA = recordMaterialUrl.split(','),
           modelVideosA = recordVideos.split(',');
-        if (elm === 'recordUrl') DbEditRecord.imgArray.push(modelUrlA);
+        if (elm === 'recordModels3d') DbEditRecord.imgArray.push(modelUrlA);
         if (elm === 'recordImgs') DbEditRecord.imgArray.push(modelImgsA);
         if (elm === 'recordMaterialUrl') DbEditRecord.imgArray.push(modelMaterialUrlA);
         if (elm === 'recordVideos') DbEditRecord.imgArray.push(modelVideosA);
@@ -435,12 +435,12 @@ export class DbEditRecord extends React.Component<ModelProps, RecordState> {
     }
   };
   /**
-   * Get title from modelConfig
+   * Get title from recordConfig
    * @param elm string
    * @returns
    */
   getTitle = (elm: any) => {
-    return Object.entries(modelConfig).map(([key, value]) => {
+    return Object.entries(recordConfig).map(([key, value]) => {
       if (value.name === elm) return value.label;
     });
   };
@@ -464,7 +464,7 @@ export class DbEditRecord extends React.Component<ModelProps, RecordState> {
   ///////////////////////////////////////////////////////////   RENDER METHODS
 
   /**
-   * Print all options from modelConfig
+   * Print all options from recordConfig
    * @param category any
    * @returns
    */
@@ -489,10 +489,10 @@ export class DbEditRecord extends React.Component<ModelProps, RecordState> {
     const { validation } = _CONFIG;
     let { data } = this.state,
       element = data[elm],
-      ctr = modelConfig[i].control,
-      category = modelConfig[i].categories,
-      isRequired = modelConfig[i].isRequired,
-      label = modelConfig[i].label;
+      ctr = recordConfig[i].control,
+      category = recordConfig[i].categories,
+      isRequired = recordConfig[i].isRequired,
+      label = recordConfig[i].label;
 
     switch (ctr) {
       case 'switch':
@@ -505,7 +505,7 @@ export class DbEditRecord extends React.Component<ModelProps, RecordState> {
         );
       case 'file':
         //@ts-ignore
-        return <Form.Control multiple type={ctr} name='imageName' onChange={(e) => this.inputFileDataUpdater(elm, e)} accept={elm === 'recordUrl' ? validation.file.web3dTypes : elm === 'recordImgs' || elm === 'recordMaterialUrl' ? validation.file.imgTypes : validation.file.vidTypes}></Form.Control>;
+        return <Form.Control multiple type={ctr} name='imageName' onChange={(e) => this.inputFileDataUpdater(elm, e)} accept={elm === 'recordModels3d' ? validation.file.web3dTypes : elm === 'recordImgs' || elm === 'recordMaterialUrl' ? validation.file.imgTypes : validation.file.vidTypes}></Form.Control>;
       case 'textarea':
         return <Form.Control as={ctr} rows={3} value={element ? element : ''} onChange={(e) => this.inputDataUpdater(elm, e.target.value)}></Form.Control>;
       default:
@@ -524,10 +524,10 @@ export class DbEditRecord extends React.Component<ModelProps, RecordState> {
       <ProgressViewer uploadingData={uploadingData} />
     ) : (
       <Form onSubmit={this.update3dModel}>
-        {modelConfig
-          ? modelConfig.map((elm: any, i: number) => {
-              const ctr: string = modelConfig[i].control,
-                enableForAddEdit: boolean = modelConfig[i].enableForAddEdit;
+        {recordConfig
+          ? recordConfig.map((elm: any, i: number) => {
+              const ctr: string = recordConfig[i].control,
+                enableForAddEdit: boolean = recordConfig[i].enableForAddEdit;
               return enableForAddEdit ? (
                 <Form.Group key={i}>
                   {<Form.Label>{elm.label}</Form.Label>}

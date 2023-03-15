@@ -4,7 +4,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 ////////////////////////////////////////////////////////////   CONFIG
 import { _CONFIG } from '../../../../_config/config-general';
-import { modelConfig } from '../../../../_config/config-records';
+import { recordConfig } from '../../../../_config/config-records';
 ///////////////////////////////////////////////////////////   LIBS
 import axios, { AxiosResponse } from 'axios';
 import { logAxiosError } from '../../../../assets/gen-methods';
@@ -60,9 +60,9 @@ export class DbListRecord extends React.Component<Model3dProps, RecordState> {
     try {
       let recordImgs: string[] = ob['recordImgs'] ? ob['recordImgs']?.split(',') : [],
         recordMaterialUrl: string[] = ob['recordMaterialUrl'] ? ob['recordMaterialUrl']?.split(',') : [],
-        recordUrl: string[] = ob['recordUrl'] ? ob['recordUrl']?.split(',') : [],
+        recordModels3d: string[] = ob['recordModels3d'] ? ob['recordModels3d']?.split(',') : [],
         recordVideos: string[] = ob['recordVideos'] ? ob['recordVideos']?.split(',') : [],
-        deleteTheseFiles: string[] = [...recordImgs, ...recordMaterialUrl, ...recordUrl, ...recordVideos];
+        deleteTheseFiles: string[] = [...recordImgs, ...recordMaterialUrl, ...recordModels3d, ...recordVideos];
       await axios.post(_CONFIG.url.deleteRecordFiles, { deleteTheseFiles, recordId: ob['recordId'], recordUuid: ob['recordUuid'], deleteFolder: true }, {}).then((response) => {
         if (response.data.success === false) console.log(_CONFIG.msg.error.file.deleting, response);
       });
@@ -79,6 +79,13 @@ export class DbListRecord extends React.Component<Model3dProps, RecordState> {
         }
       });
       await axios.delete(_CONFIG.url.videoApi + recordId).then((response) => {
+        if (response.data.success === false) {
+          console.log(_CONFIG.msg.error.file.deleting, response);
+        } else {
+          this.get3dModel();
+        }
+      });
+      await axios.delete(_CONFIG.url.models3dApi + recordId).then((response) => {
         if (response.data.success === false) {
           console.log(_CONFIG.msg.error.file.deleting, response);
         } else {
@@ -116,7 +123,7 @@ export class DbListRecord extends React.Component<Model3dProps, RecordState> {
    * @returns th elements
    */
   printModelTitle = () => {
-    return modelConfig.map((v: any, i: number) => {
+    return recordConfig.map((v: any, i: number) => {
       return <th key={i}>{v.label}</th>;
     });
   };
@@ -130,7 +137,7 @@ export class DbListRecord extends React.Component<Model3dProps, RecordState> {
     return data.length > 0
       ? data?.map((elm, i) => (
           <tr key={i}>
-            {modelConfig.map((elm: any, ii: number) => {
+            {recordConfig.map((elm: any, ii: number) => {
               return elm.name === 'editBtns' ? <td key={ii}>{this.printEditorBtns(data[i])}</td> : <td key={ii}>{data[i][elm.name]}</td>;
             })}
           </tr>

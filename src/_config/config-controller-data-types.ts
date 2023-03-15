@@ -17,7 +17,7 @@ export const seqConfigForRecords = {
   recordPolyCount: { type: DataTypes.STRING(255) },
   recordFormat: { type: DataTypes.STRING(255) },
   recordTags: { type: DataTypes.STRING(255) },
-  recordUrl: { type: DataTypes.TEXT },
+  recordModels3d: { type: DataTypes.TEXT },
   recordDownloadUrl: { type: DataTypes.TEXT },
   recordFileName: { type: DataTypes.TEXT },
   recordVideos: { type: DataTypes.TEXT },
@@ -50,12 +50,13 @@ export const seqConfigForRecords = {
   joinUuid: { type: DataTypes.STRING(100) }
 };
 
-export const seqConfigFor3dModels = {
+export const seqConfigForModels3d = {
   model3dId: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
   model3dUuid: { type: DataTypes.STRING(100) },
   model3dUploaderUid: { type: DataTypes.STRING(50) },
   model3dTitle: { type: DataTypes.STRING(255) },
   model3dDescription: { type: DataTypes.TEXT },
+  model3dOriginalFileName: { type: DataTypes.TEXT },
   model3dMeta: { type: DataTypes.TEXT },
   model3dChannel: { type: DataTypes.STRING(50) },
   model3dCategory: { type: DataTypes.STRING(50) },
@@ -67,6 +68,11 @@ export const seqConfigFor3dModels = {
   model3dPolyCount: { type: DataTypes.STRING(255) },
   model3dFormat: { type: DataTypes.STRING(255) },
   model3dTags: { type: DataTypes.STRING(255) },
+  model3dFileExtension: { type: DataTypes.STRING(100) },
+  model3dFileSize: { type: DataTypes.BIGINT },
+  model3dFolderPath: { type: DataTypes.TEXT },
+  model3dFileType: { type: DataTypes.STRING(100) },
+  model3dFileNameWithoutExtension: { type: DataTypes.TEXT },
   model3dUrl: { type: DataTypes.TEXT },
   model3dDownloadUrl: { type: DataTypes.TEXT },
   model3dFileName: { type: DataTypes.TEXT },

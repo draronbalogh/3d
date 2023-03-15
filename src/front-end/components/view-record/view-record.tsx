@@ -3,7 +3,7 @@
 import React from 'react';
 ///////////////////////////////////////////////////////////   CONFIG
 import { _CONFIG } from '../../../_config/config-general';
-import { modelConfig } from '../../../_config/config-records';
+import { recordConfig } from '../../../_config/config-records';
 ///////////////////////////////////////////////////////////   LIBS
 import axios from 'axios';
 import { logAxiosError } from '../../../assets/gen-methods';
@@ -74,7 +74,7 @@ export class ViewRecord extends React.Component<CompProps, CompState> {
    * @returns label list of table cells
    */
   getTitle = () => {
-    return Object.entries(modelConfig).map(([key, value]) => {
+    return Object.entries(recordConfig).map(([key, value]) => {
       return <td key={key}>{value.label}</td>;
     });
   };

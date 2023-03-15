@@ -151,7 +151,7 @@ if still not working, then already existing port should be closed:
 1. yarn run server
 2. get error info
 3. netstat -ano | findstr :5000 
-4. ahol fut: tskill 14236   // change tskill for !!!!  taskkill in git bash !!!!
+4. ahol fut: tskill 22064   // change tskill for !!!!  taskkill in git bash !!!!
 
 
 
