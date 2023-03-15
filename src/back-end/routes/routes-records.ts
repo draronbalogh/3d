@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import express from 'express';
-import { getAllRecords, getLastRecordById, createRecords, getRecordsById, updateRecords, deleteRecords } from '../controllers/controllers-records';
-import { createImages } from '../controllers/controllers-images';
-import { createVideos } from '../controllers/controllers-videos';
+import { getAllRecords, getLastRecordById, createRecords, getRecordsById, updateRecords, deleteRecords } from '../controllers/controller-for-records';
+import { createImages } from '../controllers/controller-for-images';
+import { createVideos } from '../controllers/controller-for-videos';
 const router = express.Router();
 router.get('/', getAllRecords);
 router.get('/getLastModelId', getLastRecordById);

@@ -145,7 +145,15 @@ https://jodiss-tri.medium.com/build-a-login-system-in-node-js-using-passport-js-
 1. Start with start menu-> "mysql installer" -> select the mysql installer - Community 
 2. Click on reconfiguring options
 3. In mysql workbench check server availability
-4. In server menu -> reverse engineer
+4. In Database menu -> reverse engineer
+
+if still not working, then already existing port should be closed: 
+1. yarn run server
+2. get error info
+3. netstat -ano | findstr :5000 
+4. ahol fut: tskill 14236   // change tskill for !!!!  taskkill in git bash !!!!
+
+
 
 Other solutions: 
 1. Refresh mysql 

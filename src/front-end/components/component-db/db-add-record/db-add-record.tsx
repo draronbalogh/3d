@@ -136,8 +136,10 @@ export class DbAddRecord extends React.Component<any, RecordState> implements Mo
       const response: any = await axios.post(url.createRecord, data, {});
       if (response.data.success === false) throw new Error(msg.error.fetch.postingData, response);
       const response2: any = await axios.get(url.getLastRecordId);
-      if (response2.data.success === false) throw new Error(msg.error.fetch.postingData, response2);
-      return response2.data[0].recordId;
+      if (response2.data.success === false) throw new Error(msg.error.fetch.postingData2, response2);
+      const recordId = response2.data[0]?.recordId;
+      if (!recordId) throw new Error('Unable to retrieve record ID');
+      return recordId;
     } catch (error) {
       console.log(error);
     }

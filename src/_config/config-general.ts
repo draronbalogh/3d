@@ -108,9 +108,10 @@ export const _CONFIG = {
         fetchById: 'Fetch by id error',
         axios: 'Axios Error',
         getData: 'Error while getting data from database',
-        postingData: 'Error while posting / storing data to database',
+        postingData: 'Database error! Error while posting / storing data to database',
+        postingData2: 'Database error 2! Error while posting / storing data to database',
         saving: 'Error while saving data to database / uploading files',
-        updating: 'Error while posting / storing data to database'
+        updating: 'Database error! Error while posting / storing data to database'
       }
     }
   }
