@@ -153,7 +153,11 @@ if still not working, then already existing port should be closed:
 3. netstat -ano | findstr :5000 
 4. ahol fut: tskill 22064   // change tskill for !!!!  taskkill in git bash !!!!
 
-
+# mysql workbench if no db exists
+1. connect to db
+2. On left 'Navigator menu', switch from 'Administration' tab to 'Schemas' tab.  
+   (Right next to Administration text, it is a tab menu, hard to recognize...it down below from Management, Instance, Performance texts..)
+   3. Right-click in the empty space in the right-hand panel and select "Create Schema". 
 
 Other solutions: 
 1. Refresh mysql 
