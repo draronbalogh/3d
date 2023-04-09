@@ -1,168 +1,51 @@
+# 3D Library
 
-# Todo
-- add a mysql table for videos 
-- create the users table
-- login to admin
+## Overview
 
-- react-table
-- form design
+This project was created as part of my DLA  research, and it was prepared for my doctoral defense presentation with the purpose of testing web 3D models. You'll find a collection of experiments with 3D WebGL and WebGPU libraries such as Three.js and Babylon.js. 
 
+This project is a full-stack application that utilizes the MERN stack, with Node.js and Express.js for the backend, React.js for the frontend, and MySQL for the database. By uploading 3D models, they are stored in a designated folder specified in the configuration and are saved in the database. CRUD operations can be performed on the models, including creating, reading, updating, and deleting them, as well as adding or deleting models to/from folders. 
 
-- 
-/*
- * Materialok --> cinema3D-nél tex
- */
+The 3D models included in the project were created using Blender and are saved as gltf and glb files, which can be viewed directly in the browser. As a work in progress, the project will continue to add more models and experiments in the future. Feedback is welcome, and you are free to contact me with any suggestions on how to improve the project.
 
-/**
- * node-sp-auth-config
- * Profil
- * Login
- * Kedvencek
- * Feltöltéseim
- * Ai file
- */
+## Installation
+1. To install dependencies, run:
+`yarn install`
 
+2. Set up MySQL database
 
-# Hasznos linkek:
-Mosh Hamedani a legjobb:
-https://programmingwithmosh.com/javascript/react-file-upload-proper-server-side-nodejs-easy/
+## Usage
+To use this project, run:
+
+`yarn run 3D`
+
+or: 
+
+`yarn server`
+`yarn client`
 
 
-itttt:::
-https://mfikri.com/en/blog/node-express-react-mysql
+## Contributing
+### Contributions are welcome! 
+If you want to contribute to this project, please follow these steps:
+To contribute code changes, please follow these steps:
 
-jó:
-https://www.bezkoder.com/react-node-express-mysql/
-https://www.becomebetterprogrammer.com/mysql-nodejs-expressjs-typescript/
-
-https://blog.logrocket.com/build-rest-api-node-express-mysql/
-https://www.designmycodes.com/examples/node-js-express-sequelize-mysql.html
-
-
-https://www.tutsmake.com/how-to-send-data-from-react-to-node-js-express-mysql/
-https://codingpr.com/react-typescript-and-express/
-https://www.tutsmake.com/react-js-node-js-file-upload-tutorial-with-example/
-
-
-https://storybook.js.org/tutorials/intro-to-storybook/react/en/get-started/
-https://create-react-app.dev/docs/developing-components-in-isolation
-
-https://www.becomebetterprogrammer.com/mysql-nodejs-expressjs-typescript/
-https://arctype.com/blog/rest-api-tutorial/
-https://blog.logrocket.com/build-rest-api-node-express-mysql/
- 
-# Basic yarn codes
-yarn start
-yarn build
-yarn test
-
-# Install and update yarn
-npm install --global yarn
-## Upgrade
-yarn upgrade --latest react-scripts
-# Install CRA
-yarn create react-app . --template typescript
-## Add ts to existing project
-yarn add typescript @types/node @types/react @types/react-dom @types/jest
-
-# Add sass
-yarn add sass
-
-# Lib ideas
-https://github.com/w3tecch/express-typescript-boilerplate
-
-# Multi remotes
-git remote set-url --add --push origin https://git-scm.mtva.hu:8080/git/3dfejlesztes
-git remote set-url --add --push origin https://github.com/balogharon/3d.git
-
-
-yarn run start
-
-
-# doc
-https://create-react-app.dev/docs/integrating-with-an-api-backend
-https://www.newline.co/fullstack-react/articles/using-create-react-app-with-a-server/
- 
-
- # original react script starter in package.json
-"start": "react-scripts start",
-
-
-# port terminal
-yarn add kill-port -- telepítése
-
-use it like:
-netstat -ano | findstr :3000
-netstat -ano | findstr :5000 // vagy PORT3D in config
-
-ahol fut:
-tskill 5196   // change tskill for !!!!  taskkill in git bash !!!!
+1. [Fork the repository](https://help.github.com/en/articles/fork-a-repo) to your own account.
+2. Create a new branch for your changes: `git checkout -b your-branch-name`
+3. Make your changes and commit them: `git commit -am 'Add some feature'`
+4. Push your branch to your fork: `git push origin your-branch-name`
+5. [Submit a pull request](https://help.github.com/en/articles/creating-a-pull-request) with a clear and descriptive title, as well as a detailed description of the changes you made.
 
 
 
+## License
+This project is licensed under the Creative Commons Attribution-NonCommercial 4.0 International License https://creativecommons.org/licenses/by-nc/4.0/.
 
-# mysql workbanch
+This means that you are free to use and modify the code for non-commercial purposes, as long as you give attribution to the original author and license any derivative works under the same license. If you want to use the code for commercial purposes, please contact me.
 
+## Contact
+Feel free to contact me through [my LinkedIn profile](https://www.linkedin.com/in/balogh-aron/)!
 
-0.
-INSERT INTO mysql.user (Host, User, Password) VALUES ('%', 'root', password('YOURPASSWORD'));
-GRANT ALL ON *.* TO 'root'@'%' WITH GRANT OPTION;
+Created by [Aron Balogh](https://github.com/balogharon).
 
-1. 
-Execute the following query in MYSQL Workbench
-
-ALTER USER 'root'@'localhost' IDENTIFIED BY 'Asdqwe123'; 
-
-
-ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'Asdqwe123';
-flush privileges;
-
-1. Start - stop service in Task Manager
-
-
-# install if error
-yarn add nodemon
-yarn add ts-node
-
-
-# sequalize data types
-https://sequelize.org/docs/v7/other-topics/other-data-types/
-
-
-
-# Express hints
-https://medium.com/@adamzerner/middleware-in-express-60d75055ba8f
-
-# React ecosystem
-https://docs.pmnd.rs/react-three-fiber/getting-started/introduction
-
-
-# Login
-https://jodiss-tri.medium.com/build-a-login-system-in-node-js-using-passport-js-and-mysql-52667cf3cc40
-
-# mysql workbench fiyes
-0. Go to taskmanager -services tab -> look for 'MySQL3d'..or so and stop process
-1. Start with start menu-> "mysql installer" -> select the mysql installer - Community 
-2. Click on reconfiguring options
-3. In mysql workbench check server availability
-4. In Database menu -> reverse engineer
-
-if still not working, then already existing port should be closed: 
-1. yarn run server
-2. get error info
-3. netstat -ano | findstr :5000 
-4. ahol fut: tskill 22064   // change tskill for !!!!  taskkill in git bash !!!!
-
-# mysql workbench if no db exists
-1. connect to db
-2. On left 'Navigator menu', switch from 'Administration' tab to 'Schemas' tab.  
-   (Right next to Administration text, it is a tab menu, hard to recognize...it down below from Management, Instance, Performance texts..)
-   3. Right-click in the empty space in the right-hand panel and select "Create Schema". 
-
-Other solutions: 
-1. Refresh mysql 
-https://dev.mysql.com/downloads/file/?id=516926
-On refresh page, press try again, and download the file a couple times... 
-
-# send sms
-https://developer.vonage.com/en/blog/send-and-receive-sms-messages-with-node-js-and-express
+Last updated on 2023-04-09.
