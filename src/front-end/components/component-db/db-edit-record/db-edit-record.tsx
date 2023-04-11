@@ -128,38 +128,40 @@ export class DbEditRecord extends React.Component<ModelProps, RecordState> {
    * @param elm string
    * @param e any
    */
-  // TODO:: refactor this function
-  inputFileDataUpdater = async (elm: string, e: any) => {
+ inputFileDataUpdater = (elm: string, e: any) => {
     e.preventDefault();
-    const { db, url, msg, validation } = _CONFIG;
+    const { validation, msg, url } = _CONFIG;
+    let category = 'img';
     try {
       this.imgD[elm] = [];
-      const category = elm === 'recordVideos' ? 'vid' : 'img',
-        fT = category + 'FileType',
+      // const category = elm === 'recordVideos' ? 'vid' : 'img';
+      switch (elm) {
+        case 'record':
+          category = 'record';
+          break;
+        case 'recordModels3d':
+          category = 'model3d';
+          break;
+        case 'recordVideos':
+          category = 'vid';
+          break;
+        case 'recordImgs':
+          category = 'img';
+          break;
+        case 'recordMaterialUrl':
+          category = 'img';
+          break;
+        default:
+          return 'img';
+      }
+      const fT = category + 'FileType',
         fS = category + 'FileSize',
         fN = category + 'FileName';
       if (e.target.files.length > validation.file.maxFiles) {
         alert(msg.error.file.maxFileLimit);
         return;
       }
-
       if (e.target.files.length > 0) {
-        const { oldFilesToDel } = this.state;
-        let recordModels3d = oldFilesToDel['recordModels3d'] ? oldFilesToDel['recordModels3d'] : '',
-          recordImgs = oldFilesToDel['recordImgs'] ? oldFilesToDel['recordImgs'] : '',
-          recordMaterialUrl = oldFilesToDel['recordMaterialUrl'] ? oldFilesToDel['recordMaterialUrl'] : '',
-          recordVideos = oldFilesToDel['recordVideos'] ? oldFilesToDel['recordVideos'] : '',
-          modelUrlA = recordModels3d.split(','),
-          modelImgsA = recordImgs.split(','),
-          modelMaterialUrlA = recordMaterialUrl.split(','),
-          modelVideosA = recordVideos.split(',');
-        if (elm === 'recordModels3d') DbEditRecord.imgArray.push(modelUrlA);
-        if (elm === 'recordImgs') DbEditRecord.imgArray.push(modelImgsA);
-        if (elm === 'recordMaterialUrl') DbEditRecord.imgArray.push(modelMaterialUrlA);
-        if (elm === 'recordVideos') DbEditRecord.imgArray.push(modelVideosA);
-        console.log('DbEditRecord.imgArray.flat(1) ', DbEditRecord.imgArray.flat(1));
-        this.setState({ deleteTheseFiles: DbEditRecord.imgArray.flat(1) });
-
         for (let i = 0; i <= e.target.files.length - 1; i++) {
           let item = e.target.files.item(i);
           this.imgD[elm].push({
@@ -167,7 +169,7 @@ export class DbEditRecord extends React.Component<ModelProps, RecordState> {
             [`${category}FileType`]: item.name.split('.').pop().toLowerCase(),
             [`${category}FileSize`]: Math.round(item.size),
             [`${category}OriginalFileName`]: item.name.toLocaleLowerCase(),
-            [`${category}FolderPath`]: `${url.uploadFolder}${this.state.data.recordUuid}`,
+            [`${category}FolderPath`]: `${url.uploadFolder}${this.state.folderName}`,
             [`${category}FileNameWithoutExtension`]: item.name.split('.').slice(0, -1).join('.').toLocaleLowerCase(),
             [`${category}FileExtension`]: item.name.split('.').pop(),
             [`${category}Visibility`]: 1,
@@ -198,14 +200,12 @@ export class DbEditRecord extends React.Component<ModelProps, RecordState> {
       files[elm] = e.target.files;
       this.setState({ files });
       Array.from(e.target.files).forEach((value: any, key: number) => {
-        // loop through files with key and value
         const fileName: string = value.name;
         filesTxt += `${uuid()}-${fileName
           .normalize('NFD')
           .replace(/[\u0300-\u036f]/g, '')
           .toLowerCase()
           .replace(/[^a-zA-Z0-9.]/g, '-')},`;
-
         filesTxtForImgs = `${uuid()}-${fileName
           .normalize('NFD')
           .replace(/[\u0300-\u036f]/g, '')
@@ -219,13 +219,11 @@ export class DbEditRecord extends React.Component<ModelProps, RecordState> {
           [elm]: filesTxt.slice(0, -1) // comma separated list of files as mysql record
         },
         imgData: this.imgD,
-        joinFromInput: [elm], // Originally it was an
         isSaved: false
       });
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
   };
+
 
   /**
    * Input data updater
@@ -259,19 +257,25 @@ export class DbEditRecord extends React.Component<ModelProps, RecordState> {
    * Update 3D model
    * @param e any
    */
+  // TODO::: itt tartok, itt kéne átnézni, hogy melyik függvény melyik fájlt törli, és melyiket nem
   update3dModel = async (e: any) => {
     e.preventDefault();
     const { data, deleteTheseFiles, recordId } = this.state;
     const { recordUuid } = data;
 
+    console.log('deleteTheseFiles', deleteTheseFiles);
+    console.log('recordId', recordId);
+    console.log('recordUuid', recordUuid);
     try {
-      await this.deleteRecordFiles(deleteTheseFiles, recordId, recordUuid);
-      await this.deleteModelImages(recordId);
-      await this.deleteModelVideos(recordId);
-      await this.patchModel(recordId, data);
-      await this.postForImageDb(recordId, recordUuid, this.imgD);
-      await this.postForVideoDb(recordId, recordUuid, this.imgD);
-      await this.uploadFiles(data, recordUuid, this.state.files, this.setState.bind(this));
+    //  await this.deleteRecordFiles(deleteTheseFiles, recordId, recordUuid);
+    //  await this.deleteModelImages(recordId);
+    //  await this.deleteModelVideos(recordId);
+    // updates records table data
+      await this.updateRecrodsDbTable(recordId, data);
+    //  await this.postForImageDb(recordId, recordUuid, this.imgD);
+    //  await this.postForImageDb(recordId, recordUuid, this.imgD);
+    //  await this.postForVideoDb(recordId, recordUuid, this.imgD);
+      await this.uploadFilesToFolder(data, recordUuid, this.state.files, this.setState.bind(this));
     } catch (error: any) {
       logAxiosError(error, _CONFIG.msg.error.fetch.updating);
     }
@@ -322,11 +326,11 @@ export class DbEditRecord extends React.Component<ModelProps, RecordState> {
     }
   };
   /**
-   * Patch model
+   * Udapte records db
    * @param recordId
    * @param data
    */
-  patchModel = async (recordId: string, data: any) => {
+  updateRecrodsDbTable = async (recordId: string, data: any) => {
     const { url, msg } = _CONFIG;
     const response = await axios.patch(url.recordApi + recordId, data);
     if (response.data.success === false) {
@@ -395,7 +399,7 @@ export class DbEditRecord extends React.Component<ModelProps, RecordState> {
    * @param files
    * @param setState
    */
-  uploadFiles = async (data: any, recordUuid: string, files: any, setState: any) => {
+  uploadFilesToFolder = async (data: any, recordUuid: string, files: any, setState: any) => {
     const { db, url, msg } = _CONFIG;
     const filesData = new FormData();
     let isThereAnyValidFile: boolean = false;

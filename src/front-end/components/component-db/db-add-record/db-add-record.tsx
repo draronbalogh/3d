@@ -115,7 +115,7 @@ export class DbAddRecord extends React.Component<any, RecordState> implements Mo
       // Upload files (if there is at least one valid file)
       if (isThereAnyValidFile) {
         this.setState({ isUploading: true });
-        const response: any = await this.uploadFiles(filesData);
+        const response: any = await this.uploadFilesToFolder(filesData);
         if (response?.data.success === false) {
           throw new Error(_CONFIG.msg.error.file.uploading, response);
         }
@@ -228,7 +228,7 @@ export class DbAddRecord extends React.Component<any, RecordState> implements Mo
    * Upload files to server
    * @param filesData
    */
-  uploadFiles = async (filesData: FormData) => {
+  uploadFilesToFolder = async (filesData: FormData) => {
     const { db, url, msg } = _CONFIG;
     try {
       const response: any = await axios.post(url.uploadRecordFiles, filesData, {
@@ -262,7 +262,6 @@ export class DbAddRecord extends React.Component<any, RecordState> implements Mo
    * @description
    * Update state with uuuid file names
    */
-  // TODO:: copy this function to edit videos it's missing!!
 
   inputFileDataUpdater = (elm: string, e: any) => {
     e.preventDefault();
