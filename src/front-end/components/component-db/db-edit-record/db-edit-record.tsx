@@ -265,10 +265,13 @@ export class DbEditRecord extends React.Component<ModelProps, RecordState> {
     console.log('deleteTheseFiles', deleteTheseFiles);
     console.log('recordId', recordId);
     console.log('recordUuid', recordUuid);
-
+    console.log('this.imgD', this.imgD);
+    //let allFiles = [...recordModels3d, ...recordImgs, ...recordMaterialUrl, ...recordVideos];
     try {
-      // DELETE  THAN UPDATE RECORD FROM FOLDER
+      // DELETE RECORD FROM FOLDER
       await this.deleteRecordFiles(deleteTheseFiles, recordId, recordUuid);
+
+      // UPLOAD NEW FILES TO FOLDER
       await this.uploadFilesToFolder(data, recordUuid, this.state.files, this.setState.bind(this));
 
       // DELETE RECORD FROM DB
@@ -276,7 +279,7 @@ export class DbEditRecord extends React.Component<ModelProps, RecordState> {
       await this.deleteVideoFromDbTable(recordId);
       await this.delete3dFromDbTable(recordId);
 
-      // UPLOAD FILE TO FOLDER
+      // UPLOAD NEW DATA TO DBS
       await this.updateRecrodsDbTable(recordId, data);
       await this.postForImageDb(recordId, recordUuid, this.imgD);
       await this.postForVideoDb(recordId, recordUuid, this.imgD);
@@ -367,6 +370,7 @@ export class DbEditRecord extends React.Component<ModelProps, RecordState> {
     const { db, url, msg } = _CONFIG;
     let imgPush: any[] = [];
     Object.keys(imgD).forEach((element: any, key: number) => {
+      console.log('element', element);
       if (element === 'recordImgs' || element === 'recordMaterialUrl') {
         imgD[element].forEach((e: any, k: number) => {
           imgPush.push(imgD[element][k]);
@@ -396,6 +400,7 @@ export class DbEditRecord extends React.Component<ModelProps, RecordState> {
     const { db, url, msg } = _CONFIG;
     let imgPush: any[] = [];
     Object.keys(imgD).forEach((element: any, key: number) => {
+      console.log('element', element);
       if (element === 'recordVideos') {
         imgD[element].forEach((e: any, k: number) => {
           imgPush.push(imgD[element][k]);
