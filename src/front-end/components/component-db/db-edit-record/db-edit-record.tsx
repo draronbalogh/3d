@@ -128,7 +128,7 @@ export class DbEditRecord extends React.Component<ModelProps, RecordState> {
    * @param elm string
    * @param e any
    */
- inputFileDataUpdater = (elm: string, e: any) => {
+  inputFileDataUpdater = (elm: string, e: any) => {
     e.preventDefault();
     const { validation, msg, url } = _CONFIG;
     let category = 'img';
@@ -224,7 +224,6 @@ export class DbEditRecord extends React.Component<ModelProps, RecordState> {
     } catch (error) {}
   };
 
-
   /**
    * Input data updater
    * @param elm string
@@ -266,16 +265,22 @@ export class DbEditRecord extends React.Component<ModelProps, RecordState> {
     console.log('deleteTheseFiles', deleteTheseFiles);
     console.log('recordId', recordId);
     console.log('recordUuid', recordUuid);
+
     try {
-    //  await this.deleteRecordFiles(deleteTheseFiles, recordId, recordUuid);
-    //  await this.deleteModelImages(recordId);
-    //  await this.deleteModelVideos(recordId);
-    // updates records table data
-      await this.updateRecrodsDbTable(recordId, data);
-    //  await this.postForImageDb(recordId, recordUuid, this.imgD);
-    //  await this.postForImageDb(recordId, recordUuid, this.imgD);
-    //  await this.postForVideoDb(recordId, recordUuid, this.imgD);
+      // DELETE  THAN UPDATE RECORD FROM FOLDER
+      await this.deleteRecordFiles(deleteTheseFiles, recordId, recordUuid);
       await this.uploadFilesToFolder(data, recordUuid, this.state.files, this.setState.bind(this));
+
+      // DELETE RECORD FROM DB
+      await this.deleteImageFromDbTable(recordId);
+      await this.deleteVideoFromDbTable(recordId);
+      await this.delete3dFromDbTable(recordId);
+
+      // UPLOAD FILE TO FOLDER
+      await this.updateRecrodsDbTable(recordId, data);
+      await this.postForImageDb(recordId, recordUuid, this.imgD);
+      await this.postForVideoDb(recordId, recordUuid, this.imgD);
+      await this.postFor3dDb(recordId, recordUuid, this.imgD);
     } catch (error: any) {
       logAxiosError(error, _CONFIG.msg.error.fetch.updating);
     }
@@ -300,7 +305,7 @@ export class DbEditRecord extends React.Component<ModelProps, RecordState> {
    * Delete model images
    * @param recordId
    */
-  deleteModelImages = async (recordId: string) => {
+  deleteImageFromDbTable = async (recordId: string) => {
     const { url, msg } = _CONFIG;
     for (const key in this.imgD) {
       let joinFromInput = key;
@@ -315,11 +320,25 @@ export class DbEditRecord extends React.Component<ModelProps, RecordState> {
    * Delete model videos
    * @param recordId
    */
-  deleteModelVideos = async (recordId: string) => {
+  deleteVideoFromDbTable = async (recordId: string) => {
     const { url, msg } = _CONFIG;
     for (const key in this.imgD) {
       let joinFromInput = key;
       const response = await axios.delete(url.videoApi + recordId + '/' + joinFromInput);
+      if (response.data.success === false) {
+        console.log(msg.error.file.deleting, response);
+      }
+    }
+  };
+  /**
+   * Delete model 3D files
+   * @param recordId
+   */
+  delete3dFromDbTable = async (recordId: string) => {
+    const { url, msg } = _CONFIG;
+    for (const key in this.imgD) {
+      let joinFromInput = key;
+      const response = await axios.delete(url.models3dApi + recordId + '/' + joinFromInput);
       if (response.data.success === false) {
         console.log(msg.error.file.deleting, response);
       }
@@ -392,6 +411,32 @@ export class DbEditRecord extends React.Component<ModelProps, RecordState> {
     }
   };
 
+  /**
+   * Create 3dmodels
+   * @param recordId
+   * @param recordUuid
+   * @param imgD
+   */
+  postFor3dDb = async (recordId: string, recordUuid: string, imgD: any) => {
+    const { db, url, msg } = _CONFIG;
+    let imgPush: any[] = [];
+    console.log('imgD', imgD);
+    Object.keys(imgD).forEach((element: any, key: number) => {
+      if (element === 'recordModels3d') {
+        console.log('imgD2', imgD);
+        imgD[element].forEach((e: any, k: number) => {
+          imgPush.push(imgD[element][k]);
+          imgD[element][k].joinFromTable = db.tableNameRecords;
+          imgD[element][k].joinId = recordId;
+          imgD[element][k].joinUuid = recordUuid;
+        });
+      }
+    });
+    const response = await axios.post(url.createModels3d, imgPush);
+    if (response.data.success === false) {
+      console.log(msg.error.file.uploading, response);
+    }
+  };
   /**
    * Upload files
    * @param data
