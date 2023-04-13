@@ -258,6 +258,7 @@ export class DbEditRecord extends React.Component<ModelProps, RecordState> {
    */
   // TODO::: itt tartok, itt kéne átnézni, hogy melyik függvény melyik fájlt törli, és melyiket nem
   update3dModel = async (e: any) => {
+    console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
     e.preventDefault();
     const { data, deleteTheseFiles, recordId } = this.state;
     const { recordUuid } = data;
@@ -269,6 +270,7 @@ export class DbEditRecord extends React.Component<ModelProps, RecordState> {
     //let allFiles = [...recordModels3d, ...recordImgs, ...recordMaterialUrl, ...recordVideos];
     try {
       // DELETE RECORD FROM FOLDER
+
       await this.deleteRecordFiles(deleteTheseFiles, recordId, recordUuid);
 
       // UPLOAD NEW FILES TO FOLDER
