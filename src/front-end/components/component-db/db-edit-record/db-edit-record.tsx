@@ -413,14 +413,15 @@ export class DbEditRecord extends React.Component<ModelProps, RecordState> {
       });
 
       if (response.data.success === false) {
-        console.log(msg.error.file.uploading, response);
+        throw new Error(msg.error.file.uploading, response);
       } else {
         setTimeout(() => {
-          setState({ isUploading: false, isThankYou: true });
-        }, 1500);
+          this.setState({ isUploading: false, isThankYou: true });
+        }, 2000);
+
         setTimeout(() => {
-          setState({ isThankYou: false, isSaved: true });
-        }, 2250);
+          this.setState({ isThankYou: false, isSaved: true });
+        }, 3000);
       }
     } else {
       setState({ isUploading: false, isThankYou: false, isSaved: true });
@@ -508,9 +509,9 @@ export class DbEditRecord extends React.Component<ModelProps, RecordState> {
   //////////////////////////////////////////////////////////////////////////////////////    RENDER
   render() {
     const { isSaved, isThankYou, isUploading, uploadingData, data } = this.state;
-    console.log('isSaved', isSaved);
+
     return isThankYou ? (
-      <div>köszi</div>
+      <div>Felöltés sikeres</div>
     ) : isSaved ? (
       <Navigate to='/' />
     ) : isUploading ? (
