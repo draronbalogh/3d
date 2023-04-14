@@ -1,5 +1,5 @@
-# 3D database and experiments
-## MERN stack application with 3D models
+# Web 3D database and experiments
+## MySQL, Express, React, Node (MERN) stack application with 3D models
 ## Overview
 
 This project was created as part of my DLA  research, and it was prepared for my doctoral defense presentation with the purpose of testing web 3D models. You'll find a collection of experiments with 3D WebGL and WebGPU libraries such as Three.js and Babylon.js. 
