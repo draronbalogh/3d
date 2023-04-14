@@ -90,100 +90,102 @@ export class DbEditRecord extends React.Component<ModelProps, RecordState> {
    * @param elm string
    * @param e any
    */
+  getCleanedFileName = (fileName: string, includeComma: boolean = false) => {
+    const cleanedFileName = `${uuid()}-${fileName
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .replace(/[^a-zA-Z0-9.]/g, '-')}`;
+    return includeComma ? cleanedFileName + ',' : cleanedFileName;
+  };
+
+  isValidFile = (file: File, fileType: string, validation: any, msg: any) => {
+    if (!validation.file.types.includes(fileType)) {
+      alert(msg.error.file.notValid);
+      return false;
+    }
+    if (file.size < validation.file.minFileSize) {
+      alert(msg.error.file.tooSmall);
+      return false;
+    }
+    if (file.size > validation.file.maxFileSize) {
+      alert(msg.error.file.tooBig);
+      return false;
+    }
+    return true;
+  };
+
   inputFileDataUpdater = (elm: string, e: any) => {
     e.preventDefault();
     const { validation, msg, url } = _CONFIG;
     let category = 'img';
-    try {
-      this.imgD[elm] = [];
-      // const category = elm === 'recordVideos' ? 'vid' : 'img';
-      switch (elm) {
-        case 'record':
-          category = 'record';
-          break;
-        case 'recordModels3d':
-          category = 'model3d';
-          break;
-        case 'recordVideos':
-          category = 'vid';
-          break;
-        case 'recordImgs':
-          category = 'img';
-          break;
-        case 'recordMaterialUrl':
-          category = 'img';
-          break;
-        default:
-          return 'img';
-      }
-      const fT = category + 'FileType',
-        fS = category + 'FileSize',
-        fN = category + 'FileName';
-      if (e.target.files.length > validation.file.maxFiles) {
-        alert(msg.error.file.maxFileLimit);
+
+    const categories: { [key: string]: string } = {
+      record: 'record',
+      recordModels3d: 'model3d',
+      recordVideos: 'vid',
+      recordImgs: 'img',
+      recordMaterialUrl: 'img'
+    };
+
+    category = categories[elm] || 'img';
+
+    if (e.target.files.length > validation.file.maxFiles) {
+      alert(msg.error.file.maxFileLimit);
+      return;
+    }
+
+    this.imgD[elm] = [];
+
+    for (let i = 0; i < e.target.files.length; i++) {
+      const item = e.target.files.item(i);
+      const fileType = item.name.split('.').pop().toLowerCase();
+
+      if (!this.isValidFile(item, fileType, validation, msg)) {
         return;
       }
-      if (e.target.files.length > 0) {
-        for (let i = 0; i <= e.target.files.length - 1; i++) {
-          let item = e.target.files.item(i);
-          this.imgD[elm].push({
-            ...this.state.data,
-            [`${category}FileType`]: item.name.split('.').pop().toLowerCase(),
-            [`${category}FileSize`]: Math.round(item.size),
-            [`${category}OriginalFileName`]: item.name.toLocaleLowerCase(),
-            [`${category}FolderPath`]: `${url.uploadFolder}${this.state.folderName}`,
-            [`${category}FileNameWithoutExtension`]: item.name.split('.').slice(0, -1).join('.').toLocaleLowerCase(),
-            [`${category}FileExtension`]: item.name.split('.').pop(),
-            [`${category}Visibility`]: 1,
-            [`${category}Uuid`]: nanoid(10).toLocaleLowerCase(),
-            [`${category}FileMimeType`]: item.type,
-            [`${category}FileLastModified`]: item.lastModified,
-            [`${category}FileLastModifiedDate`]: item.lastModifiedDate,
-            joinFromInput: elm
-          });
 
-          if (!validation.file.types.includes(this.imgD[elm][i][fT])) {
-            alert(msg.error.file.notValid);
-            return;
-          }
-          if (this.imgD[elm][i][fS] < validation.file.minFileSize) {
-            alert(msg.error.file.tooSmall);
-            return;
-          }
-          if (this.imgD[elm][i][fS] > validation.file.maxFileSize) {
-            alert(msg.error.file.tooBig);
-            return;
-          }
-        }
-      }
-      let files = { ...this.state.files },
-        filesTxt: string = '',
-        filesTxtForImgs: string = '';
-      files[elm] = e.target.files;
-      this.setState({ files });
-      Array.from(e.target.files).forEach((value: any, key: number) => {
-        const fileName: string = value.name;
-        filesTxt += `${uuid()}-${fileName
-          .normalize('NFD')
-          .replace(/[\u0300-\u036f]/g, '')
-          .toLowerCase()
-          .replace(/[^a-zA-Z0-9.]/g, '-')},`;
-        filesTxtForImgs = `${uuid()}-${fileName
-          .normalize('NFD')
-          .replace(/[\u0300-\u036f]/g, '')
-          .toLowerCase()
-          .replace(/[^a-zA-Z0-9.]/g, '-')}`;
-        this.imgD[elm][key][fN] = filesTxtForImgs;
-      });
-      this.setState({
-        data: {
-          ...this.state.data,
-          [elm]: filesTxt.slice(0, -1) // comma separated list of files as mysql record
-        },
-        imgData: this.imgD,
-        isSaved: false
-      });
-    } catch (error) {}
+      const fileData = {
+        [`${category}FileType`]: fileType,
+        [`${category}FileSize`]: Math.round(item.size),
+        [`${category}OriginalFileName`]: item.name.toLocaleLowerCase(),
+        [`${category}FolderPath`]: `${url.uploadFolder}${this.state.folderName}`,
+        [`${category}FileNameWithoutExtension`]: item.name.split('.').slice(0, -1).join('.').toLocaleLowerCase(),
+        [`${category}FileExtension`]: item.name.split('.').pop(),
+        [`${category}Visibility`]: 1,
+        [`${category}Uuid`]: nanoid(10).toLocaleLowerCase(),
+        [`${category}FileMimeType`]: item.type,
+        [`${category}FileLastModified`]: item.lastModified,
+        [`${category}FileLastModifiedDate`]: item.lastModifiedDate,
+        joinFromInput: elm
+      };
+
+      this.imgD[elm].push(fileData);
+    }
+
+    let files = { ...this.state.files },
+      filesTxt = '',
+      filesTxtForImgs = '';
+    files[elm] = e.target.files;
+
+    Array.from(e.target.files).forEach((value: any, key: number) => {
+      const fileName = value.name;
+      const fN = `${category}FileName`;
+
+      filesTxt += this.getCleanedFileName(fileName, true);
+      filesTxtForImgs = this.getCleanedFileName(fileName);
+      this.imgD[elm][key][fN] = filesTxtForImgs;
+    });
+
+    this.setState({
+      files,
+      data: {
+        ...this.state.data,
+        [elm]: filesTxt.slice(0, -1)
+      },
+      imgData: this.imgD,
+      isSaved: false
+    });
   };
 
   /**
@@ -253,14 +255,18 @@ export class DbEditRecord extends React.Component<ModelProps, RecordState> {
       // UPLOAD NEW FILES TO FOLDER
       await this.uploadFilesToFolder(data, recordUuid, this.state.files, this.setState.bind(this));
       // DELETE RECORD FROM DB
-      await this.deleteImageFromDbTable(recordId);
-      await this.deleteVideoFromDbTable(recordId);
-      await this.delete3dFromDbTable(recordId);
+      await this.deleteFileFromDbTable(recordId, 'image');
+      await this.deleteFileFromDbTable(recordId, 'video');
+      await this.deleteFileFromDbTable(recordId, 'model3d');
       // UPLOAD NEW DATA TO DBS
       await this.updateRecrodsDbTable(recordId, data);
-      await this.postForImageDb(recordId, recordUuid, this.imgD);
-      await this.postForVideoDb(recordId, recordUuid, this.imgD);
-      await this.postFor3dDb(recordId, recordUuid, this.imgD);
+      await this.postForDb(recordId, recordUuid, this.imgD, 'image');
+      await this.postForDb(recordId, recordUuid, this.imgD, 'video');
+      await this.postForDb(recordId, recordUuid, this.imgD, 'model3d');
+
+      // await this.postForImageDb(recordId, recordUuid, this.imgD);
+      // await this.postForVideoDb(recordId, recordUuid, this.imgD);
+      // await this.postFor3dDb(recordId, recordUuid, this.imgD);
     } catch (error: any) {
       logAxiosError(error, _CONFIG.msg.error.fetch.updating);
     }
@@ -280,45 +286,32 @@ export class DbEditRecord extends React.Component<ModelProps, RecordState> {
       console.log(msg.error.file.deleting, response);
     }
   };
+  /**
+   * Delete file from the specified API
+   * @param recordId
+   * @param fileType
+   */
+  deleteFileFromDbTable = async (recordId: string, fileType: 'image' | 'video' | 'model3d') => {
+    const { url, msg } = _CONFIG;
+    let apiEndpoint;
 
-  /**
-   * Delete model images
-   * @param recordId
-   */
-  deleteImageFromDbTable = async (recordId: string) => {
-    const { url, msg } = _CONFIG;
-    for (const key in this.imgD) {
-      let joinFromInput = key;
-      const response = await axios.delete(url.imageApi + recordId + '/' + joinFromInput);
-      if (response.data.success === false) {
-        console.log(msg.error.file.deleting, response);
-      }
+    switch (fileType) {
+      case 'image':
+        apiEndpoint = url.imageApi;
+        break;
+      case 'video':
+        apiEndpoint = url.videoApi;
+        break;
+      case 'model3d':
+        apiEndpoint = url.models3dApi;
+        break;
+      default:
+        throw new Error('Invalid file type');
     }
-  };
 
-  /**
-   * Delete model videos
-   * @param recordId
-   */
-  deleteVideoFromDbTable = async (recordId: string) => {
-    const { url, msg } = _CONFIG;
     for (const key in this.imgD) {
       let joinFromInput = key;
-      const response = await axios.delete(url.videoApi + recordId + '/' + joinFromInput);
-      if (response.data.success === false) {
-        console.log(msg.error.file.deleting, response);
-      }
-    }
-  };
-  /**
-   * Delete model 3D files
-   * @param recordId
-   */
-  delete3dFromDbTable = async (recordId: string) => {
-    const { url, msg } = _CONFIG;
-    for (const key in this.imgD) {
-      let joinFromInput = key;
-      const response = await axios.delete(url.models3dApi + recordId + '/' + joinFromInput);
+      const response = await axios.delete(apiEndpoint + recordId + '/' + joinFromInput);
       if (response.data.success === false) {
         console.log(msg.error.file.deleting, response);
       }
@@ -343,80 +336,48 @@ export class DbEditRecord extends React.Component<ModelProps, RecordState> {
    * @param recordUuid
    * @param imgD
    */
-  postForImageDb = async (recordId: string, recordUuid: string, imgD: any) => {
+
+  postForDb = async (recordId: string, recordUuid: string, imgD: any, fileType: 'image' | 'video' | 'model3d') => {
     const { db, url, msg } = _CONFIG;
+    let apiEndpoint;
+    let relevantKeys: string[] = [];
+
+    switch (fileType) {
+      case 'image':
+        apiEndpoint = url.createImage;
+        relevantKeys = ['recordImgs', 'recordMaterialUrl'];
+        break;
+      case 'video':
+        apiEndpoint = url.createVideo;
+        relevantKeys = ['recordVideos'];
+        break;
+      case 'model3d':
+        apiEndpoint = url.createModels3d;
+        relevantKeys = ['recordModels3d'];
+        break;
+      default:
+        throw new Error('Invalid file type');
+    }
+
     let imgPush: any[] = [];
-    Object.keys(imgD).forEach((element: any, key: number) => {
-      console.log('element', element);
-      if (element === 'recordImgs' || element === 'recordMaterialUrl') {
-        imgD[element].forEach((e: any, k: number) => {
-          imgPush.push(imgD[element][k]);
-          imgD[element][k].joinFromTable = db.tableNameRecords;
-          imgD[element][k].joinId = recordId;
-          imgD[element][k].joinUuid = recordUuid;
+    Object.keys(imgD).forEach((element: any) => {
+      if (relevantKeys.includes(element)) {
+        imgD[element].forEach((e: any) => {
+          imgPush.push(e);
+          e.joinFromTable = db.tableNameRecords;
+          e.joinId = recordId;
+          e.joinUuid = recordUuid;
         });
       }
     });
+
     try {
-      const response = await axios.post(url.createImage, imgPush);
+      const response = await axios.post(apiEndpoint, imgPush);
       if (response.data.success === false) {
         console.log(msg.error.file.uploading, response);
       }
     } catch (error) {
       console.log(error);
-    }
-  };
-
-  /**
-   * Create images
-   * @param recordId
-   * @param recordUuid
-   * @param imgD
-   */
-  postForVideoDb = async (recordId: string, recordUuid: string, imgD: any) => {
-    const { db, url, msg } = _CONFIG;
-    let imgPush: any[] = [];
-    Object.keys(imgD).forEach((element: any, key: number) => {
-      //      console.log('element', element);
-      if (element === 'recordVideos') {
-        imgD[element].forEach((e: any, k: number) => {
-          imgPush.push(imgD[element][k]);
-          imgD[element][k].joinFromTable = db.tableNameRecords;
-          imgD[element][k].joinId = recordId;
-          imgD[element][k].joinUuid = recordUuid;
-        });
-      }
-    });
-    const response = await axios.post(url.createVideo, imgPush);
-    if (response.data.success === false) {
-      console.log(msg.error.file.uploading, response);
-    }
-  };
-
-  /**
-   * Create 3dmodels
-   * @param recordId
-   * @param recordUuid
-   * @param imgD
-   */
-  postFor3dDb = async (recordId: string, recordUuid: string, imgD: any) => {
-    const { db, url, msg } = _CONFIG;
-    let imgPush: any[] = [];
-    //    console.log('imgD', imgD);
-    Object.keys(imgD).forEach((element: any, key: number) => {
-      if (element === 'recordModels3d') {
-        console.log('imgD2', imgD);
-        imgD[element].forEach((e: any, k: number) => {
-          imgPush.push(imgD[element][k]);
-          imgD[element][k].joinFromTable = db.tableNameRecords;
-          imgD[element][k].joinId = recordId;
-          imgD[element][k].joinUuid = recordUuid;
-        });
-      }
-    });
-    const response = await axios.post(url.createModels3d, imgPush);
-    if (response.data.success === false) {
-      console.log(msg.error.file.uploading, response);
     }
   };
   /**
@@ -547,6 +508,7 @@ export class DbEditRecord extends React.Component<ModelProps, RecordState> {
   //////////////////////////////////////////////////////////////////////////////////////    RENDER
   render() {
     const { isSaved, isThankYou, isUploading, uploadingData, data } = this.state;
+    console.log('isSaved', isSaved);
     return isThankYou ? (
       <div>köszi</div>
     ) : isSaved ? (

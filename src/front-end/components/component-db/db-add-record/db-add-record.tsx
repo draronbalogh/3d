@@ -50,6 +50,7 @@ export class DbAddRecord extends React.Component<any, RecordState> implements Mo
   saveRecod = async (e: any) => {
     e.preventDefault();
     const { data, files, folderName } = this.state;
+    const { db, url } = _CONFIG;
     const filesData = new FormData();
     let isThereAnyValidFile: boolean = false;
     // Prepare filesData and check if there is at least one valid file
@@ -65,18 +66,14 @@ export class DbAddRecord extends React.Component<any, RecordState> implements Mo
     }
 
     try {
-      // Create model
+      // await this.postForModels3dDb(recordId);
+      // await this.postForVideoDb(recordId);
+      // await this.postForImageDb(recordId);
       const recordId = await this.postForRecordlDb(data);
-
-      // Create images
-      await this.postForModels3dDb(recordId);
-
-      // Create images
-      await this.postForImageDb(recordId);
-
-      // Create images
-      await this.postForVideoDb(recordId);
-
+      await this.postForMediaDb(recordId, 'recordModels3d', url.createModels3d);
+      await this.postForMediaDb(recordId, 'recordImgs', url.createImage);
+      await this.postForMediaDb(recordId, 'recordMaterialUrl', url.createImage);
+      await this.postForMediaDb(recordId, 'recordVideos', url.createVideo);
       // Upload files (if there is at least one valid file)
       if (isThereAnyValidFile) {
         this.setState({ isUploading: true });
@@ -112,44 +109,20 @@ export class DbAddRecord extends React.Component<any, RecordState> implements Mo
     }
   };
   /**
-   * Create videos in database
+   * Create media in database (images, models3d, videos)
    * @param recordId
+   * @param targetElement - 'recordImgs', 'recordMaterialUrl', 'recordModels3d', 'recordVideos'
+   * @param targetUrl - URL for the API endpoint (createImage, createModels3d, createVideo)
    */
-  postForModels3dDb = async (recordId: number) => {
+  postForMediaDb = async (recordId: number, targetElement: string, targetUrl: string) => {
     const { data } = this.state;
-    const { db, url } = _CONFIG;
+    const { db } = _CONFIG;
     try {
       let postArr: any[] = [];
-      console.log(this.imgD);
-      Object.keys(this.imgD).forEach((element: any, key: number) => {
-        console.log('element: ', element);
-        if (element === 'recordModels3d') {
-          this.imgD[element].forEach((e: any, k: number) => {
-            postArr.push(this.imgD[element][k]);
-            this.imgD[element][k].joinFromTable = db.tableNameRecords;
-            this.imgD[element][k].joinId = recordId;
-            this.imgD[element][k].joinUuid = data.recordUuid;
-          });
-        }
-      });
-      const response = await axios.post(url.createModels3d, postArr);
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
-  /**
-   * Create images in database
-   * @param recordId
-   */
-  postForImageDb = async (recordId: number) => {
-    const { data } = this.state;
-    const { db, url } = _CONFIG;
-    try {
-      let postArr: any[] = [];
-      Object.keys(this.imgD).forEach((element: any, key: number) => {
-        if (element === 'recordImgs' || element === 'recordMaterialUrl') {
-          this.imgD[element].forEach((e: any, k: number) => {
+      Object.keys(this.imgD).forEach((element: any) => {
+        if (element === targetElement) {
+          this.imgD[element].forEach((_: any, k: number) => {
             postArr.push(this.imgD[element][k]);
             this.imgD[element][k].joinFromTable = db.tableNameRecords;
             this.imgD[element][k].joinId = recordId;
@@ -157,33 +130,8 @@ export class DbAddRecord extends React.Component<any, RecordState> implements Mo
           });
         }
       });
-      const response = await axios.post(url.createImage, postArr);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  /**
-   * Create videos in database
-   * @param recordId
-   */
-  postForVideoDb = async (recordId: number) => {
-    const { data } = this.state;
-    const { db, url } = _CONFIG;
-    try {
-      let postArr: any[] = [];
-      console.log(this.imgD);
-      Object.keys(this.imgD).forEach((element: any, key: number) => {
-        if (element === 'recordVideos') {
-          this.imgD[element].forEach((e: any, k: number) => {
-            console.log('element: ', element);
-            postArr.push(this.imgD[element][k]);
-            this.imgD[element][k].joinFromTable = db.tableNameRecords;
-            this.imgD[element][k].joinId = recordId;
-            this.imgD[element][k].joinUuid = data.recordUuid;
-          });
-        }
-      });
-      const response = await axios.post(url.createVideo, postArr);
+
+      const response = await axios.post(targetUrl, postArr);
     } catch (error) {
       console.log(error);
     }
@@ -228,35 +176,55 @@ export class DbAddRecord extends React.Component<any, RecordState> implements Mo
    * Update state with uuuid file names
    */
 
+  getCleanedFileName = (fileName: string, includeComma: boolean = false) => {
+    const cleanedFileName = `${uuid()}-${fileName
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .replace(/[^a-zA-Z0-9.]/g, '-')}`;
+    return includeComma ? cleanedFileName + ',' : cleanedFileName;
+  };
+
+  getFileCategory = (elm: string) => {
+    switch (elm) {
+      case 'record':
+        return 'record';
+      case 'recordModels3d':
+        return 'model3d';
+      case 'recordVideos':
+        return 'vid';
+      case 'recordImgs':
+      case 'recordMaterialUrl':
+      default:
+        return 'img';
+    }
+  };
+
+  createFileObject = (elm: string, category: string, item: File, folderName: string) => {
+    const keyPrefix = `${category}`;
+    return {
+      ...this.state.data,
+      [`${keyPrefix}FileType`]: (item.name.split('.').pop() ?? '').toLowerCase(),
+      [`${keyPrefix}FileSize`]: Math.round(item.size),
+      [`${keyPrefix}OriginalFileName`]: item.name.toLocaleLowerCase(),
+      [`${keyPrefix}FolderPath`]: `${_CONFIG.url.uploadFolder}${folderName}`,
+      [`${keyPrefix}FileNameWithoutExtension`]: item.name.split('.').slice(0, -1).join('.').toLocaleLowerCase(),
+      [`${keyPrefix}FileExtension`]: item.name.split('.').pop(),
+      [`${keyPrefix}Visibility`]: 1,
+      [`${keyPrefix}Uuid`]: nanoid(10).toLocaleLowerCase(),
+      [`${keyPrefix}FileMimeType`]: item.type,
+      [`${keyPrefix}FileLastModified`]: item.lastModified,
+      [`${keyPrefix}FileLastModifiedDate`]: new Date(item.lastModified),
+      joinFromInput: elm
+    };
+  };
+
   inputFileDataUpdater = (elm: string, e: any) => {
     e.preventDefault();
-    const { validation, msg, url } = _CONFIG;
-    let category = 'img';
+    const { validation, msg } = _CONFIG;
+    let category = this.getFileCategory(elm);
     try {
       this.imgD[elm] = [];
-      // const category = elm === 'recordVideos' ? 'vid' : 'img';
-      switch (elm) {
-        case 'record':
-          category = 'record';
-          break;
-        case 'recordModels3d':
-          category = 'model3d';
-          break;
-        case 'recordVideos':
-          category = 'vid';
-          break;
-        case 'recordImgs':
-          category = 'img';
-          break;
-        case 'recordMaterialUrl':
-          category = 'img';
-          break;
-        default:
-          return 'img';
-      }
-      const fT = category + 'FileType',
-        fS = category + 'FileSize',
-        fN = category + 'FileName';
       if (e.target.files.length > validation.file.maxFiles) {
         alert(msg.error.file.maxFileLimit);
         return;
@@ -264,31 +232,17 @@ export class DbAddRecord extends React.Component<any, RecordState> implements Mo
       if (e.target.files.length > 0) {
         for (let i = 0; i <= e.target.files.length - 1; i++) {
           let item = e.target.files.item(i);
-          this.imgD[elm].push({
-            ...this.state.data,
-            [`${category}FileType`]: item.name.split('.').pop().toLowerCase(),
-            [`${category}FileSize`]: Math.round(item.size),
-            [`${category}OriginalFileName`]: item.name.toLocaleLowerCase(),
-            [`${category}FolderPath`]: `${url.uploadFolder}${this.state.folderName}`,
-            [`${category}FileNameWithoutExtension`]: item.name.split('.').slice(0, -1).join('.').toLocaleLowerCase(),
-            [`${category}FileExtension`]: item.name.split('.').pop(),
-            [`${category}Visibility`]: 1,
-            [`${category}Uuid`]: nanoid(10).toLocaleLowerCase(),
-            [`${category}FileMimeType`]: item.type,
-            [`${category}FileLastModified`]: item.lastModified,
-            [`${category}FileLastModifiedDate`]: item.lastModifiedDate,
-            joinFromInput: elm
-          });
+          this.imgD[elm].push(this.createFileObject(elm, category, item, this.state.folderName));
 
-          if (!validation.file.types.includes(this.imgD[elm][i][fT])) {
+          if (!validation.file.types.includes(this.imgD[elm][i][`${category}FileType`])) {
             alert(msg.error.file.notValid);
             return;
           }
-          if (this.imgD[elm][i][fS] < validation.file.minFileSize) {
+          if (this.imgD[elm][i][`${category}FileSize`] < validation.file.minFileSize) {
             alert(msg.error.file.tooSmall);
             return;
           }
-          if (this.imgD[elm][i][fS] > validation.file.maxFileSize) {
+          if (this.imgD[elm][i][`${category}FileSize`] > validation.file.maxFileSize) {
             alert(msg.error.file.tooBig);
             return;
           }
@@ -301,17 +255,9 @@ export class DbAddRecord extends React.Component<any, RecordState> implements Mo
       this.setState({ files });
       Array.from(e.target.files).forEach((value: any, key: number) => {
         const fileName: string = value.name;
-        filesTxt += `${uuid()}-${fileName
-          .normalize('NFD')
-          .replace(/[\u0300-\u036f]/g, '')
-          .toLowerCase()
-          .replace(/[^a-zA-Z0-9.]/g, '-')},`;
-        filesTxtForImgs = `${uuid()}-${fileName
-          .normalize('NFD')
-          .replace(/[\u0300-\u036f]/g, '')
-          .toLowerCase()
-          .replace(/[^a-zA-Z0-9.]/g, '-')}`;
-        this.imgD[elm][key][fN] = filesTxtForImgs;
+        filesTxt += this.getCleanedFileName(fileName, true);
+        filesTxtForImgs = this.getCleanedFileName(fileName);
+        this.imgD[elm][key][`${category}FileName`] = filesTxtForImgs;
       });
       this.setState({
         data: {
