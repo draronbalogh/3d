@@ -213,92 +213,49 @@ export class DbEditRecord extends React.Component<ModelProps, RecordState> {
       });
     this.setState({ isSaved: false });
   };
+  processData = (dataArray: DataObject[] | undefined, property: keyof DataObject) => {
+    if (!dataArray) {
+      return '';
+    }
+    let resultArr: string[] = [];
 
+    dataArray.forEach((obj: DataObject) => {
+      const value = obj[property];
+
+      if (value) {
+        if (property === 'recordImgs' || property === 'recordVideos' || property === 'recordModels3d' || property === 'recordMaterialUrl') {
+          resultArr.push(...value.split(','));
+        } else {
+          resultArr.push(value);
+        }
+      }
+    });
+    const uniqueResultArr = [...new Set(resultArr)];
+    return uniqueResultArr.join(',');
+  };
   /**
    * Update 3D model
    * @param e any
    */
-  // TODO::: itt tartok, itt kéne átnézni, hogy melyik függvény melyik fájlt törli, és melyiket nem
   update3dModel = async (e: any) => {
-    console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
     e.preventDefault();
     const { data, recordId } = this.state;
     const { recordUuid } = data;
-    console.log('this.imgD', this.imgD);
-
     const dataI: Data = this.imgD;
-    let recordImgsArr: string[] = [],
-      recordModels3dArr: string[] = [],
-      recordMaterialUrlArr: string[] = [],
-      recordVideosArr: string[] = [];
-
-    const extractData = (dataArray: DataObject[] = []) => {
-      console.log('dataArray', dataArray);
-      dataArray.forEach((obj: DataObject) => {
-        if (obj.recordImgs) {
-          recordImgsArr = [];
-          recordImgsArr.push(...obj.recordImgs.split(','));
-        }
-        if (obj.recordModels3d) {
-          recordModels3dArr = [];
-          recordModels3dArr.push(obj.recordModels3d);
-        }
-        if (obj.recordMaterialUrl) {
-          recordMaterialUrlArr = [];
-          recordMaterialUrlArr.push(obj.recordMaterialUrl);
-        }
-        if (obj.recordVideos) {
-          recordVideosArr = [];
-          recordVideosArr.push(...obj.recordVideos.split(','));
-        }
-      });
-    };
-    console.log('dataI', dataI);
-    let recordImgs: string = '',
-      recordModels3d: string = '',
-      recordMaterialUrl: string = '',
-      recordVideos: string = '';
-    if (dataI.recordImgs) {
-      extractData(dataI.recordImgs);
-      const uniqueRecordImgsArr = [...new Set(recordImgsArr)];
-      recordImgs = uniqueRecordImgsArr.join(',');
-    }
-    if (dataI.recordModels3d) {
-      extractData(dataI.recordModels3d);
-      const uniqueRecordModels3dArr = [...new Set(recordModels3dArr)];
-      recordModels3d = uniqueRecordModels3dArr.join(',');
-    }
-    if (dataI.recordMaterialUrl) {
-      extractData(dataI.recordMaterialUrl);
-      const uniqueRecordMaterialUrlArr = [...new Set(recordMaterialUrlArr)];
-      recordMaterialUrl = uniqueRecordMaterialUrlArr.join(',');
-    }
-    if (dataI.recordVideos) {
-      extractData(dataI.recordVideos);
-      const uniqueRecordVideosArr = [...new Set(recordVideosArr)];
-      recordVideos = uniqueRecordVideosArr.join(',');
-    }
-    let a = 'abc',
-      b = 'dfg',
-      c = 'hij';
-    console.log('recordImgs:', recordImgs);
-    console.log('recordModels3d:', recordModels3d);
-    console.log('recordMaterialUrl:', recordMaterialUrl);
-    console.log('recordVideos:', recordVideos);
+    const recordImgs = this.processData(dataI.recordImgs, 'recordImgs');
+    const recordModels3d = this.processData(dataI.recordModels3d, 'recordModels3d');
+    const recordMaterialUrl = this.processData(dataI.recordMaterialUrl, 'recordMaterialUrl');
+    const recordVideos = this.processData(dataI.recordVideos, 'recordVideos');
     let deleteTheseFiles: string[] = recordImgs.split(',').concat(recordModels3d.split(',')).concat(recordMaterialUrl.split(',')).concat(recordVideos.split(','));
     try {
       // DELETE RECORD FROM FOLDER
-
       await this.deleteRecordFiles(deleteTheseFiles, recordId, recordUuid);
-
       // UPLOAD NEW FILES TO FOLDER
       await this.uploadFilesToFolder(data, recordUuid, this.state.files, this.setState.bind(this));
-
       // DELETE RECORD FROM DB
       await this.deleteImageFromDbTable(recordId);
       await this.deleteVideoFromDbTable(recordId);
       await this.delete3dFromDbTable(recordId);
-
       // UPLOAD NEW DATA TO DBS
       await this.updateRecrodsDbTable(recordId, data);
       await this.postForImageDb(recordId, recordUuid, this.imgD);
