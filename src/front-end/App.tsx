@@ -102,7 +102,10 @@ class App extends React.Component<unknown, State> {
 
   //////////////////////////////////////////////////////////////////////////////////////    RENDER
   render() {
-    const { data, isDarkMode } = this.state;
+    const { data, isDarkMode, updateIdNum } = this.state;
+
+    console.log('this.updateIdNum', data);
+    // TODO:: refresh list on edit change
     return (
       <Container fluid className={'3dRegform'}>
         <Row>

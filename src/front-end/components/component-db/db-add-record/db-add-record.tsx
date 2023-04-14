@@ -357,7 +357,7 @@ export class DbAddRecord extends React.Component<any, RecordState> implements Mo
   render() {
     const { isSaved, isThankYou, isUploading, uploadingData } = this.state;
     return isThankYou ? (
-      <div>köszi</div>
+      <div>Felöltés sikeres</div>
     ) : isSaved ? (
       <Navigate to='/' />
     ) : isUploading ? (
