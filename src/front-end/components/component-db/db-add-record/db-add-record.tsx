@@ -18,42 +18,7 @@ import { ProgressViewer } from '../db-shared/progress-viewer/progress-viewer-com
 import 'react-circular-progressbar/dist/styles.css';
 import { forEachChild } from 'typescript';
 ///////////////////////////////////////////////////////////   INTERFACE
-interface RecordState {
-  data: any;
-  imgData: imgDataType[];
-  isUploading: boolean;
-  isSaved: boolean;
-  isThankYou: boolean;
-  uploadingData: any;
-  folderName: string;
-  recordUuid: string;
-  files: UploadFiles | any;
-  folderId: string;
-}
-interface UploadFiles {
-  recordModels3d: [];
-  recordImgs: [];
-  recordMaterialUrl: [];
-  recordVideos: [];
-}
-interface imgDataType {
-  imgFileType: string;
-  imgFileSize: number;
-  imgOriginalFileName: string;
-  imgFileNameWithoutExtension: string;
-  imgFileExtension: any;
-  imgFileUuid: string;
-  imgFileMimeType: string;
-  imgFileLastModified: string;
-  imgFileLastModifiedDate: string;
-  recordTitle: string;
-  recordUuid: string;
-}
-
-interface ModelMethods {
-  saveRecod: (e: any) => Promise<void>;
-  formBuilder: (i: number, elm: any) => JSX.Element;
-}
+import { RecordState, UploadFiles, imgDataType, ModelMethods } from './interfaces';
 
 //////////////////////////////////////////////////////////////////////////////////////    CLASS SETUP
 export class DbAddRecord extends React.Component<any, RecordState> implements ModelMethods {

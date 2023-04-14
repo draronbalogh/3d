@@ -17,44 +17,7 @@ import { ProgressViewer } from '../db-shared/progress-viewer/progress-viewer-com
 ///////////////////////////////////////////////////////////   SCSS
 import 'react-circular-progressbar/dist/styles.css';
 ///////////////////////////////////////////////////////////   INTERFACE
-interface ModelProps {
-  data: any;
-}
-interface UploadFiles {
-  recordModels3d: [];
-  recordImgs: [];
-  recordMaterialUrl: [];
-  recordVideos: [];
-}
-interface RecordState {
-  data: any;
-  imgData: imgDataType[];
-  uploadingData: any;
-  files: UploadFiles | any;
-  isUploading: boolean;
-  isSaved: boolean;
-  isThankYou: boolean;
-  oldFilesToDel: any;
-  recordUuid: string;
-  folderId: string;
-  folderName: string;
-  joinFromInput: string[];
-  deleteTheseFiles: string[];
-  recordId: any;
-}
-interface imgDataType {
-  imgFileType: string;
-  imgFileSize: number;
-  imgOriginalFileName: string;
-  imgFileNameWithoutExtension: string;
-  imgFileExtension: any;
-  imgFileUuid: string;
-  imgFileMimeType: string;
-  imgFileLastModified: string;
-  imgFileLastModifiedDate: string;
-  recordTitle: string;
-  recordUuid: string;
-}
+import { ModelProps, UploadFiles, RecordState, imgDataType, DataObject, Data } from './interfaces';
 declare module 'react' {
   interface HTMLAttributes<T> {
     directory?: string;
@@ -76,7 +39,6 @@ export class DbEditRecord extends React.Component<ModelProps, RecordState> {
       imgData: [],
       files: { recordModels3d: [], recordImgs: [], recordMaterialUrl: [], recordVideos: [] },
       oldFilesToDel: null,
-      deleteTheseFiles: [],
       uploadingData: [],
       folderId: '',
       folderName: '',
@@ -260,14 +222,70 @@ export class DbEditRecord extends React.Component<ModelProps, RecordState> {
   update3dModel = async (e: any) => {
     console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
     e.preventDefault();
-    const { data, deleteTheseFiles, recordId } = this.state;
+    const { data, recordId } = this.state;
     const { recordUuid } = data;
-
-    console.log('deleteTheseFiles', deleteTheseFiles);
-    console.log('recordId', recordId);
-    console.log('recordUuid', recordUuid);
     console.log('this.imgD', this.imgD);
-    //let allFiles = [...recordModels3d, ...recordImgs, ...recordMaterialUrl, ...recordVideos];
+
+    const dataI: Data = this.imgD;
+    let recordImgsArr: string[] = [],
+      recordModels3dArr: string[] = [],
+      recordMaterialUrlArr: string[] = [],
+      recordVideosArr: string[] = [];
+
+    const extractData = (dataArray: DataObject[] = []) => {
+      console.log('dataArray', dataArray);
+      dataArray.forEach((obj: DataObject) => {
+        if (obj.recordImgs) {
+          recordImgsArr = [];
+          recordImgsArr.push(...obj.recordImgs.split(','));
+        }
+        if (obj.recordModels3d) {
+          recordModels3dArr = [];
+          recordModels3dArr.push(obj.recordModels3d);
+        }
+        if (obj.recordMaterialUrl) {
+          recordMaterialUrlArr = [];
+          recordMaterialUrlArr.push(obj.recordMaterialUrl);
+        }
+        if (obj.recordVideos) {
+          recordVideosArr = [];
+          recordVideosArr.push(...obj.recordVideos.split(','));
+        }
+      });
+    };
+    console.log('dataI', dataI);
+    let recordImgs: string = '',
+      recordModels3d: string = '',
+      recordMaterialUrl: string = '',
+      recordVideos: string = '';
+    if (dataI.recordImgs) {
+      extractData(dataI.recordImgs);
+      const uniqueRecordImgsArr = [...new Set(recordImgsArr)];
+      recordImgs = uniqueRecordImgsArr.join(',');
+    }
+    if (dataI.recordModels3d) {
+      extractData(dataI.recordModels3d);
+      const uniqueRecordModels3dArr = [...new Set(recordModels3dArr)];
+      recordModels3d = uniqueRecordModels3dArr.join(',');
+    }
+    if (dataI.recordMaterialUrl) {
+      extractData(dataI.recordMaterialUrl);
+      const uniqueRecordMaterialUrlArr = [...new Set(recordMaterialUrlArr)];
+      recordMaterialUrl = uniqueRecordMaterialUrlArr.join(',');
+    }
+    if (dataI.recordVideos) {
+      extractData(dataI.recordVideos);
+      const uniqueRecordVideosArr = [...new Set(recordVideosArr)];
+      recordVideos = uniqueRecordVideosArr.join(',');
+    }
+    let a = 'abc',
+      b = 'dfg',
+      c = 'hij';
+    console.log('recordImgs:', recordImgs);
+    console.log('recordModels3d:', recordModels3d);
+    console.log('recordMaterialUrl:', recordMaterialUrl);
+    console.log('recordVideos:', recordVideos);
+    let deleteTheseFiles: string[] = recordImgs.split(',').concat(recordModels3d.split(',')).concat(recordMaterialUrl.split(',')).concat(recordVideos.split(','));
     try {
       // DELETE RECORD FROM FOLDER
 
@@ -299,7 +317,7 @@ export class DbEditRecord extends React.Component<ModelProps, RecordState> {
    */
   deleteRecordFiles = async (deleteTheseFiles: any, recordId: string, recordUuid: string) => {
     const { url, msg } = _CONFIG;
-    console.log('>>', recordId, recordUuid);
+    // console.log('>>', recordId, recordUuid);
     const response = await axios.post(url.deleteRecordFiles, { deleteTheseFiles, recordId, recordUuid, deleteFolder: false }, {});
     if (response.data.success === false) {
       console.log(msg.error.file.deleting, response);
@@ -402,7 +420,7 @@ export class DbEditRecord extends React.Component<ModelProps, RecordState> {
     const { db, url, msg } = _CONFIG;
     let imgPush: any[] = [];
     Object.keys(imgD).forEach((element: any, key: number) => {
-      console.log('element', element);
+      //      console.log('element', element);
       if (element === 'recordVideos') {
         imgD[element].forEach((e: any, k: number) => {
           imgPush.push(imgD[element][k]);
@@ -427,7 +445,7 @@ export class DbEditRecord extends React.Component<ModelProps, RecordState> {
   postFor3dDb = async (recordId: string, recordUuid: string, imgD: any) => {
     const { db, url, msg } = _CONFIG;
     let imgPush: any[] = [];
-    console.log('imgD', imgD);
+    //    console.log('imgD', imgD);
     Object.keys(imgD).forEach((element: any, key: number) => {
       if (element === 'recordModels3d') {
         console.log('imgD2', imgD);

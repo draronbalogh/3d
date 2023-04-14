@@ -11,14 +11,7 @@ import { logAxiosError } from '../../../../assets/gen-methods';
 ///////////////////////////////////////////////////////////   DOM
 import Table from 'react-bootstrap/Table';
 ///////////////////////////////////////////////////////////   INTERFACE
-interface Model3dProps {
-  updateId: any;
-  updateData: any;
-}
-interface RecordState {
-  data: any[];
-  isDeleted: boolean;
-}
+import { Model3dProps, RecordState } from './interfaces';
 //////////////////////////////////////////////////////////////////////////////////////    CLASS SETUP
 export class DbListRecord extends React.Component<Model3dProps, RecordState> {
   constructor(props: Model3dProps) {
