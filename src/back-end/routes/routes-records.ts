@@ -14,5 +14,4 @@ router.post('/createVideo', createVideos);
 router.post('/createModels3d', createModels3d);
 router.patch('/:recordId', updateRecords);
 router.delete('/:recordId', deleteRecords);
-
 export default router;

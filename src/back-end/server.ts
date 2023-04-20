@@ -17,7 +17,22 @@ import routesModels3d from './routes/routes-models3d';
 import dbC from '../_config/config-database';
 import { createNecessaryDirectoriesSync } from '../assets/file-methods';
 import { logAxiosError } from '../assets/gen-methods';
+import ActiveDirectory from 'activedirectory2';
+
 const { validation, url, msg, routes } = _CONFIG;
+interface Config {
+  url: string;
+  baseDN: string;
+  username: string;
+  password: string;
+}
+interface User {
+  displayName: string;
+  mail: string;
+  telephoneNumber: string;
+  department: string;
+}
+
 ///////////////////////////////////////////////////////////   FUNCTIONS
 /**
  * Connect to database and start server
@@ -189,6 +204,52 @@ const deleteRecordFiles = async (req: any, res: any, next: any) => {
   res.json({ status: 200, message: msg.txt.file.deleteOk, newTask: newTask });
 };
 
+/**
+Authenticate a user against a LDAP server using ActiveDirectory library.
+@param {express.Request} req - The request object from express.
+@param {express.Response} res - The response object from express.
+@returns {Promise<void>} - A promise that resolves with nothing, but sends an HTTP response to the client.
+*/
+const config = {
+  url: _CONFIG.ldap.url,
+  baseDN: _CONFIG.ldap.baseDN
+}; //@ts-ignore
+const ad = new ActiveDirectory(config);
+const ldapLogin = async (req: express.Request, res: express.Response) => {
+  try {
+    const authenticated = await new Promise((resolve, reject) => {
+      const u = req.body.username || _CONFIG.ldap.u;
+      const p = req.body.password || _CONFIG.ldap.p;
+
+      ad.authenticate(u, p, (err, auth) => {
+        if (err) {
+          reject(err);
+        } else {
+          //@ts-ignore
+          ad.findUser(auth?.sAMAccountName, (err, userData) => {
+            if (err) {
+              console.error(err);
+              res.status(401).send({ message: 'Authentication failed' });
+            } else {
+              //@ts-ignore
+              const userWithDetails = { ...auth, ...userData };
+              console.log('userWithDetails', userWithDetails);
+              res.status(200).send({ message: 'User found', user: userWithDetails });
+            }
+          });
+          resolve(auth);
+        }
+      });
+    });
+    console.log('authenticated ', authenticated);
+    if (!authenticated) {
+      throw new Error('Authentication failed');
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(401).send({ message: 'Authentication failed' });
+  }
+};
 ///////////////////////////////////////////////////////////   APP (pre)CONFIG
 const app = express();
 app.use(cors());
@@ -201,6 +262,7 @@ app.use(routes.routesRecord, routesRecord);
 app.use(routes.routesImages, routesImages);
 app.use(routes.routesVideos, routesVideos);
 app.use(routes.routesModels3d, routesModels3d);
+app.use('/auth', ldapLogin);
 app.listen(PORT3D, () => console.log(msg.txt.server.started));
 
 ///////////////////////////////////////////////////////////   RUN APP

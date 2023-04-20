@@ -6,6 +6,7 @@ import { Routes, Route } from 'react-router-dom';
 import { _CONFIG } from '../_config/config-general';
 ///////////////////////////////////////////////////////////   LIBS
 import { ViewRecord, DbListRecord, DbAddRecord, DbEditRecord } from './components';
+
 ///////////////////////////////////////////////////////////   DOM
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
@@ -20,6 +21,12 @@ interface State {
   updateData: unknown;
   data: unknown;
   isDarkMode: boolean;
+}
+interface UserData {
+  displayName: string;
+  mail: string;
+  telephoneNumber: string;
+  department: string;
 }
 //////////////////////////////////////////////////////////////////////////////////////    CLASS SETUP
 /**
@@ -42,9 +49,28 @@ class App extends React.Component<unknown, State> {
   ///////////////////////////////////////////////////////////   LIFECYCLE METHODS
   componentDidMount() {
     this.changeBgStyle();
+    // TODO:: if its on mtv intra?
+    this.ldapLogin();
   }
 
+  ldapLogin = async () => {
+    try {
+      const response = await fetch('http://localhost:3001/auth');
+      if (response.ok) {
+        const data: UserData = (await response.json()) as UserData;
+        console.log(data);
+        // itt kezeld a választ
+      } else {
+        throw new Error('Error');
+      }
+    } catch (error) {
+      console.log(error);
+      // itt kezeld a hibát
+    }
+  };
+
   ///////////////////////////////////////////////////////////   CLASS METHODS
+
   /**
    * Update recordId
    * @param recordId
@@ -104,7 +130,7 @@ class App extends React.Component<unknown, State> {
   render() {
     const { data, isDarkMode, updateIdNum } = this.state;
 
-    console.log('this.updateIdNum', data);
+    // console.log('this.updateIdNum', data);
     // TODO:: refresh list on edit change
     return (
       <Container fluid className={'3dRegform'}>
@@ -117,6 +143,7 @@ class App extends React.Component<unknown, State> {
           <Col xs={12}>
             <Routes>
               <Route path='/' element={<DbListRecord updateId={this.updateId} updateData={this.updateData} />} />
+              <Route path='/auth' element={'Ad'} />
               <Route path='/add' element={<DbAddRecord />} />
               <Route path='/edit/:recordId' element={<DbEditRecord data={data} />} />
               <Route path='/view/:recordId' element={<ViewRecord data={data} />} />

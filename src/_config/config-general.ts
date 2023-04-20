@@ -25,6 +25,12 @@ export const _CONFIG = {
     createModels3d: `${HOST3D}:${PORT3D}/api/records/createModels3d`,
     uploadFolder: 'c:/node/3d_uploads/'
   },
+  ldap: {
+    url: 'ldap://DC05BUD.intra.mtv.hu:389', //10.120.100.5
+    baseDN: 'DC=intra,DC=mtv,DC=hu',
+    u: 'aron.balogh@intra.mtv.hu',
+    p: 'TremorszSukoro01234'
+  },
   routes: {
     routesRecord: '/api/records',
     routesImages: '/api/images',
