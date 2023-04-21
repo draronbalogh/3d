@@ -17,8 +17,8 @@ import routesModels3d from './routes/routes-models3d';
 import dbC from '../_config/config-database';
 import { createNecessaryDirectoriesSync } from '../assets/file-methods';
 import { logAxiosError } from '../assets/gen-methods';
-// import ActiveDirectory from 'activedirectory2';
-import * as ldap from 'ldapjs';
+import ActiveDirectory from 'activedirectory2';
+
 const { validation, url, msg, routes } = _CONFIG;
 interface Config {
   url: string;
@@ -210,120 +210,72 @@ Authenticate a user against a LDAP server using ActiveDirectory library.
 @param {express.Response} res - The response object from express.
 @returns {Promise<void>} - A promise that resolves with nothing, but sends an HTTP response to the client.
 */
-
-// var ad = new ActiveDirectory(config);
+const config = {
+  /*  url: _CONFIG.ldap.urlFull,
+  baseDN: _CONFIG.ldap.baseDN,
+  bindDN: _CONFIG.ldap.baseDN
+ 
+  
+    baseDN?: string | undefined;
+    bindDN?: string | undefined;
+    bindCredentials?: string | undefined;
+    scope?: 'base' | 'one' | 'sub' | undefined;
+    filter: string | Filter;
+    attributes: AttributeSpec;
+    sizeLimit: 0;
+    timeLimit: 10;
+    includeMembership: MembershipType[];
+  */
+}; //@ts-ignore
+var ad = new ActiveDirectory(config);
 const ldapLogin = async (req: express.Request, res: express.Response) => {
-  const client = ldap.createClient({
-    url: _CONFIG.ldap.urlFull,
-    bindDN: _CONFIG.ldap.u,
-    bindCredentials: _CONFIG.ldap.p
-  });
+  try {
+    const authenticated = await new Promise((resolve, reject) => {
+      const u = req.body.username || _CONFIG.ldap.u;
+      const p = req.body.password || _CONFIG.ldap.p;
 
-  client.bind(_CONFIG.ldap.u, _CONFIG.ldap.p, (err) => {
-    // Helyettesítsd a saját bejelentkezési adataiddal
-    if (err) {
-      console.error('Error binding to LDAP', err);
-    } else {
-      console.log('Connected to LDAP');
-
-      // '(&(objectClass=user)(cn=*aron*))'
-      // (objectClass=user) // Size Limit Exceeded
-      // (objectClass=group) // Size Limit
-      /*
-Az összes felhasználó lekérése: filter: '(objectClass=user)'
-Az összes csoport lekérése: filter: '(objectClass=group)'
-Egy konkrét felhasználó lekérése azonosító alapján: filter: '(sAMAccountName=johndoe)'
-Az összes felhasználó lekérése, akiknek a vezetékneve "Smith": filter: '(&(objectClass=user)(sn=Smith))'
-Az összes felhasználó lekérése, akiknek a nevében szerepel a "John" és a címe "New York": filter: '(&(objectClass=user)(cn=*John*)(l=New York))'
-Az összes csoport lekérése, amelynek neve tartalmazza a "sales" szót: filter: '(&(objectClass=group)(cn=*sales*))'
-        
-
-filter: '(&(objectClass=user))',
-
-filter: '(&(objectClass=user)(WorkEmail=Balogh.Aron@mtva.hu))',
-filter: '(&(objectClass=user)(email=Balogh.Aron@mtva.hu))',
-filter: '(&(objectClass=user)(userPrincipalName=Balogh.Aron@mtva.hu))',
-filter: '(&(objectClass=user)(mail=Balogh.Aron@mtva.hu))',
-
-
-
-         sizeLimit: 0
-        timeLimit: 10,
-        paged: {
-          pageSize: 10
-        }
-        
-*/
-      const searchOptions = {
-        filter: '(&(objectClass=user)(user=Balogh.Aron))',
-        scope: 'sub',
-        attributes: ['*']
-      };
-
-      //@ts-ignore
-      client.search(_CONFIG.ldap.baseDN, searchOptions, (searchErr, searchRes) => {
-        // Helyettesítsd a saját domain-neveddel és com-mal végződő címeddel
-        if (searchErr) {
-          console.error('Error searching LDAP', searchErr);
+      ad.authenticate(u, p, (err, auth) => {
+        if (err) {
+          reject(err);
         } else {
-          searchRes.on('searchEntry', (entry: any) => {
-            console.log('Found entry11111111111:', JSON.stringify(entry.object));
-            //res.json({ message: 'User found', user: entry.object || 'empty data' });
-            // Itt tudod elmenteni a felhasználó adatait vagy tovább feldolgozni őket
-          });
+          console.log('auth', auth);
+          /*  var opts = {
+            scope: 'sub',
+            filter: 'objectClass=User',
+            includeMembership: ['user'],
+            entryParser: function (entry: any, raw: any, callback: any) {
+              // returning null with exclude result
+              if (entry.ignore) return null;
 
-          searchRes.on('error', (err: any) => {
-            console.error('LDAP search error', err);
-          });
+              entry.retrievedAt = new Date();
 
-          searchRes.on('end', (entry: any) => {
-            console.log('Found entry222222222:', entry);
-            res.json({ entry, user: entry.object || 'nincs találat' });
-            console.log('LDAP search finished');
-            client.unbind();
+              callback(entry);
+            }
+          };*/
+          var opts = { filter: 'objectClass=User' };
+          ad.findUser(u, (err, userData) => {
+            if (err) {
+              console.error(err);
+              res.status(401).send({ message: 'Authentication failed' });
+            } else {
+              //@ts-ignore
+              const userWithDetails = { ...auth, ...userData };
+              console.log('userWithDetails', userWithDetails);
+              res.status(200).send({ message: 'User found', user: userWithDetails });
+            }
           });
+          resolve(auth);
         }
       });
+    });
+    console.log('authenticated ', authenticated);
+    if (!authenticated) {
+      throw new Error('Authentication failed');
     }
-  });
-  /* client.unbind((err) => {
-    if (err) {
-      console.error('Failed to unbind from AD', err);
-    } else {
-      console.log('Successfully unbound from AD');
-    }
-  });*/
-
-  /*
-  var iObjectsFound = 0;
-  console.log('[');
-
-  var opts = { filter: '(&(samaccountname=*))', scope: 'sub', attributes: ['*'] };
-
-  client.search('ou=ResourceUsers,dc=example,dc=com', opts, function (err: any, res: any) {
-    //@ts-ignore
-    assert.ifError(err);
-
-    res.on('searchEntry', function (entry: any) {
-      if (iObjectsFound > 0) {
-        console.log(', ');
-      }
-      iObjectsFound = iObjectsFound + 1;
-      console.log(JSON.stringify(entry.object));
-    });
-    res.on('searchReference', function (referral: any) {
-      console.log('referral: ' + referral.uris.join());
-    });
-    res.on('error', function (err: any) {
-      console.error('error: ' + err.message);
-    });
-    res.on('end', function (result: any) {
-      console.log('status: ' + result.status);
-    });
-  });
-
-  console.log(']');
-  */
+  } catch (err) {
+    console.error(err);
+    res.status(401).send({ message: 'Authentication failed' });
+  }
 };
 ///////////////////////////////////////////////////////////   APP (pre)CONFIG
 const app = express();

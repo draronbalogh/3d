@@ -26,8 +26,10 @@ export const _CONFIG = {
     uploadFolder: 'c:/node/3d_uploads/'
   },
   ldap: {
-    url: 'ldap://DC05BUD.intra.mtv.hu:389', //10.120.100.5
-    baseDN: 'DC=intra,DC=mtv,DC=hu',
+    urlFull: 'ldap://DC05BUD.intra.mtv.hu:389', //10.120.100.5
+    /* url: 'ldap://DC05BUD.intra.mtv.hu', //10.120.100.5
+    port: '389',*/
+    baseDN: 'DC=intra,DC=mtv,DC=hu', // DC=intra,DC=mtv,DC=hu
     u: 'aron.balogh@intra.mtv.hu',
     p: 'TremorszSukoro01234'
   },
