@@ -11,5 +11,4 @@ view-record/
 server.ts
 # others
 gen-methods.ts
-
- 
+sample.json

@@ -1,5 +1,6 @@
 export const PORT3D = 5000;
 export const HOST3D = 'http://127.0.0.1'; // TODO: Change proxy in package.json to this
+
 export const _CONFIG = {
   db: {
     host: '3d',
@@ -26,9 +27,8 @@ export const _CONFIG = {
     uploadFolder: 'c:/node/3d_uploads/'
   },
   ldap: {
-    urlFull: 'ldap://DC05BUD.intra.mtv.hu:389', //10.120.100.5
-    /* url: 'ldap://DC05BUD.intra.mtv.hu', //10.120.100.5
-    port: '389',*/
+    urlFull: 'ldap://DC05BUD.intra.mtv.hu:389', //10.120.100.5  // ellenőzrés: nslookup DC05BUD.intra.mtv.hu
+    urlSecFull: 'ldaps://DC05BUD.intra.mtv.hu:636',
     baseDN: 'DC=intra,DC=mtv,DC=hu', // DC=intra,DC=mtv,DC=hu
     u: 'aron.balogh@intra.mtv.hu',
     p: 'TremorszSukoro01234'

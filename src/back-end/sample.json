@@ -1,0 +1,467 @@
+{
+    "messageId": 2,
+    "protocolOp": 100,
+    "type": "SearchResultEntry",
+    "objectName": "CN=K\\c5\\91r\\c3\\b6sfalvi Martin,OU=MTVA,OU=Windows_10,OU=Users,OU=MTVA,DC=intra,DC=mtv,DC=hu",
+    "attributes": [{
+            "type": "objectClass",
+            "values": [
+                "top",
+                "person",
+                "organizationalPerson",
+                "user"
+            ]
+        },
+        {
+            "type": "cn",
+            "values": [
+                "Kőrösfalvi Martin"
+            ]
+        },
+        {
+            "type": "sn",
+            "values": [
+                "Kőrösfalvi"
+            ]
+        },
+        {
+            "type": "l",
+            "values": [
+                "Budapest"
+            ]
+        },
+        {
+            "type": "title",
+            "values": [
+                "junior szoftverfejlesztő"
+            ]
+        },
+        {
+            "type": "description",
+            "values": [
+                "junior szoftverfejlesztő"
+            ]
+        },
+        {
+            "type": "postalCode",
+            "values": [
+                "1037"
+            ]
+        },
+        {
+            "type": "physicalDeliveryOfficeName",
+            "values": [
+                "A2043"
+            ]
+        },
+        {
+            "type": "givenName",
+            "values": [
+                "Martin"
+            ]
+        },
+        {
+            "type": "distinguishedName",
+            "values": [
+                "CN=Kőrösfalvi Martin,OU=MTVA,OU=Windows_10,OU=Users,OU=MTVA,DC=intra,DC=mtv,DC=hu"
+            ]
+        },
+        {
+            "type": "instanceType",
+            "values": [
+                "4"
+            ]
+        },
+        {
+            "type": "whenCreated",
+            "values": [
+                "20230209183310.0Z"
+            ]
+        },
+        {
+            "type": "whenChanged",
+            "values": [
+                "20230415103521.0Z"
+            ]
+        },
+        {
+            "type": "displayName",
+            "values": [
+                "Kőrösfalvi Martin"
+            ]
+        },
+        {
+            "type": "uSNCreated",
+            "values": [
+                "760176988"
+            ]
+        },
+        {
+            "type": "memberOf",
+            "values": [
+                "CN=FP_Megengedo_nincs_Facebook_nincs_futtathato,OU=ForcePoint,OU=Security_groups,OU=Groups,OU=MTVA,DC=intra,DC=mtv,DC=hu",
+                "CN=ForcePointProxy,OU=Security_groups,OU=Groups,OU=MTVA,DC=intra,DC=mtv,DC=hu",
+                "CN=NXN4_MTVA_PRD_portal,OU=Nexon4,OU=Security_groups,OU=Groups,OU=MTVA,DC=intra,DC=mtv,DC=hu",
+                "CN=VPN_PSA5000_Users_Redmine_web,OU=PulseSecure_VPN,OU=Security_groups,OU=Groups,OU=MTVA,DC=intra,DC=mtv,DC=hu",
+                "CN=VPN_PSA5000_Users_Helpdesk_web,OU=PulseSecure_VPN,OU=Security_groups,OU=Groups,OU=MTVA,DC=intra,DC=mtv,DC=hu",
+                "CN=MFA_VPN_users,OU=Security_groups,OU=Groups,OU=MTVA,DC=intra,DC=mtv,DC=hu",
+                "CN=FS_INFORMATIKA_RW,OU=FS_groups,OU=Security_groups,OU=Groups,OU=MTVA,DC=intra,DC=mtv,DC=hu",
+                "CN=Folder Redirection Users,OU=Windows_10,OU=Users,OU=MTVA,DC=intra,DC=mtv,DC=hu",
+                "CN=HomeFolder_users,OU=Windows_10,OU=Users,OU=MTVA,DC=intra,DC=mtv,DC=hu",
+                "CN=UEV users,OU=Security_groups,OU=Groups,OU=MTVA,DC=intra,DC=mtv,DC=hu",
+                "CN=VPN_PSA5000_Tunnel_EveryThing,OU=PulseSecure_VPN,OU=Security_groups,OU=Groups,OU=MTVA,DC=intra,DC=mtv,DC=hu",
+                "CN=Belsős MTVA dolgozók,OU=Exchange Groups and Contacts,DC=intra,DC=mtv,DC=hu",
+                "CN=beleptetes_kunigunda_ab,OU=Beleptetes,OU=Security_groups,OU=Groups,OU=MTVA,DC=intra,DC=mtv,DC=hu",
+                "CN=TAU_elfogado,OU=TAU,OU=Security_groups,OU=Groups,OU=MTVA,DC=intra,DC=mtv,DC=hu"
+            ]
+        },
+        {
+            "type": "uSNChanged",
+            "values": [
+                "807599988"
+            ]
+        },
+        {
+            "type": "department",
+            "values": [
+                "Szoftverfejlesztés és Szoftverüzemeltetés Csoport"
+            ]
+        },
+        {
+            "type": "company",
+            "values": [
+                "Médiaszolg.-tám. és Vagyonkezelő Alap"
+            ]
+        },
+        {
+            "type": "proxyAddresses",
+            "values": [
+                "x500:/o=ExchangeLabs/ou=Exchange Administrative Group (FYDIBOHF23SPDLT)/cn=Recipients/cn=b8b3bc8925cd461d8c4b69ecc6bd52c8-5801f8ca-21",
+                "smtp:korosfalvi.martin@mtv.hu",
+                "smtp:Martin.Korosfalvi@intra.mtv.hu",
+                "smtp:Martin.Korosfalvi@mtva.hu",
+                "smtp:korosfalvi.martin@mtvahu.mail.onmicrosoft.com",
+                "SMTP:Korosfalvi.Martin@mtva.hu"
+            ]
+        },
+        {
+            "type": "name",
+            "values": [
+                "Kőrösfalvi Martin"
+            ]
+        },
+        {
+            "type": "objectGUID",
+            "values": [
+                "�w_}}��H�ґ��B\u0000"
+            ]
+        },
+        {
+            "type": "userAccountControl",
+            "values": [
+                "512"
+            ]
+        },
+        {
+            "type": "badPwdCount",
+            "values": [
+                "0"
+            ]
+        },
+        {
+            "type": "codePage",
+            "values": [
+                "0"
+            ]
+        },
+        {
+            "type": "countryCode",
+            "values": [
+                "0"
+            ]
+        },
+        {
+            "type": "badPasswordTime",
+            "values": [
+                "133261832174074362"
+            ]
+        },
+        {
+            "type": "lastLogoff",
+            "values": [
+                "0"
+            ]
+        },
+        {
+            "type": "lastLogon",
+            "values": [
+                "133268792280812565"
+            ]
+        },
+        {
+            "type": "pwdLastSet",
+            "values": [
+                "133207626446980231"
+            ]
+        },
+        {
+            "type": "primaryGroupID",
+            "values": [
+                "513"
+            ]
+        },
+        {
+            "type": "objectSid",
+            "values": [
+                "\u0001\u0005\u0000\u0000\u0000\u0000\u0000\u0005\u0015\u0000\u0000\u0000x<��kU��Ɍ����\u0000\u0000"
+            ]
+        },
+        {
+            "type": "accountExpires",
+            "values": [
+                "9223372036854775807"
+            ]
+        },
+        {
+            "type": "logonCount",
+            "values": [
+                "256"
+            ]
+        },
+        {
+            "type": "sAMAccountName",
+            "values": [
+                "martin.korosfalvi"
+            ]
+        },
+        {
+            "type": "sAMAccountType",
+            "values": [
+                "805306368"
+            ]
+        },
+        {
+            "type": "showInAddressBook",
+            "values": [
+                "CN=Default Global Address List,CN=All Global Address Lists,CN=Address Lists Container,CN=MTV,CN=Microsoft Exchange,CN=Services,CN=Configuration,DC=intra,DC=mtv,DC=hu",
+                "CN=All Users,CN=All Address Lists,CN=Address Lists Container,CN=MTV,CN=Microsoft Exchange,CN=Services,CN=Configuration,DC=intra,DC=mtv,DC=hu"
+            ]
+        },
+        {
+            "type": "otherFacsimileTelephoneNumber",
+            "values": [
+                "korosfalvi-mgmt"
+            ]
+        },
+        {
+            "type": "legacyExchangeDN",
+            "values": [
+                "/o=MTV/ou=Exchange Administrative Group (FYDIBOHF23SPDLT)/cn=Recipients/cn=user56fa9e3c"
+            ]
+        },
+        {
+            "type": "userPrincipalName",
+            "values": [
+                "korosfalvi.martin@mtva.hu"
+            ]
+        },
+        {
+            "type": "objectCategory",
+            "values": [
+                "CN=Person,CN=Schema,CN=Configuration,DC=intra,DC=mtv,DC=hu"
+            ]
+        },
+        {
+            "type": "dSCorePropagationData",
+            "values": [
+                "16010101000000.0Z"
+            ]
+        },
+        {
+            "type": "lastLogonTimestamp",
+            "values": [
+                "133260285131480242"
+            ]
+        },
+        {
+            "type": "msDS-ExternalDirectoryObjectId",
+            "values": [
+                "User_5801f8ca-21fd-4637-984e-28abaffbbae4"
+            ]
+        },
+        {
+            "type": "mail",
+            "values": [
+                "Korosfalvi.Martin@mtva.hu"
+            ]
+        },
+        {
+            "type": "manager",
+            "values": [
+                "CN=Fodor Erika,OU=MTVA,OU=Windows_10,OU=Users,OU=MTVA,DC=intra,DC=mtv,DC=hu"
+            ]
+        },
+        {
+            "type": "mobile",
+            "values": [
+                "+36 (70) 656 9377"
+            ]
+        },
+        {
+            "type": "pager",
+            "values": [
+                "65748"
+            ]
+        },
+        {
+            "type": "msExchUMDtmfMap",
+            "values": [
+                "reversedPhone:77396560763+",
+                "emailAddress:5676732584627846",
+                "lastNameFirstName:5676732584627846",
+                "firstNameLastName:6278465676732584"
+            ]
+        },
+        {
+            "type": "msExchVersion",
+            "values": [
+                "88218628259840"
+            ]
+        },
+        {
+            "type": "mailNickname",
+            "values": [
+                "korosfalvi.martin"
+            ]
+        },
+        {
+            "type": "msExchDumpsterWarningQuota",
+            "values": [
+                "20971520"
+            ]
+        },
+        {
+            "type": "msExchWhenMailboxCreated",
+            "values": [
+                "20230209183404.0Z"
+            ]
+        },
+        {
+            "type": "mDBUseDefaults",
+            "values": [
+                "TRUE"
+            ]
+        },
+        {
+            "type": "msExchPoliciesIncluded",
+            "values": [
+                "f33b3ab6-4897-4e9d-91e1-826c38c23e14",
+                "{26491cfc-9e50-4857-861b-0cb8df22b5d7}"
+            ]
+        },
+        {
+            "type": "msExchRecipientDisplayType",
+            "values": [
+                "1073741824"
+            ]
+        },
+        {
+            "type": "msExchMailboxGuid",
+            "values": [
+                "��a�\"w�D�8����O�"
+            ]
+        },
+        {
+            "type": "msExchCalendarLoggingQuota",
+            "values": [
+                "6291456"
+            ]
+        },
+        {
+            "type": "msExchArchiveWarnQuota",
+            "values": [
+                "94371840"
+            ]
+        },
+        {
+            "type": "extensionAttribute6",
+            "values": [
+                "Sync"
+            ]
+        },
+        {
+            "type": "msExchMailboxSecurityDescriptor",
+            "values": [
+                "\u0001\u0000\u0004�\u0014\u0000\u0000\u0000 \u0000\u0000\u0000\u0000\u0000\u0000\u0000,\u0000\u0000\u0000\u0001\u0001\u0000\u0000\u0000\u0000\u0000\u0005\n\u0000\u0000\u0000\u0001\u0001\u0000\u0000\u0000\u0000\u0000\u0005\n\u0000\u0000\u0000\u0004\u0000\u001c\u0000\u0001\u0000\u0000\u0000\u0000\u0002\u0014\u0000\u0001\u0000\u0002\u0000\u0001\u0001\u0000\u0000\u0000\u0000\u0000\u0005\n\u0000\u0000\u0000"
+            ]
+        },
+        {
+            "type": "msExchRBACPolicyLink",
+            "values": [
+                "CN=Default Role Assignment Policy,CN=Policies,CN=RBAC,CN=MTV,CN=Microsoft Exchange,CN=Services,CN=Configuration,DC=intra,DC=mtv,DC=hu"
+            ]
+        },
+        {
+            "type": "msExchTextMessagingState",
+            "values": [
+                "302120705",
+                "16842751"
+            ]
+        },
+        {
+            "type": "msExchRecipientTypeDetails",
+            "values": [
+                "1"
+            ]
+        },
+        {
+            "type": "msExchELCMailboxFlags",
+            "values": [
+                "130"
+            ]
+        },
+        {
+            "type": "msExchArchiveQuota",
+            "values": [
+                "104857600"
+            ]
+        },
+        {
+            "type": "msExchMobileMailboxFlags",
+            "values": [
+                "1"
+            ]
+        },
+        {
+            "type": "homeMDB",
+            "values": [
+                "CN=MDB06,CN=Databases,CN=Exchange Administrative Group (FYDIBOHF23SPDLT),CN=Administrative Groups,CN=MTV,CN=Microsoft Exchange,CN=Services,CN=Configuration,DC=intra,DC=mtv,DC=hu"
+            ]
+        },
+        {
+            "type": "msExchHomeServerName",
+            "values": [
+                "/o=MTV/ou=Exchange Administrative Group (FYDIBOHF23SPDLT)/cn=Configuration/cn=Servers/cn=XCHMBX08BUD"
+            ]
+        },
+        {
+            "type": "msExchUserAccountControl",
+            "values": [
+                "0"
+            ]
+        },
+        {
+            "type": "msExchUserCulture",
+            "values": [
+                "hu-HU"
+            ]
+        },
+        {
+            "type": "msExchDumpsterQuota",
+            "values": [
+                "31457280"
+            ]
+        }
+    ],
+    "controls": []
+}
