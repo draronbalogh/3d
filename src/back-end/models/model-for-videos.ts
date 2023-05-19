@@ -11,7 +11,7 @@ const ModelCtrForVideoTypes = dbC.define(_CONFIG.db.tableNameVideos, seqConfigFo
 
 const createVideosTable = async () => {
   try {
-    await ModelCtrForVideoTypes.sync({ force: true }); // TODO:: make it force: false
+    await ModelCtrForVideoTypes.sync({ force: false }); // TODO:: make it force: false
     console.log('ModelCtrForVideoTypes table created');
   } catch (error) {
     console.error('Error creating Videos table:', error);

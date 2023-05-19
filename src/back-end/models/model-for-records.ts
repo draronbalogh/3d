@@ -12,7 +12,7 @@ const ModelCtrForRecordTypes = dbC.define(_CONFIG.db.tableNameRecords, seqConfig
 
 const createRecordModelTable = async () => {
   try {
-    await ModelCtrForRecordTypes.sync({ force: true }); // TODO:: make it force: false
+    await ModelCtrForRecordTypes.sync({ force: false }); // TODO:: make it force: false
     console.log('ModelCtrForRecordTypes table created');
   } catch (error) {
     console.error('Error creating record model table:', error);
