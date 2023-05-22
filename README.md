@@ -53,3 +53,18 @@ Last updated on 2023-04-09.
 
 ### Doc help
 https://github.com/balogharon/3d/tree/8446a4c52ffa7b7f9cc9a841ff5720fb2091cd3c#readme
+
+
+## settings
+
+git config --global http.proxy http://192.168.92.40:8080
+git config --global https.proxy http://192.168.92.40:8080
+git config --global http.sslVerify false
+
+npm config set https-proxy http://192.168.92.40:8080
+npm config set http-proxy http://192.168.92.40:8080
+npm config set strict-ssl false
+
+npm install -g yarn
+yarn cache clean
+yarn config set strict-ssl false
