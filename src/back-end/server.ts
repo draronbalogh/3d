@@ -41,8 +41,9 @@ interface Entry {
   entry: any;
   name: string;
   phone: string;
+  manager: string;
+  //roles: string;
 }
-
 interface Leader {
   email: string | undefined;
 }
@@ -310,7 +311,7 @@ const getAttributeValue = (entry: any, type: string) => {
 
 const ldapsLogin = async (req: express.Request, res: express.Response): Promise<void> => {
   const client: Client = ldap.createClient({
-    url: _CONFIG.ldap.urlSecFull,
+    url: 'ldaps://DC05BUD.intra.mtv.hu:636',
     tlsOptions: {
       rejectUnauthorized: false
     },
@@ -319,8 +320,7 @@ const ldapsLogin = async (req: express.Request, res: express.Response): Promise<
     idleTimeout: 1500
   });
 
-  let responseSent = false;
-
+  let responseSent: boolean = false;
   client.on('error', (err: Error) => {
     console.error('LDAP error:', err);
     if (!responseSent) {
@@ -350,9 +350,12 @@ const ldapsLogin = async (req: express.Request, res: express.Response): Promise<
             if (entry?.pojo) {
               const name = getAttributeValue(entry, 'displayName');
               if (name === 'Nincs megadva') return;
-              const phone = getAttributeValue(entry, 'mobile');
+              const phone = getAttributeValue(entry, 'mobile')?.replace(/["() ]/g, '');
               if (phone === 'Nincs megadva') return;
-              entries.push({ entry: entry.pojo.attributes, name: getAttributeValue(entry, 'displayName'), phone: '123' });
+              const manager = getManagerName(entry, 'manager');
+              // const roles = getRoleValues(entry, 'roles');
+
+              entries.push({ entry: entry.pojo.attributes, name, phone, manager });
             }
           });
           searchRes.on('error', (err: Error) => {

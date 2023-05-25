@@ -30,8 +30,11 @@ export const _CONFIG = {
     urlFull: 'ldap://DC05BUD.intra.mtv.hu:389', //10.120.100.5  // ellenőzrés: nslookup DC05BUD.intra.mtv.hu
     urlSecFull: 'ldaps://DC05BUD.intra.mtv.hu:636',
     baseDN: 'DC=intra,DC=mtv,DC=hu', // DC=intra,DC=mtv,DC=hu
+    //intra\adminba suk4
     u: 'aron.balogh@intra.mtv.hu',
-    p: 'TremorszSukoro01234'
+    p: 'TremorszSukoro01234',
+    adminu: 'adminba@intra.mtv.hu',
+    adminp: 'Almafa.12345678'
   },
   routes: {
     routesRecord: '/api/records',
