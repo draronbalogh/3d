@@ -11,7 +11,7 @@ const ModelCtrForModels3dTypes = dbC.define(_CONFIG.db.tableNameModels3d, seqCon
 
 const create3dTable = async () => {
   try {
-    await ModelCtrForModels3dTypes.sync({ force: true }); // TODO:: make it force: false
+    await ModelCtrForModels3dTypes.sync({ force: false }); // TODO:: make it force: false
     console.log('ModelCtrFor3dTypes table created');
   } catch (error) {
     console.error('Error creating models table:', error);

@@ -11,7 +11,7 @@ const ModelCtrForImageTypes = dbC.define(_CONFIG.db.tableNameImages, seqConfigFo
 
 const createImagesTable = async () => {
   try {
-    await ModelCtrForImageTypes.sync({ force: true }); // TODO:: make it force: false
+    await ModelCtrForImageTypes.sync({ force: false }); // TODO:: make it force: false
     console.log('ModelCtrForImageTypes table created');
   } catch (error) {
     console.error('Error creating Images table:', error);

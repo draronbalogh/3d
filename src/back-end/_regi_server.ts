@@ -2,7 +2,7 @@
 ///////////////////////////////////////////////////////////   EXPRESS
 import express from 'express';
 import cors from 'cors';
-import bodyParser from 'body-parser';
+import bodyParser, { json } from 'body-parser';
 import path, { parse } from 'path';
 import fs from 'node:fs';
 ///////////////////////////////////////////////////////////   CONFIG
@@ -17,7 +17,12 @@ import routesModels3d from './routes/routes-models3d';
 import dbC from '../_config/config-database';
 import { createNecessaryDirectoriesSync } from '../assets/file-methods';
 import { logAxiosError } from '../assets/gen-methods';
-import ActiveDirectory from 'activedirectory2';
+// import ActiveDirectory from 'activedirectory2';
+import ldap, { Client } from 'ldapjs';
+import { ServerResponse } from 'http';
+import { Response } from 'express';
+
+import { promisify } from 'util';
 
 const { validation, url, msg, routes } = _CONFIG;
 interface Config {
@@ -32,7 +37,15 @@ interface User {
   telephoneNumber: string;
   department: string;
 }
+interface Entry {
+  entry: any;
+  name: string;
+  phone: string;
+}
 
+interface Leader {
+  email: string | undefined;
+}
 ///////////////////////////////////////////////////////////   FUNCTIONS
 /**
  * Connect to database and start server
@@ -205,76 +218,168 @@ const deleteRecordFiles = async (req: any, res: any, next: any) => {
 };
 
 /**
-Authenticate a user against a LDAP server using ActiveDirectory library.
-@param {express.Request} req - The request object from express.
-@param {express.Response} res - The response object from express.
-@returns {Promise<void>} - A promise that resolves with nothing, but sends an HTTP response to the client.
+Get role values from an LDAP entry for the specified attribute type that contains the substring 'CN=beleptetes'.
+@param {Object} entry - The LDAP entry object.
+@param {string} type - The type of the attribute to search for.
+@returns {Array<string>} - An array of role values.
 */
-const config = {
-  /*  url: _CONFIG.ldap.urlFull,
-  baseDN: _CONFIG.ldap.baseDN,
-  bindDN: _CONFIG.ldap.baseDN
+const getRoleValues = (entry: any, type: string) => {
+  const attribute: any = entry.pojo.attributes.find((attributeCheck: { type: string; value: any }) => attributeCheck.type === type);
+  return attribute.values.filter((str: any) => str.includes('CN=beleptetes')).map((str: any) => str.split(',')[0].substring(3).replace(/"/g, '')) ?? [];
+};
+
+/**
+Get the manager name from an LDAP entry for the specified attribute type.
+@param {Object} entry - The LDAP entry object.
+@param {string} type - The type of the attribute to search for.
+@returns {string} - The manager name or 'Nincs megadva' if not found.
+*/
+
+const getManagerName = (entry: any, type: string) => {
+  const parts = getAttributeValue(entry, type).split(',');
+  const cnPart = parts.find((part) => part.startsWith('CN='));
+  return cnPart?.substring(3).replace(/"/g, '') ?? 'Nincs megadva';
+};
+
+/**
+Get the value of an attribute from an LDAP entry for the specified attribute type.
+@param {Object} entry - The LDAP entry object.
+@param {string} type - The type of the attribute to search for.
+@returns {string} - The value of the attribute or an empty string if not found.
+*/
+const getAttributeValue = (entry: any, type: string) => {
+  const attribute = entry.pojo.attributes.find((attributeCheck: { type: string; value: any }) => attributeCheck.type === type);
+  return JSON.stringify(attribute?.values[0]).replace(/"/g, '');
+};
+
+/**
+ * Authenticate a user against a LDAP server using ActiveDirectory library.
+ * @param {express.Request} req - The request object from express.
+ * @param {express.Response} res - The response object from express.
+ * @returns {Promise<Leader|null>} - A promise that resolves with a Leader object or null, depending on the result of the LDAP query.
  
-  
-    baseDN?: string | undefined;
-    bindDN?: string | undefined;
-    bindCredentials?: string | undefined;
-    scope?: 'base' | 'one' | 'sub' | undefined;
-    filter: string | Filter;
-    attributes: AttributeSpec;
-    sizeLimit: 0;
-    timeLimit: 10;
-    includeMembership: MembershipType[];
-  */
-}; //@ts-ignore
-var ad = new ActiveDirectory(config);
-const ldapLogin = async (req: express.Request, res: express.Response) => {
+* Filter explanation (minden value egy []):
+    objectClass: Kategória szűrő: 'top', 'person', 'organizationalPerson', 'user'
+    cn: Common Name: LDAP attribútum, azaz név rendesen kiírva pl.: 'Balogh Áron'
+    sn: Surname: vezetéknév pl.: 'Balogh'
+    l: Location: lakhely pl.: 'Budapest'
+    title: Beosztás: pl.: fejlesztőa
+    description: Beosztás leírása: pl.: műsorinformatikai fejlesztő mérnök
+    postalCode: Irányítószám, 1037
+    physicalDeliveryfficeName: Irodai helyiség: pl.: A2044
+    givenName: Keresztnév, pl.: Áron
+    displayName: Megjelenített név, pl.: Balogh Áron
+    memberOf: Felhasználóhoz vagy csoport tagjaihoz kapcsolódó jogosultságokat, információkat tartalmazza: az irodát (pl.:Informatikai Iroda) a hierarchiában elfoglalt pozíciójukat is valamint azoknak a csoportoknak a nevét tartalmazzák, amelyekbe az adott felhasználó vagy csoport tagja tartozik.
+    department: Részleg, pl.: Szoftverfejlesztés és Szoftverüzemeltetés Csoport
+    company: Cég, pl.: Médiaszolg.-tám. és Vagyonkezelő Alap
+    streetAddress: Cég címe, pl.: Kunigunda útja 64.
+    name: Név, pl.: Balogh Áron
+    sAMAccountName: !!FONTOS!! AD-hhoz egyedi hálózati bejelentkezési név, egyedi azonosító
+    otherFacsimileTelephoneNumber: Itt a userhez tartozó PC-k jelölését találjuk, pl.: ['mit-grpc-01', 'grpc-10']
+    userPrincipalName: Email cím pl.: balogh.aron@mtva.hu
+    mail: Email cím pl.: Balogh.Aron@mtva.hu
+    manager: Felettes, pl.: ['CN=Fodor Erika,OU=MTVA,OU=Windows_10,OU=Users,OU=MTVA,DC=intra,DC=mtv,DC=hu']
+    mobile: Mobil, pl.: ['+36 (30) 211 3146']
+    pager: Bérkód, pl.: 123456
+    thumbnailPhoto: User fotója, pl.: ����\x00\x10JFIF\x00\x01\x01\x01\x00`\x00`\x00\x00��\x
+    mailNickname: Nicknév, pl.: aron.balogh
+
+  * Filter name és magyarzázata (csak pálda): 
+      filterForName: `(&
+        (objectcategory=person) 
+        (objectclass=user)
+        (samaccountname=aron.balogh)
+        (!(pager=TECHNIKAI*))
+        (!(pager=fax))
+        (pager=*)
+        (mail=*)
+        (!(samaccountname=*teszt*))
+        (!(samaccountname=*test*))
+        (!(samaccountname=_*))
+        (!(userAccountControl:1.2.840.113556.1.4.803:=2)))`
+
+    - A találatok objectcategory tulajdonsága 'person' kell legyen
+    - A találatok objectclass tulajdonsága 'user' kell legyen
+    - A találatok samaccountname tulajdonságának értéke 'aron.balogh' kell legyen
+    - A találatok pager tulajdonsága nem tartalmazhatja a 'TECHNIKAI*' vagy a 'fax' szavakat
+    - A találatok pager tulajdonságának üresnek nem szabad lennie
+    - A találatok mail tulajdonságának értéke nem lehet üres
+    - A találatok samaccountname tulajdonsága nem lehet olyan, ami tartalmazza a 'teszt', 'test' vagy '_*' karakterláncokat
+    - A találatok userAccountControl tulajdonsága nem lehet letiltott (2-es értékkel jelölve)
+ */
+
+const ldapsLogin = async (req: express.Request, res: express.Response): Promise<void> => {
+  const client: Client = ldap.createClient({
+    url: _CONFIG.ldap.urlSecFull,
+    tlsOptions: {
+      rejectUnauthorized: false
+    },
+    reconnect: false,
+    connectTimeout: 5000,
+    idleTimeout: 1500
+  });
+
+  let responseSent = false;
+
+  client.on('error', (err: Error) => {
+    console.error('LDAP error:', err);
+    if (!responseSent) {
+      responseSent = true;
+      res.status(500).json({ error: 'LDAP error' });
+    }
+  });
   try {
-    const authenticated = await new Promise((resolve, reject) => {
-      const u = req.body.username || _CONFIG.ldap.u;
-      const p = req.body.password || _CONFIG.ldap.p;
-
-      ad.authenticate(u, p, (err, auth) => {
+    await new Promise<void>((resolve, reject) => {
+      client.bind(_CONFIG.ldap.u, _CONFIG.ldap.p, (err?: Error | null) => {
         if (err) {
-          reject(err);
-        } else {
-          console.log('auth', auth);
-          /*  var opts = {
-            scope: 'sub',
-            filter: 'objectClass=User',
-            includeMembership: ['user'],
-            entryParser: function (entry: any, raw: any, callback: any) {
-              // returning null with exclude result
-              if (entry.ignore) return null;
-
-              entry.retrievedAt = new Date();
-
-              callback(entry);
-            }
-          };*/
-          var opts = { filter: 'objectClass=User' };
-          ad.findUser(u, (err, userData) => {
-            if (err) {
-              console.error(err);
-              res.status(401).send({ message: 'Authentication failed' });
-            } else {
-              //@ts-ignore
-              const userWithDetails = { ...auth, ...userData };
-              console.log('userWithDetails', userWithDetails);
-              res.status(200).send({ message: 'User found', user: userWithDetails });
+          reject('A felhasználónév vagy jelszó helytelen!');
+          return;
+        }
+        const opts: ldap.SearchOptions = {
+          filter: '(&(objectcategory=person)(objectclass=user)(samaccountname=aron.balogh)(!(pager=TECHNIKAI*))(!(pager=fax))(pager=*)(mail=*)(!(samaccountname=*teszt*))(!(samaccountname=*test*))(!(samaccountname=_*))(!(userAccountControl:1.2.840.113556.1.4.803:=2)))',
+          scope: 'sub',
+          attributes: ['*']
+        };
+        var entries: Entry[] = [];
+        const searchCallback = (err: Error | null, searchRes: any) => {
+          if (err) {
+            reject(`Keresési hiba: ${err}`);
+            return;
+          }
+          searchRes.on('searchEntry', (entry: any) => {
+            if (entry?.pojo) {
+              const name = getAttributeValue(entry, 'displayName');
+              if (name === 'Nincs megadva') return;
+              const phone = getAttributeValue(entry, 'mobile');
+              if (phone === 'Nincs megadva') return;
+              entries.push({ entry: entry.pojo.attributes, name: getAttributeValue(entry, 'displayName'), phone: '123' });
             }
           });
-          resolve(auth);
-        }
+          searchRes.on('error', (err: Error) => {
+            reject({ err });
+          });
+          searchRes.on('end', (result: any) => {
+            console.log('LDAP search finished');
+            client.unbind((err) => {
+              if (err) console.error('LDAP unbind error: ', err);
+            });
+            if (!responseSent) {
+              responseSent = true;
+              res.status(200).json(entries);
+            }
+            resolve();
+          });
+        };
+
+        client.search(_CONFIG.ldap.baseDN, opts, searchCallback);
       });
     });
-    console.log('authenticated ', authenticated);
-    if (!authenticated) {
-      throw new Error('Authentication failed');
-    }
   } catch (err) {
-    console.error(err);
-    res.status(401).send({ message: 'Authentication failed' });
+    console.error('LDAP connection error: ', err);
+    if (!responseSent) {
+      responseSent = true;
+      res.status(500).json({ error: 'LDAP connection error' });
+    }
   }
 };
 ///////////////////////////////////////////////////////////   APP (pre)CONFIG
@@ -289,7 +394,7 @@ app.use(routes.routesRecord, routesRecord);
 app.use(routes.routesImages, routesImages);
 app.use(routes.routesVideos, routesVideos);
 app.use(routes.routesModels3d, routesModels3d);
-app.use('/auth', ldapLogin);
+app.use('/auth', ldapsLogin);
 app.listen(PORT3D, () => console.log(msg.txt.server.started));
 
 ///////////////////////////////////////////////////////////   RUN APP
