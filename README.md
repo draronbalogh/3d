@@ -161,3 +161,18 @@ https://medium.com/@adamzerner/middleware-in-express-60d75055ba8f
 
 React ecosystem
 https://docs.pmnd.rs/react-three-fiber/getting-started/introduction
+
+
+# inst
+
+git config --global http.proxy http://192.168.92.40:8080
+git config --global https.proxy http://192.168.92.40:8080
+git config --global http.sslVerify false
+
+npm config set proxy http://192.168.92.40:8080
+npm config set https-proxy http://192.168.92.40:8080
+npm config set strict-ssl false
+
+npm install -g yarn
+yarn cache clean
+yarn config set strict-ssl false
