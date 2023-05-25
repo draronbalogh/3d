@@ -1,5 +1,6 @@
 import https from 'https';
-import express, { Request, Response } from 'express';
+import http from 'http';
+import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import path from 'path';
@@ -14,6 +15,7 @@ import routesImages from './routes/routes-images';
 import routesVideos from './routes/routes-videos';
 import routesModels3d from './routes/routes-models3d';
 import dbC from '../_config/config-database';
+
 import { createNecessaryDirectoriesSync } from '../assets/file-methods';
 import { logAxiosError } from '../assets/gen-methods';
 
@@ -239,7 +241,34 @@ const ldapsLogin = async (req: Request, res: Response): Promise<void> => {
   }
 };
 dotenv.config();
+const httpRedirectMiddleware = (req: Request, res: Response, next: NextFunction) => {
+  if (req.headers['x-forwarded-proto'] !== 'https') {
+    console.log('redirecting to https');
+    res.redirect(`https://${req.headers.host}${req.url}`);
+  } else {
+    next();
+  }
+};
+const removeWwwMiddlewareWWW = (req: Request, res: Response, next: NextFunction) => {
+  if (req.hostname.startsWith('www.')) {
+    const noWwwUrl = `https://${req.hostname.slice(4)}${req.url}`;
+    res.redirect(301, noWwwUrl);
+  } else {
+    next();
+  }
+};
+
+// Használd ezt a middleware-t a többi middleware előtt:
+
 const app = express();
+const pfx = fs.readFileSync('d:/cert/3d_withSAN.pfx');
+
+app.use(removeWwwMiddlewareWWW);
+if (pfx) {
+  console.log('PFX file successfully loaded.');
+} else {
+  console.log('Failed to load PFX file.');
+}
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -252,24 +281,17 @@ app.use(routes.routesVideos, routesVideos);
 app.use(routes.routesModels3d, routesModels3d);
 app.use('/auth', ldapsLogin);
 
-// http szerver indítás
-app.listen(PORT3D, () => console.log(msg.txt.server.started));
-
-// https szerver indítás
-/*
-const privateKey = fs.readFileSync('path/to/your/private.key', 'utf8');
-const certificate = fs.readFileSync('path/to/your/certificate.crt', 'utf8');
-const httpsServer = https.createServer({ key: privateKey, cert: certificate }, app);
-httpsServer.listen(PORT3D, () => console.log(msg.txt.server.started));
-*/
-
 // listeners
-app.get('/i', (req, res) => {
-  console.log('Hello István!');
-  res.send('Hello István!');
+app.get('/ar', (req, res) => {
+  console.log('Hello Áron!');
+  res.send('Hello Áron!');
+});
+app.get('/ba', (req, res, next) => {
+  console.log('Hello Balázs!');
+  res.send('Hello Balázs! sssszzzzzzzzz');
 });
 app.get('/', (req, res, next) => {
-  console.log('Hello Áron!');
+  console.log('Hello Attila!');
   next();
 });
 if (process.env.NODE_ENV === 'production') {
@@ -277,12 +299,27 @@ if (process.env.NODE_ENV === 'production') {
   app.get('*', (req, res) => {
     res.sendFile(path.resolve(__dirname, '../../build', 'index.html'));
   });
-}
-try {
-  console.clear();
-  console.log(msg.txt.db.startDb);
-  connectToDb();
-  // createNecessaryDirectoriesSync(url.uploadFolder);
-} catch (error) {
-  console.error(msg.error.db.connection, error);
+  try {
+    console.log(msg.txt.db.startDb);
+    connectToDb();
+    const options = { pfx: pfx, passphrase: 'Fapapucs.1234' };
+
+    // server start
+    const httpsServer = https.createServer(options, app);
+    httpsServer.listen(443, () => {
+      console.log('HTTPS server running on port 443');
+    });
+
+    const httpApp = express();
+    httpApp.all('*', (req, res) => {
+      res.redirect(`https://${req.hostname}${req.url}`);
+    });
+
+    const httpServer = http.createServer(httpApp);
+    httpServer.listen(80, () => {
+      console.log('HTTP server running on port 80');
+    });
+  } catch (error) {
+    console.error(msg.error.db.connection, error);
+  }
 }
