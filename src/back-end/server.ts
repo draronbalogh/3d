@@ -15,6 +15,12 @@ import routesImages from './routes/routes-images';
 import routesVideos from './routes/routes-videos';
 import routesModels3d from './routes/routes-models3d';
 import dbC from '../_config/config-database';
+import winca from 'win-ca';
+import crypto from 'crypto';
+import { createHash } from 'crypto';
+
+import * as forge from 'node-forge';
+import * as tls from 'tls';
 
 import { createNecessaryDirectoriesSync } from '../assets/file-methods';
 import { logAxiosError } from '../assets/gen-methods';
@@ -244,6 +250,7 @@ const ldapsLogin = async (req: Request, res: Response): Promise<void> => {
   }
 };
 dotenv.config();
+
 const httpRedirectMiddleware = (req: Request, res: Response, next: NextFunction) => {
   if (req.headers['x-forwarded-proto'] !== 'https') {
     console.log('redirecting to https');
@@ -260,18 +267,75 @@ const removeWwwMiddlewareWWW = (req: Request, res: Response, next: NextFunction)
     next();
   }
 };
-
-// Használd ezt a middleware-t a többi middleware előtt:
-
 const app = express();
-const pfx = fs.readFileSync('d:/cert/3d_withSAN.pfx');
 
-app.use(removeWwwMiddlewareWWW);
+const fetchCertificates = (): Promise<any[]> =>
+  new Promise((resolve) => {
+    let certificates: any[] = [];
+    winca({
+      format: winca.der2.pem,
+      store: ['trustedpublisher'],
+      ondata: (crt: any) => {
+        certificates.push(crt);
+      },
+      onend: () => {
+        resolve(certificates);
+      }
+    });
+  });
+
+const getThumbprint = (cert: forge.pki.Certificate): string => {
+  const md = forge.md.sha1.create();
+  md.update(forge.asn1.toDer(forge.pki.certificateToAsn1(cert)).getBytes());
+  return md.digest().toHex();
+};
+
+const startApp = async () => {
+  try {
+    const certificates = await fetchCertificates();
+
+    const thumbprint = 'b0ba25f574aef5a37a40ccf6a9cb896ec59a3300';
+    const foundCertificate = certificates.find((cert: any) => {
+      const parsedCert = forge.pki.certificateFromPem(cert);
+      const certThumbprint = getThumbprint(parsedCert);
+      return certThumbprint === thumbprint;
+    });
+
+    if (!foundCertificate) {
+      throw new Error('Certificate not found');
+    }
+
+    console.log('Certificate found:', foundCertificate);
+
+    if (process.env.NODE_ENV === 'production') {
+      const privateKey = fs.readFileSync('d:/cert/key.pem', 'utf8');
+
+      const options = {
+        key: privateKey,
+        cert: foundCertificate,
+        passphrase: 'Fapapucs.1234'
+      };
+
+      const httpsServer = https.createServer(options, app);
+      httpsServer.listen(443, () => {
+        console.log('HTTPS server running on port 443');
+      });
+
+      // HTTP redirect logic
+    }
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+startApp();
+app.use(removeWwwMiddlewareWWW); /*
 if (pfx) {
   console.log('PFX file successfully loaded.');
 } else {
   console.log('Failed to load PFX file.');
-}
+}*/
+
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -297,32 +361,3 @@ app.get('/', (req, res, next) => {
   console.log('Hello Attila!');
   next();
 });
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../../build')));
-  app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, '../../build', 'index.html'));
-  });
-  try {
-    console.log(msg.txt.db.startDb);
-    connectToDb();
-    const options = { pfx: pfx, passphrase: 'Fapapucs.1234' };
-
-    // server start
-    const httpsServer = https.createServer(options, app);
-    httpsServer.listen(443, () => {
-      console.log('HTTPS server running on port 443');
-    });
-
-    const httpApp = express();
-    httpApp.all('*', (req, res) => {
-      res.redirect(`https://${req.hostname}${req.url}`);
-    });
-
-    const httpServer = http.createServer(httpApp);
-    httpServer.listen(80, () => {
-      console.log('HTTP server running on port 80');
-    });
-  } catch (error) {
-    console.error(msg.error.db.connection, error);
-  }
-}

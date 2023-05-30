@@ -18,7 +18,6 @@
         "@types/mysql": "^2.15.21",
         "@types/nanoid": "^3.0.0",
         "@types/node": "^18.11.18",
-        "@types/node-sass": "^4.11.3",
         "@types/nodemon": "^1.19.2",
         "@types/react": "^18.0.26",
         "@types/react-bootstrap": "^0.32.32",
@@ -28,6 +27,7 @@
         "@types/sass-loader": "^8.0.3",
         "@types/typescript": "^2.0.0",
         "@types/uuid": "^9.0.0",
+        "@types/win-ca": "^3.5.0",
         "activedirectory2": "^2.1.0",
         "axios": "1.2.2",
         "bootstrap": "5.3.0-alpha1",
@@ -39,7 +39,8 @@
         "mysql": "^2.18.1",
         "mysql2": "^2.3.3",
         "nanoid": "^4.0.0",
-        "node-sass": "^8.0.0",
+        "node-forge": "^1.3.1",
+        "node-openssl-cert": "^0.1.42",
         "nodemon": "^2.0.20",
         "react": "^18.2.0",
         "react-bootstrap": "2.7.0",
@@ -52,7 +53,10 @@
         "ts-node": "^10.9.1",
         "typescript": "^4.9.3",
         "uuid": "^9.0.0",
-        "web-vitals": "^2.1.0"
+        "web-vitals": "^2.1.0",
+        "win-ca": "^3.5.0",
+        "win-cert": "^0.1.3",
+        "windows-certs": "^3.4.0"
     },
     "scripts": {
         "start": "react-scripts start",
