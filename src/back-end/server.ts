@@ -15,6 +15,12 @@ import routesImages from './routes/routes-images';
 import routesVideos from './routes/routes-videos';
 import routesModels3d from './routes/routes-models3d';
 import dbC from '../_config/config-database';
+import winca from 'win-ca';
+import crypto from 'crypto';
+import { createHash } from 'crypto';
+
+import * as forge from 'node-forge';
+import * as tls from 'tls';
 
 import { createNecessaryDirectoriesSync } from '../assets/file-methods';
 import { logAxiosError } from '../assets/gen-methods';
@@ -258,17 +264,103 @@ const removeWwwMiddlewareWWW = (req: Request, res: Response, next: NextFunction)
   }
 };
 
-// Használd ezt a middleware-t a többi middleware előtt:
-
 const app = express();
-const pfx = fs.readFileSync('d:/cert/3d_withSAN.pfx');
 
-app.use(removeWwwMiddlewareWWW);
+/** WORKIN FOR THIS USER CERTIFIATES */
+let certificates: any[] = [];
+
+/*
+  | Constant | Value | Meaning
+  |der2.der | 0 | DER-format (binary, Node's [Buffer][])
+  |der2.pem | 1 | PEM-format (text, Base64-encoded)
+  |der2.txt | 2 | PEM-format plus some <abbr title="This is SPARTA!!!">laconic</abbr> header
+  |der2.asn1| 3 | ASN.1-parsed certificate
+  | er2.x509 | 4 | Certificate in `node-forge` format(RSA only!)
+    */
+const fetchCertificates = new Promise<void>((resolve) => {
+  winca({
+    format: winca.der2.pem,
+    store: ['trustedpublisher'], // 'root' | 'ca' | 'my' | 'trustedpublisher';
+    ondata: (crt) => {
+      console.log('crt', crt);
+      certificates.push(crt);
+    },
+    onend: () => {
+      resolve();
+    }
+  });
+});
+let foundCertificate = '';
+fetchCertificates.then((certificates) => {
+  console.log('certificates', certificates);
+
+  // Find certificate by thumbprint
+  const thumbprint = 'b0ba25f574aef5a37a40ccf6a9cb896ec59a3300';
+  //@ts-ignore
+  foundCertificate = certificates.find((cert) => {
+    const parsedCert = forge.pki.certificateFromPem(cert);
+    const certThumbprint = getThumbprint(parsedCert);
+    return certThumbprint === thumbprint;
+  });
+
+  if (foundCertificate) {
+    console.log('Certificate found:', foundCertificate);
+
+    if (process.env.NODE_ENV === 'production') {
+      app.use(express.static(path.join(__dirname, '../../build')));
+      app.get('*', (req, res) => {
+        res.sendFile(path.resolve(__dirname, '../../build', 'index.html'));
+      });
+      try {
+        console.log(msg.txt.db.startDb);
+        console.log('foundCertificate222', foundCertificate);
+        connectToDb();
+        //const options = { pfx: '', passphrase: 'Fapapucs.1234' };
+
+        const privateKey = fs.readFileSync('../key.pem', 'utf8'),
+          options = {
+            key: privateKey,
+            cert: foundCertificate,
+            passphrase: 'Fapapucs.1234'
+          };
+
+        // server start
+        const httpsServer = https.createServer(options, app);
+        httpsServer.listen(443, () => {
+          console.log('HTTPS server running on port 443');
+        });
+
+        const httpApp = express();
+        httpApp.all('*', (req, res) => {
+          res.redirect(`https://${req.hostname}${req.url}`);
+        });
+
+        const httpServer = http.createServer(httpApp);
+        httpServer.listen(80, () => {
+          console.log('HTTP server running on port 80');
+        });
+      } catch (error) {
+        console.error(msg.error.db.connection, error);
+      }
+    }
+  } else {
+    console.log('Certificate not found');
+  }
+});
+
+// Function to get the thumbprint from a certificate
+function getThumbprint(cert: any) {
+  const md = forge.md.sha1.create();
+  md.update(forge.asn1.toDer(forge.pki.certificateToAsn1(cert)).getBytes());
+  return md.digest().toHex();
+}
+app.use(removeWwwMiddlewareWWW); /*
 if (pfx) {
   console.log('PFX file successfully loaded.');
 } else {
   console.log('Failed to load PFX file.');
-}
+}*/
+
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -294,32 +386,3 @@ app.get('/', (req, res, next) => {
   console.log('Hello Attila!');
   next();
 });
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../../build')));
-  app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, '../../build', 'index.html'));
-  });
-  try {
-    console.log(msg.txt.db.startDb);
-    connectToDb();
-    const options = { pfx: pfx, passphrase: 'Fapapucs.1234' };
-
-    // server start
-    const httpsServer = https.createServer(options, app);
-    httpsServer.listen(443, () => {
-      console.log('HTTPS server running on port 443');
-    });
-
-    const httpApp = express();
-    httpApp.all('*', (req, res) => {
-      res.redirect(`https://${req.hostname}${req.url}`);
-    });
-
-    const httpServer = http.createServer(httpApp);
-    httpServer.listen(80, () => {
-      console.log('HTTP server running on port 80');
-    });
-  } catch (error) {
-    console.error(msg.error.db.connection, error);
-  }
-}
