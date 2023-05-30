@@ -292,22 +292,22 @@ const getThumbprint = (cert: forge.pki.Certificate): string => {
 
 const startApp = async () => {
   try {
-    const certificates = await fetchCertificates();
-
-    const thumbprint = 'b0ba25f574aef5a37a40ccf6a9cb896ec59a3300';
-    const foundCertificate = certificates.find((cert: any) => {
-      const parsedCert = forge.pki.certificateFromPem(cert);
-      const certThumbprint = getThumbprint(parsedCert);
-      return certThumbprint === thumbprint;
-    });
-
-    if (!foundCertificate) {
-      throw new Error('Certificate not found');
-    }
-
-    console.log('Certificate found:', foundCertificate);
-
     if (process.env.NODE_ENV === 'production') {
+      const certificates = await fetchCertificates();
+
+      const thumbprint = 'b0ba25f574aef5a37a40ccf6a9cb896ec59a3300';
+      const foundCertificate = certificates.find((cert: any) => {
+        const parsedCert = forge.pki.certificateFromPem(cert);
+        const certThumbprint = getThumbprint(parsedCert);
+        return certThumbprint === thumbprint;
+      });
+
+      if (!foundCertificate) {
+        throw new Error('Certificate not found');
+      }
+
+      console.log('Certificate found:', foundCertificate);
+
       const privateKey = fs.readFileSync('d:/cert/key.pem', 'utf8');
 
       const options = {
@@ -322,6 +322,12 @@ const startApp = async () => {
       });
 
       // HTTP redirect logic
+    } else {
+      // Running on localhost, create a standard HTTP server
+      const httpServer = http.createServer(app);
+      httpServer.listen(80, () => {
+        console.log('HTTP server running on port 80');
+      });
     }
   } catch (err) {
     console.error(err);
