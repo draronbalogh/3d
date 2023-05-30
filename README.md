@@ -71,12 +71,12 @@ yarn config set strict-ssl false
 
 
 # get certs
-wind -> certmgr.msc
-
- 
+## Get Local Computer Certs
+wind -> certmgr.msc -> copy from personal certificates 3d.intra.mtv.hu to Trusted Publishers certificates 
+## Get Current User Certs
+wind -> certmgr.msc -> copy from personal certificates 3d.intra.mtv.hu to Trusted Publishers certificates 
 
 /*
-
 Materialok --> cinema3D-nél tex */
 /**
 
