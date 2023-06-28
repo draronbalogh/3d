@@ -2,7 +2,7 @@
 ///////////////////////////////////////////////////////////   REACT
 import React from 'react';
 ///////////////////////////////////////////////////////////   CONFIG
-import { _CONFIG } from '../../../_config/config-general';
+import { HOST3D, _CONFIG } from '../../../_config/config-general';
 import { recordConfig } from '../../../_config/config-records';
 ///////////////////////////////////////////////////////////   LIBS
 import axios from 'axios';
@@ -14,6 +14,7 @@ interface CompProps {
 interface CompState {
   data: any;
   recordId: number | any;
+  imageBlob: Blob | null;
 }
 //////////////////////////////////////////////////////////////////////////////////////    CLASS SETUP
 export class ViewRecord extends React.Component<CompProps, CompState> {
@@ -21,7 +22,8 @@ export class ViewRecord extends React.Component<CompProps, CompState> {
     super(props);
     this.state = {
       recordId: Number(window.location.pathname.split('/').pop()),
-      data: this.props.data
+      data: this.props.data,
+      imageBlob: null
     };
   }
 
@@ -29,7 +31,9 @@ export class ViewRecord extends React.Component<CompProps, CompState> {
   componentDidMount() {
     const { data } = this.state;
     if (data.length >= 1) this.findDataById();
-    if (!data.length) this.fetchModelDataById();
+    if (!data.length) {
+      this.fetchModelDataById();
+    }
   }
 
   ///////////////////////////////////////////////////////////   CLASS METHODS
@@ -39,17 +43,24 @@ export class ViewRecord extends React.Component<CompProps, CompState> {
   findDataById = () => {
     const { data, recordId } = this.state;
     const obj = data.find((o: { recordId: any }) => o.recordId === recordId);
-    this.setState({ data: obj });
+    this.setState({ data: obj }, () => {
+      console.log('most töltöm be');
+      this.loadImage();
+    });
   };
 
   /**
    * Fetch data by recordId
    */
   fetchModelDataById = async () => {
+    console.log('?????????');
     try {
       const { recordId } = this.state;
       const response = await axios.get(_CONFIG.url.recordApi + recordId);
-      this.setState({ data: response.data });
+      this.setState({ data: response.data }, () => {
+        console.log('most töltöm be');
+        this.loadImage();
+      });
     } catch (e: any) {
       logAxiosError(e, _CONFIG.msg.error.fetch.getData);
     }
@@ -78,10 +89,29 @@ export class ViewRecord extends React.Component<CompProps, CompState> {
       return <td key={key}>{value.label}</td>;
     });
   };
-
+  loadImage = () => {
+    const { data } = this.state;
+    if (data && data.recordImgs) {
+      axios
+        .get(`${HOST3D}/uploads/${data.recordUuid}/${data.recordImgs}`, {
+          responseType: 'blob'
+        })
+        .then((response) => {
+          console.log('1');
+          const imageBlob = new Blob([response.data], { type: response.headers['content-type'] });
+          console.log('imageBlob', imageBlob);
+          this.setState({ imageBlob });
+        })
+        .catch((error) => {
+          logAxiosError(error, 'Error loading image');
+        });
+    }
+  };
   //////////////////////////////////////////////////////////////////////////////////////    RENDER
   render() {
-    const { recordId } = this.state;
+    const { recordId, data, imageBlob } = this.state;
+
+    console.log('data', data);
     return (
       <table>
         <thead>
@@ -92,6 +122,7 @@ export class ViewRecord extends React.Component<CompProps, CompState> {
         </thead>
         <tbody>
           <tr>{this.printModelDesc()}</tr>
+          {imageBlob && <img src={URL.createObjectURL(imageBlob)} alt='Kép' />}
         </tbody>
       </table>
     );

@@ -50,7 +50,7 @@ class App extends React.Component<unknown, State> {
   componentDidMount() {
     this.changeBgStyle();
     // TODO:: if its on mtv intra?
-    this.ldapLogin();
+    // this.ldapLogin();
   }
 
   ldapLogin = async () => {

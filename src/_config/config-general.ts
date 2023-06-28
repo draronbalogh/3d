@@ -24,7 +24,7 @@ export const _CONFIG = {
     createImage: `${HOST3D}:${PORT3D}/api/records/createImage`,
     createVideo: `${HOST3D}:${PORT3D}/api/records/createVideo`,
     createModels3d: `${HOST3D}:${PORT3D}/api/records/createModels3d`,
-    uploadFolder: 'c:/node/3d_uploads/'
+    uploadFolder: 'C:/node/3d_uploads/'
   },
   ldap: {
     urlFull: 'ldap://DC05BUD.intra.mtv.hu:389', //10.120.100.5  // ellenőzrés: nslookup DC05BUD.intra.mtv.hu

@@ -20,12 +20,9 @@ import crypto from 'crypto';
 import { createHash } from 'crypto';
 import * as forge from 'node-forge';
 import * as tls from 'tls';
-
 import { createNecessaryDirectoriesSync } from '../assets/file-methods';
 import { logAxiosError } from '../assets/gen-methods';
-
 const { validation, url, msg, routes } = _CONFIG;
-
 interface Entry {
   entry: any;
   name: string;
@@ -222,9 +219,7 @@ const ldapsLogin = async (req: Request, res: Response): Promise<void> => {
           scope: 'sub',
           attributes: ['*']
         };
-
         const entries: Entry[] = [];
-
         const searchCallback = (err: Error | null, searchRes: any) => {
           if (err) {
             reject(`Keresési hiba: ${err}`);
@@ -257,7 +252,6 @@ const ldapsLogin = async (req: Request, res: Response): Promise<void> => {
             resolve();
           });
         };
-
         client.search(_CONFIG.ldap.baseDN, opts, searchCallback);
       });
     });
@@ -388,7 +382,7 @@ const startApp = async () => {
 };
 
 startApp();
-
+connectToDb();
 app.use(removeWwwMiddlewareWWW);
 app.use(cors());
 app.use(bodyParser.json());
@@ -401,7 +395,7 @@ app.use(routes.routesImages, routesImages);
 app.use(routes.routesVideos, routesVideos);
 app.use(routes.routesModels3d, routesModels3d);
 app.use('/auth', ldapsLogin);
-
+app.use('/uploads', express.static(_CONFIG.url.uploadFolder));
 // listeners
 app.get('/ar', (req, res) => {
   console.log('Hello Áron!');
