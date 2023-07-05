@@ -396,6 +396,7 @@ app.use(routes.routesVideos, routesVideos);
 app.use(routes.routesModels3d, routesModels3d);
 app.use('/auth', ldapsLogin);
 app.use('/uploads', express.static(_CONFIG.url.uploadFolder));
+
 // listeners
 app.get('/ar', (req, res) => {
   console.log('Hello Áron!');

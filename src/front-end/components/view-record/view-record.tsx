@@ -8,6 +8,7 @@ import { recordConfig } from '../../../_config/config-records';
 import axios from 'axios';
 import { logAxiosError } from '../../../assets/gen-methods';
 import * as THREE from 'three';
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
@@ -23,13 +24,16 @@ interface CompState {
   videoBlobs?: Blob[];
   modelBlobs?: Blob[];
   materialUrlBlobs?: Blob[];
-  scenes: THREE.Scene[];
+  scenes: THREE.Scene[] | null;
   renderers?: THREE.WebGLRenderer[];
-  cameras?: THREE.PerspectiveCamera[];
+  cameras?: THREE.PerspectiveCamera[] | null;
+  controls: OrbitControls[];
+  // animationIds: (number | null)[];
 }
 //////////////////////////////////////////////////////////////////////////////////////    CLASS SETUP
 export class ViewRecord extends React.Component<CompProps, CompState> {
   sceneContainerRef = React.createRef<HTMLDivElement>();
+  animationIds: (number | null)[] = [];
   constructor(props: CompProps) {
     super(props);
     this.state = {
@@ -41,7 +45,9 @@ export class ViewRecord extends React.Component<CompProps, CompState> {
       materialUrlBlobs: [],
       renderers: [],
       cameras: [],
-      scenes: []
+      scenes: [],
+      controls: []
+      //   animationIds: []
     };
   }
 
@@ -54,7 +60,34 @@ export class ViewRecord extends React.Component<CompProps, CompState> {
     }
   }
   componentWillUnmount() {
+    const { renderers, cameras, scenes, controls } = this.state;
+
+    // const { animationIds } = this.state;
+    this.animationIds.forEach((id) => {
+      if (id !== null) {
+        cancelAnimationFrame(id);
+      }
+    });
     window.removeEventListener('resize', this.handleWindowResize);
+    // Dispose WebGL context
+    if (renderers && cameras && scenes && controls) {
+      for (let i = 0; i < renderers.length; i++) {
+        scenes[i].traverse((object) => {
+          if (object instanceof THREE.Mesh) {
+            object.geometry.dispose();
+            if (object.material instanceof THREE.Material) {
+              object.material.dispose();
+            } else if (Array.isArray(object.material)) {
+              object.material.forEach((material) => material.dispose());
+            }
+          }
+        });
+        if (renderers[i]) renderers[i].dispose();
+        //if (cameras[i]) cameras[i] = null;
+        //if (scenes[i]) scenes[i] = null;
+        if (controls[i]) controls[i].dispose();
+      }
+    }
   }
   ///////////////////////////////////////////////////////////   CLASS METHODS
   /**
@@ -205,20 +238,18 @@ export class ViewRecord extends React.Component<CompProps, CompState> {
 
   // Load scene
   loadScene = () => {
+    const dracoLoader = new DRACOLoader();
     const loader = new GLTFLoader();
     const { modelBlobs } = this.state;
-
     const scenes: THREE.Scene[] = [];
     const renderers: THREE.WebGLRenderer[] = [];
     const cameras: THREE.PerspectiveCamera[] = [];
-
-    if (!modelBlobs) {
-      return;
-    }
-
+    if (!modelBlobs) return;
+    dracoLoader.setDecoderPath('/draco/');
+    loader.setDRACOLoader(dracoLoader);
     modelBlobs.forEach((blob, index) => {
       const objectUrl = URL.createObjectURL(blob);
-
+      let mixer: THREE.AnimationMixer;
       loader.load(
         objectUrl,
         (gltf) => {
@@ -242,14 +273,20 @@ export class ViewRecord extends React.Component<CompProps, CompState> {
               });
             }*/
           });
+          // Animation
+          mixer = new THREE.AnimationMixer(gltf.scene);
+          let action = mixer.clipAction(gltf.animations[0]);
+          action.play();
           scene.add(gltf.scene);
 
           const renderer = new THREE.WebGLRenderer({ antialias: true });
           renderers.push(renderer);
 
-          const aspectRatio = window.innerWidth / window.innerHeight;
+          // const aspectRatio = window.innerWidth / window.innerHeight;
+          const aspectRatio = 1280 / 720;
           const camera = new THREE.PerspectiveCamera(75, aspectRatio, 0.1, 1000);
 
+          const clock = new THREE.Clock();
           cameras.push(camera);
 
           // Adding orbit control
@@ -259,15 +296,27 @@ export class ViewRecord extends React.Component<CompProps, CompState> {
           controls.enableZoom = true;
 
           camera.position.z = 150;
-          renderer.setSize(window.innerWidth, window.innerHeight);
+          // renderer.setSize(window.innerWidth, window.innerHeight);
+          renderer.setSize(1280, 720);
 
-          const animate = function () {
-            requestAnimationFrame(animate);
+          const animateInLoadScene = () => {
+            const delta = clock.getDelta();
+            mixer.update(delta);
+            const id = requestAnimationFrame(animateInLoadScene);
+            let updatedAnimationIds = [...this.animationIds];
+            updatedAnimationIds[index] = id;
+            //this.setState({ animationIds: updatedAnimationIds });
+            this.animationIds = updatedAnimationIds;
             controls.update();
-            renderer.render(scene, camera);
+            if (renderers[index] !== null && renderers[index] !== undefined) renderers[index].render(scenes[index], cameras[index]);
           };
 
-          animate();
+          // kezdeti állapotban null-t adunk az animationIds-hez
+          let animationIds: (number | null)[] = new Array(modelBlobs.length).fill(null);
+          animateInLoadScene();
+          this.setState({ renderers, cameras, scenes }, () => {
+            window.addEventListener('resize', this.handleWindowResize);
+          });
         },
 
         (progress) => {
@@ -279,10 +328,6 @@ export class ViewRecord extends React.Component<CompProps, CompState> {
           console.error('An error occurred while loading the model:', error);
         }
       );
-    });
-
-    this.setState({ renderers, cameras, scenes }, () => {
-      window.addEventListener('resize', this.handleWindowResize);
     });
   };
   // Method to handle window resize
@@ -313,12 +358,16 @@ export class ViewRecord extends React.Component<CompProps, CompState> {
 
         container.appendChild(canvas);
 
-        const animate = function () {
-          requestAnimationFrame(animate);
-          renderer.render(scene, cameras[index]);
+        const animateInRenderScene = () => {
+          const id = requestAnimationFrame(animateInRenderScene);
+          let updatedAnimationIds = [...this.animationIds];
+          updatedAnimationIds[index] = id;
+          // this.setState({ animationIds: updatedAnimationIds });
+          this.animationIds = updatedAnimationIds;
+          renderers[index].render(scenes[index], cameras[index]);
         };
 
-        animate();
+        animateInRenderScene();
       });
     }
   };
@@ -379,9 +428,9 @@ export class ViewRecord extends React.Component<CompProps, CompState> {
           {[
             // Ezt a sor hozzáadtuk
             // this.renderImages(),
-            // this.renderVideos(),
+            //  this.renderVideos(),
             this.renderModels3D()
-            //   this.renderMaterialURLs()
+            // this.renderMaterialURLs()
           ]}
         </div>
       </>
