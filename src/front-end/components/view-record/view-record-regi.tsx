@@ -1,35 +1,39 @@
-import React, { Component, createRef } from 'react';
+//////////////////////////////////////////////////////////////////////////////////////   IMPORT
+///////////////////////////////////////////////////////////   REACT
+import React from 'react';
+///////////////////////////////////////////////////////////   CONFIG
+import { HOST3D, _CONFIG } from '../../../_config/config-general';
+import { recordConfig } from '../../../_config/config-records';
+///////////////////////////////////////////////////////////   LIBS
 import axios from 'axios';
+import { logAxiosError } from '../../../assets/gen-methods';
 import * as THREE from 'three';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
-import { HOST3D, _CONFIG } from '../../../_config/config-general';
-import { recordConfig } from '../../../_config/config-records';
-import { logAxiosError } from '../../../assets/gen-methods';
-
+///////////////////////////////////////////////////////////   INTERFACE
 interface CompProps {
   data: any;
 }
-
 interface CompState {
-  recordId: number | any;
   data: any;
-  imageBlobs: Blob[];
-  videoBlobs: Blob[];
-  modelBlobs: Blob[];
-  materialUrlBlobs: Blob[];
-  scenes: THREE.Scene[];
-  renderers: THREE.WebGLRenderer[];
-  cameras: THREE.PerspectiveCamera[];
+  recordId: number | any;
+  imageBlob?: Blob;
+  imageBlobs?: Blob[];
+  videoBlobs?: Blob[];
+  modelBlobs?: Blob[];
+  materialUrlBlobs?: Blob[];
+  scenes: THREE.Scene[] | null;
+  renderers?: THREE.WebGLRenderer[];
+  cameras?: THREE.PerspectiveCamera[] | null;
   controls: OrbitControls[];
+  // animationIds: (number | null)[];
 }
-
-export class ViewRecord extends Component<CompProps, CompState> {
-  sceneContainerRef = createRef<HTMLDivElement>();
+//////////////////////////////////////////////////////////////////////////////////////    CLASS SETUP
+export class ViewRecord extends React.Component<CompProps, CompState> {
+  sceneContainerRef = React.createRef<HTMLDivElement>();
   animationIds: (number | null)[] = [];
-
   constructor(props: CompProps) {
     super(props);
     this.state = {
@@ -43,27 +47,29 @@ export class ViewRecord extends Component<CompProps, CompState> {
       cameras: [],
       scenes: [],
       controls: []
+      //   animationIds: []
     };
   }
 
+  ///////////////////////////////////////////////////////////   LIFECYCLE METHODS
   componentDidMount() {
     const { data } = this.state;
-    if (data.length >= 1) {
-      this.findDataById();
-    }
+    if (data.length >= 1) this.findDataById();
     if (!data.length) {
       this.fetchModelDataById();
     }
   }
-
   componentWillUnmount() {
     const { renderers, cameras, scenes, controls } = this.state;
+
+    // const { animationIds } = this.state;
     this.animationIds.forEach((id) => {
       if (id !== null) {
         cancelAnimationFrame(id);
       }
     });
     window.removeEventListener('resize', this.handleWindowResize);
+    // Dispose WebGL context
     if (renderers && cameras && scenes && controls) {
       for (let i = 0; i < renderers.length; i++) {
         scenes[i].traverse((object) => {
@@ -77,11 +83,16 @@ export class ViewRecord extends Component<CompProps, CompState> {
           }
         });
         if (renderers[i]) renderers[i].dispose();
+        //if (cameras[i]) cameras[i] = null;
+        //if (scenes[i]) scenes[i] = null;
         if (controls[i]) controls[i].dispose();
       }
     }
   }
-
+  ///////////////////////////////////////////////////////////   CLASS METHODS
+  /**
+   * Find data by recordId
+   */
   findDataById = () => {
     const { data, recordId } = this.state;
     const obj = data.find((o: { recordId: any }) => o.recordId === recordId);
@@ -91,6 +102,9 @@ export class ViewRecord extends Component<CompProps, CompState> {
     });
   };
 
+  /**
+   * Fetch data by recordId
+   */
   fetchModelDataById = async () => {
     try {
       const { recordId } = this.state;
@@ -104,6 +118,11 @@ export class ViewRecord extends Component<CompProps, CompState> {
     }
   };
 
+  ///////////////////////////////////////////////////////////   RENDER METHODS
+  /**
+   * Print model description
+   * @returns data or null
+   */
   printModelDesc = () => {
     const { data } = this.state;
     return data
@@ -113,6 +132,10 @@ export class ViewRecord extends Component<CompProps, CompState> {
       : null;
   };
 
+  /**
+   * Get title
+   * @returns label list of table cells
+   */
   getTitle = () => {
     return Object.entries(recordConfig).map(([key, value]) => {
       return <td key={key}>{value.label}</td>;
@@ -127,7 +150,6 @@ export class ViewRecord extends Component<CompProps, CompState> {
         assetName = assetName.trim();
         if (assetName) {
           try {
-            console.log(`Loading ${assetType}: ${assetName}...`);
             const response = await axios.get(`${HOST3D}/uploads/${this.state.data.recordUuid}/${assetName}`, { responseType: 'blob' });
             const assetBlob = new Blob([response.data], { type: response.headers['content-type'] });
             assetBlobs.push(assetBlob);
@@ -140,7 +162,6 @@ export class ViewRecord extends Component<CompProps, CompState> {
     }
     return [];
   };
-
   loadAll = async () => {
     const { data } = this.state;
     if (data) {
@@ -148,13 +169,10 @@ export class ViewRecord extends Component<CompProps, CompState> {
       const videoBlobs = await this.loadAssets(data.recordVideos, 'videoBlobs');
       const materialUrlBlobs = await this.loadAssets(data.recordMaterialUrl, 'materialUrlBlobs');
       const modelBlobs = await this.loadAssets(data.recordModels3d, 'modelBlobs');
-      this.setState({ imageBlobs, videoBlobs, materialUrlBlobs, modelBlobs }, () => {
-        console.log('Assets loaded successfully!'); // Kiírás, hogy az assetek betöltődtek
-        this.loadScene();
-      });
+      this.setState({ imageBlobs, videoBlobs, materialUrlBlobs, modelBlobs }, this.loadScene);
     }
   };
-
+  // Load scene
   loadScene = () => {
     const dracoLoader = new DRACOLoader();
     const loader = new GLTFLoader();
@@ -175,32 +193,36 @@ export class ViewRecord extends Component<CompProps, CompState> {
           scenes.push(scene);
           scene.background = new THREE.Color(0x333333);
 
+          // Adding lights
           const ambientLight = new THREE.AmbientLight(0x404040);
           scene.add(ambientLight);
           const directionalLight = new THREE.DirectionalLight(0xffffff);
           directionalLight.position.set(1, 1, 1).normalize();
           scene.add(directionalLight);
-
+          // Animation
           mixer = new THREE.AnimationMixer(gltf.scene);
           let action = mixer.clipAction(gltf.animations[0]);
-          action?.play();
+          action.play();
           scene.add(gltf.scene);
 
           const renderer = new THREE.WebGLRenderer({ antialias: true });
           renderers.push(renderer);
 
+          // const aspectRatio = window.innerWidth / window.innerHeight;
           const aspectRatio = 1280 / 720;
           const camera = new THREE.PerspectiveCamera(75, aspectRatio, 0.1, 1000);
 
           const clock = new THREE.Clock();
           cameras.push(camera);
 
+          // Adding orbit control
           const controls = new OrbitControls(camera, renderer.domElement);
           controls.enableDamping = true;
           controls.dampingFactor = 0.25;
           controls.enableZoom = true;
 
           camera.position.z = 150;
+          // renderer.setSize(window.innerWidth, window.innerHeight);
           renderer.setSize(1280, 720);
 
           const animateInLoadScene = () => {
@@ -209,31 +231,32 @@ export class ViewRecord extends Component<CompProps, CompState> {
             const id = requestAnimationFrame(animateInLoadScene);
             let updatedAnimationIds = [...this.animationIds];
             updatedAnimationIds[index] = id;
+            //this.setState({ animationIds: updatedAnimationIds });
             this.animationIds = updatedAnimationIds;
             controls.update();
             if (renderers[index] !== null && renderers[index] !== undefined) renderers[index].render(scenes[index], cameras[index]);
           };
 
+          // kezdeti állapotban null-t adunk az animationIds-hez
           let animationIds: (number | null)[] = new Array(modelBlobs.length).fill(null);
           animateInLoadScene();
           this.setState({ renderers, cameras, scenes }, () => {
             window.addEventListener('resize', this.handleWindowResize);
           });
         },
-        (progressEvent) => {
-          const progress = progressEvent.loaded / progressEvent.total;
-          console.log(`Model load progress (${index + 1}/${modelBlobs.length}):`, progress);
+
+        (progress) => {
+          // A betöltés folyamatban van
+          console.log('Model load progress:', progress.loaded / progress.total);
         },
-        /*   (progress) => {
-          console.log('Model load progress:', progress, progress.loaded, progress.total);
-        },*/
         (error) => {
+          // Hiba történt
           console.error('An error occurred while loading the model:', error);
         }
       );
     });
   };
-
+  // Method to handle window resize
   handleWindowResize = () => {
     const { cameras, renderers } = this.state;
     const container = this.sceneContainerRef.current;
@@ -245,7 +268,7 @@ export class ViewRecord extends Component<CompProps, CompState> {
       }
     }
   };
-
+  // Update scene rendering method
   renderScenes = () => {
     const { renderers, scenes, cameras } = this.state;
     const container = this.sceneContainerRef.current;
@@ -265,6 +288,7 @@ export class ViewRecord extends Component<CompProps, CompState> {
           const id = requestAnimationFrame(animateInRenderScene);
           let updatedAnimationIds = [...this.animationIds];
           updatedAnimationIds[index] = id;
+          // this.setState({ animationIds: updatedAnimationIds });
           this.animationIds = updatedAnimationIds;
           renderers[index].render(scenes[index], cameras[index]);
         };
@@ -274,16 +298,16 @@ export class ViewRecord extends Component<CompProps, CompState> {
     }
   };
 
-  renderImages = () => {
+  renderImages() {
     const { imageBlobs } = this.state;
     return imageBlobs?.map((blob, index) => (
       <div key={index}>
         <img src={URL.createObjectURL(blob)} alt='Kép' />
       </div>
     ));
-  };
+  }
 
-  renderVideos = () => {
+  renderVideos() {
     const { videoBlobs } = this.state;
 
     return videoBlobs?.map((blob, index) => (
@@ -291,32 +315,34 @@ export class ViewRecord extends Component<CompProps, CompState> {
         <video src={URL.createObjectURL(blob)} controls />
       </div>
     ));
-  };
+  }
 
-  renderModels3D = () => {
+  renderModels3D() {
     const { scenes } = this.state;
     if (!scenes) {
       return null;
     }
     return (
       <div key='3d-container' ref={this.sceneContainerRef} id='3d-container'>
-        <>{this.renderScenes()}</>
+        <>
+          {this.renderScenes()} {/* Wrap in a fragment */}
+        </>
       </div>
     );
-  };
-
-  renderMaterialURLs = () => {
+  }
+  renderMaterialURLs() {
     const { materialUrlBlobs } = this.state;
     return materialUrlBlobs?.map((blob, index) => (
       <div key={index}>
         <img src={URL.createObjectURL(blob)} alt='Material URL' />
       </div>
     ));
-  };
-
+  }
+  //////////////////////////////////////////////////////////////////////////////////////    RENDER
   render() {
-    const { recordId, data } = this.state;
+    const { recordId, data, imageBlobs } = this.state;
 
+    // console.log('data', data);
     return (
       <>
         <div>3d component ({recordId})</div>
@@ -326,10 +352,11 @@ export class ViewRecord extends Component<CompProps, CompState> {
         <div>
           {this.printModelDesc()}
           {[
-            // this.renderImages(),
-            // this.renderVideos(),
-            // this.renderMaterialURLs()]}
-            this.renderModels3D()
+            // Ezt a sor hozzáadtuk
+            this.renderImages(),
+            this.renderVideos(),
+            this.renderModels3D(),
+            this.renderMaterialURLs()
           ]}
         </div>
       </>
