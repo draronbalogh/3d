@@ -4,13 +4,12 @@ import * as THREE from 'three';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import { HOST3D, _CONFIG } from '../../../_config/config-general';
+import { HOST3D, PORT3D, _CONFIG } from '../../../_config/config-general';
 import { recordConfig } from '../../../_config/config-records';
 import { logAxiosError } from '../../../assets/gen-methods';
 import * as BABYLON from '@babylonjs/core';
+import '@babylonjs/loaders';
 import { Engine, Scene } from '@babylonjs/core';
-//import * as BABYLONLoaders from '@babylonjs/loaders';
-//import 'babylonjs-loaders';
 
 interface CompProps {
   data: any;
@@ -25,6 +24,7 @@ interface CompState {
   imageBlobs: Blob[];
   videoBlobs: Blob[];
   modelBlobs: Blob[];
+  modelUrls: any;
   materialUrlBlobs: Blob[];
   scenes: THREE.Scene[];
   renderers: THREE.WebGLRenderer[];
@@ -44,6 +44,7 @@ export class ViewRecord extends Component<CompProps, CompState> {
       imageBlobs: [],
       videoBlobs: [],
       modelBlobs: [],
+      modelUrls: [],
       materialUrlBlobs: [],
       renderers: [],
       cameras: [],
@@ -154,14 +155,15 @@ export class ViewRecord extends Component<CompProps, CompState> {
       const videoBlobs = await this.loadAssets(data.recordVideos, 'videoBlobs');
       const materialUrlBlobs = await this.loadAssets(data.recordMaterialUrl, 'materialUrlBlobs');
       const modelBlobs = await this.loadAssets(data.recordModels3d, 'modelBlobs');
-      this.setState({ imageBlobs, videoBlobs, materialUrlBlobs, modelBlobs }, () => {
+      const modelUrls = data.recordModels3d.split(',');
+      this.setState({ imageBlobs, videoBlobs, materialUrlBlobs, modelBlobs, modelUrls }, () => {
         console.log('Assets loaded successfully!'); // Kiírás, hogy az assetek betöltődtek
         this.loadScene();
       });
     }
   };
 
-  loadModel = async (url: string, loaderType: LoaderType) => {
+  loadModel = async (url: string, modelUrls: string, index: number, loaderType: LoaderType) => {
     if (loaderType === LoaderType.ThreeJS) {
       // Use the three.js loader
       const loader = new GLTFLoader();
@@ -172,44 +174,60 @@ export class ViewRecord extends Component<CompProps, CompState> {
         loader.load(url, (gltf: any) => resolve(gltf), undefined, reject);
       });
     } else if (loaderType === LoaderType.BabylonJS) {
-      // Use the babylon.js loader
-      const canvas = this.sceneContainerRef.current?.childNodes[0] as HTMLCanvasElement;
+      console.log('modelUrls', modelUrls[index]);
+      const container = this.sceneContainerRef.current;
+      let canvas = container?.childNodes[0] as HTMLCanvasElement;
+      if (!canvas) {
+        canvas = document.createElement('canvas');
+        container?.appendChild(canvas);
+      }
       const engine = new BABYLON.Engine(canvas, true); // Create a new Babylon.js engine
       const scene = new BABYLON.Scene(engine); // Create a new Babylon.js scene
-      const meshes = await BABYLON.SceneLoader.ImportMeshAsync('', '', url, scene);
+      const camera = new BABYLON.FreeCamera('camera1', new BABYLON.Vector3(0, 5, -10), scene);
+
+      camera.setTarget(BABYLON.Vector3.Zero());
+      camera.attachControl(canvas, false);
+      console.log('this.state', this.state);
+      let linkx = `${HOST3D}:${PORT3D}/uploads/${this.state.data.recordUuid}/${modelUrls[index]}`;
+      console.log('linkx', linkx);
+      const result = await BABYLON.SceneLoader.ImportMeshAsync(null, '', linkx, scene);
+      const { meshes } = result;
+
+      scene.registerBeforeRender(function () {
+        meshes.forEach((mesh) => {
+          mesh.rotation.x += 0.01;
+          mesh.rotation.y += 0.01;
+        });
+      });
+
       return { engine, scene, meshes };
     }
   };
   loadScene = async () => {
-    // const dracoLoader = new DRACOLoader();
-    //  const loader = new GLTFLoader();
-    const { modelBlobs } = this.state;
+    const { modelBlobs, modelUrls } = this.state;
     const scenes: THREE.Scene[] = [];
     const renderers: THREE.WebGLRenderer[] = [];
     const cameras: THREE.PerspectiveCamera[] = [];
     if (!modelBlobs) return;
-    // dracoLoader.setDecoderPath('/draco/');
-    //  loader.setDRACOLoader(dracoLoader);
     modelBlobs.forEach((blob, index) => {
-      const objectUrl = URL.createObjectURL(blob);
+      const blobUrl = URL.createObjectURL(blob);
       let mixer: THREE.AnimationMixer;
-      console.log('objectUrl', objectUrl);
       let lType = LoaderType.BabylonJS; /* loaderType *LoaderType.ThreeJS*/
-      this.loadModel(objectUrl, lType).then(
+      this.loadModel(blobUrl, modelUrls, index, lType).then(
         (result) => {
           if (lType === LoaderType.BabylonJS) {
-            const { engine, scene, meshes } = result as { engine: BABYLON.Engine; scene: BABYLON.Scene; meshes: BABYLON.AbstractMesh[] };
+            const { engine, scene } = result as { engine: BABYLON.Engine; scene: BABYLON.Scene };
+            // scene.clearColor = new BABYLON.Color4(1, 0, 0, 1);
+
             engine.runRenderLoop(() => {
               scene.render();
             });
 
-            // Resize the engine when window resizes
             window.addEventListener('resize', () => {
               engine.resize();
             });
           } else if (lType === LoaderType.ThreeJS) {
             const gltf = result as any;
-
             const scene = new THREE.Scene();
             scenes.push(scene);
             scene.background = new THREE.Color(0x333333);
@@ -244,17 +262,11 @@ export class ViewRecord extends Component<CompProps, CompState> {
             const size = box.getSize(new THREE.Vector3());
             const center = box.getCenter(new THREE.Vector3());
 
-            // Set the camera to look at the center of the model
             camera.lookAt(center);
-
-            // Set the camera position based on the size of the model
-            camera.position.z = size.length() / 2; // You can adjust the multiplier as needed
-
-            //camera.position.z = 150;
+            camera.position.z = size.length() / 2;
             renderer.setSize(1280, 720);
 
             const animateInLoadScene = () => {
-              // Check if mixer exists before trying to update ita
               if (mixer) {
                 const delta = clock.getDelta();
                 mixer.update(delta);
