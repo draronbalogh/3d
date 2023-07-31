@@ -160,6 +160,7 @@ export class ViewRecord extends Component<CompProps, CompState> {
       });
     }
   };
+
   loadModel = async (url: string, loaderType: LoaderType) => {
     if (loaderType === LoaderType.ThreeJS) {
       // Use the three.js loader
@@ -172,14 +173,14 @@ export class ViewRecord extends Component<CompProps, CompState> {
       });
     } else if (loaderType === LoaderType.BabylonJS) {
       // Use the babylon.js loader
-      const canvas = document.createElement('canvas'); // Create a new canvas element
+      const canvas = this.sceneContainerRef.current?.childNodes[0] as HTMLCanvasElement;
       const engine = new BABYLON.Engine(canvas, true); // Create a new Babylon.js engine
       const scene = new BABYLON.Scene(engine); // Create a new Babylon.js scene
       const meshes = await BABYLON.SceneLoader.ImportMeshAsync('', '', url, scene);
       return { engine, scene, meshes };
     }
   };
-  loadScene = () => {
+  loadScene = async () => {
     // const dracoLoader = new DRACOLoader();
     //  const loader = new GLTFLoader();
     const { modelBlobs } = this.state;
@@ -193,19 +194,20 @@ export class ViewRecord extends Component<CompProps, CompState> {
       const objectUrl = URL.createObjectURL(blob);
       let mixer: THREE.AnimationMixer;
       console.log('objectUrl', objectUrl);
-      this.loadModel(objectUrl, LoaderType.BabylonJS /* loaderType *LoaderType.ThreeJS*/).then(
+      let lType = LoaderType.BabylonJS; /* loaderType *LoaderType.ThreeJS*/
+      this.loadModel(objectUrl, lType).then(
         (result) => {
-          if (LoaderType.BabylonJS) {
+          if (lType === LoaderType.BabylonJS) {
             const { engine, scene, meshes } = result as { engine: BABYLON.Engine; scene: BABYLON.Scene; meshes: BABYLON.AbstractMesh[] };
             engine.runRenderLoop(() => {
               scene.render();
             });
-            // Add canvas to container
-            const canvas = engine.getRenderingCanvas();
-            if (canvas && this.sceneContainerRef.current) {
-              this.sceneContainerRef.current.appendChild(canvas);
-            }
-          } else if (LoaderType.ThreeJS) {
+
+            // Resize the engine when window resizes
+            window.addEventListener('resize', () => {
+              engine.resize();
+            });
+          } else if (lType === LoaderType.ThreeJS) {
             const gltf = result as any;
 
             const scene = new THREE.Scene();
@@ -230,18 +232,14 @@ export class ViewRecord extends Component<CompProps, CompState> {
 
             const renderer = new THREE.WebGLRenderer({ antialias: true });
             renderers.push(renderer);
-
             const aspectRatio = 1280 / 720;
             const camera = new THREE.PerspectiveCamera(75, aspectRatio, 0.1, 1000);
-
             const clock = new THREE.Clock();
             cameras.push(camera);
-
             const controls = new OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true;
             controls.dampingFactor = 0.25;
             controls.enableZoom = true;
-
             const box = new THREE.Box3().setFromObject(gltf.scene);
             const size = box.getSize(new THREE.Vector3());
             const center = box.getCenter(new THREE.Vector3());
