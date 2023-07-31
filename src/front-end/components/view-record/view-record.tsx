@@ -4,15 +4,21 @@ import * as THREE from 'three';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-
 import { HOST3D, _CONFIG } from '../../../_config/config-general';
 import { recordConfig } from '../../../_config/config-records';
 import { logAxiosError } from '../../../assets/gen-methods';
+import * as BABYLON from '@babylonjs/core';
+import { Engine, Scene } from '@babylonjs/core';
+//import * as BABYLONLoaders from '@babylonjs/loaders';
+//import 'babylonjs-loaders';
 
 interface CompProps {
   data: any;
 }
-
+enum LoaderType {
+  ThreeJS,
+  BabylonJS
+}
 interface CompState {
   recordId: number | any;
   data: any;
@@ -154,82 +160,129 @@ export class ViewRecord extends Component<CompProps, CompState> {
       });
     }
   };
-
+  loadModel = async (url: string, loaderType: LoaderType) => {
+    if (loaderType === LoaderType.ThreeJS) {
+      // Use the three.js loader
+      const loader = new GLTFLoader();
+      const dracoLoader = new DRACOLoader();
+      dracoLoader.setDecoderPath('/draco/');
+      loader.setDRACOLoader(dracoLoader);
+      return new Promise<any>((resolve, reject) => {
+        loader.load(url, (gltf: any) => resolve(gltf), undefined, reject);
+      });
+    } else if (loaderType === LoaderType.BabylonJS) {
+      // Use the babylon.js loader
+      const canvas = document.createElement('canvas'); // Create a new canvas element
+      const engine = new BABYLON.Engine(canvas, true); // Create a new Babylon.js engine
+      const scene = new BABYLON.Scene(engine); // Create a new Babylon.js scene
+      const meshes = await BABYLON.SceneLoader.ImportMeshAsync('', '', url, scene);
+      return { engine, scene, meshes };
+    }
+  };
   loadScene = () => {
-    const dracoLoader = new DRACOLoader();
-    const loader = new GLTFLoader();
+    // const dracoLoader = new DRACOLoader();
+    //  const loader = new GLTFLoader();
     const { modelBlobs } = this.state;
     const scenes: THREE.Scene[] = [];
     const renderers: THREE.WebGLRenderer[] = [];
     const cameras: THREE.PerspectiveCamera[] = [];
     if (!modelBlobs) return;
-    dracoLoader.setDecoderPath('/draco/');
-    loader.setDRACOLoader(dracoLoader);
+    // dracoLoader.setDecoderPath('/draco/');
+    //  loader.setDRACOLoader(dracoLoader);
     modelBlobs.forEach((blob, index) => {
       const objectUrl = URL.createObjectURL(blob);
       let mixer: THREE.AnimationMixer;
-      loader.load(
-        objectUrl,
-        (gltf) => {
-          const scene = new THREE.Scene();
-          scenes.push(scene);
-          scene.background = new THREE.Color(0x333333);
+      console.log('objectUrl', objectUrl);
+      this.loadModel(objectUrl, LoaderType.BabylonJS /* loaderType *LoaderType.ThreeJS*/).then(
+        (result) => {
+          if (LoaderType.BabylonJS) {
+            const { engine, scene, meshes } = result as { engine: BABYLON.Engine; scene: BABYLON.Scene; meshes: BABYLON.AbstractMesh[] };
+            engine.runRenderLoop(() => {
+              scene.render();
+            });
+            // Add canvas to container
+            const canvas = engine.getRenderingCanvas();
+            if (canvas && this.sceneContainerRef.current) {
+              this.sceneContainerRef.current.appendChild(canvas);
+            }
+          } else if (LoaderType.ThreeJS) {
+            const gltf = result as any;
 
-          const ambientLight = new THREE.AmbientLight(0x404040);
-          scene.add(ambientLight);
-          const directionalLight = new THREE.DirectionalLight(0xffffff);
-          directionalLight.position.set(1, 1, 1).normalize();
-          scene.add(directionalLight);
+            const scene = new THREE.Scene();
+            scenes.push(scene);
+            scene.background = new THREE.Color(0x333333);
 
-          mixer = new THREE.AnimationMixer(gltf.scene);
-          let action = mixer.clipAction(gltf.animations[0]);
-          action?.play();
-          scene.add(gltf.scene);
+            const ambientLight = new THREE.AmbientLight(0x404040);
+            scene.add(ambientLight);
+            const directionalLight = new THREE.DirectionalLight(0xffffff);
+            directionalLight.position.set(1, 1, 1).normalize();
+            scene.add(directionalLight);
 
-          const renderer = new THREE.WebGLRenderer({ antialias: true });
-          renderers.push(renderer);
+            let mixer: THREE.AnimationMixer;
+            scene.add(gltf.scene);
 
-          const aspectRatio = 1280 / 720;
-          const camera = new THREE.PerspectiveCamera(75, aspectRatio, 0.1, 1000);
+            // Check if animations exist before trying to play them
+            if (gltf.animations && gltf.animations.length > 0) {
+              mixer = new THREE.AnimationMixer(gltf.scene);
+              let action = mixer.clipAction(gltf.animations[0]);
+              action?.play();
+            }
 
-          const clock = new THREE.Clock();
-          cameras.push(camera);
+            const renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderers.push(renderer);
 
-          const controls = new OrbitControls(camera, renderer.domElement);
-          controls.enableDamping = true;
-          controls.dampingFactor = 0.25;
-          controls.enableZoom = true;
+            const aspectRatio = 1280 / 720;
+            const camera = new THREE.PerspectiveCamera(75, aspectRatio, 0.1, 1000);
 
-          camera.position.z = 150;
-          renderer.setSize(1280, 720);
+            const clock = new THREE.Clock();
+            cameras.push(camera);
 
-          const animateInLoadScene = () => {
-            const delta = clock.getDelta();
-            mixer.update(delta);
-            const id = requestAnimationFrame(animateInLoadScene);
-            let updatedAnimationIds = [...this.animationIds];
-            updatedAnimationIds[index] = id;
-            this.animationIds = updatedAnimationIds;
-            controls.update();
-            if (renderers[index] !== null && renderers[index] !== undefined) renderers[index].render(scenes[index], cameras[index]);
-          };
+            const controls = new OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.25;
+            controls.enableZoom = true;
 
-          let animationIds: (number | null)[] = new Array(modelBlobs.length).fill(null);
-          animateInLoadScene();
-          this.setState({ renderers, cameras, scenes }, () => {
-            window.addEventListener('resize', this.handleWindowResize);
-          });
+            const box = new THREE.Box3().setFromObject(gltf.scene);
+            const size = box.getSize(new THREE.Vector3());
+            const center = box.getCenter(new THREE.Vector3());
+
+            // Set the camera to look at the center of the model
+            camera.lookAt(center);
+
+            // Set the camera position based on the size of the model
+            camera.position.z = size.length() / 2; // You can adjust the multiplier as needed
+
+            //camera.position.z = 150;
+            renderer.setSize(1280, 720);
+
+            const animateInLoadScene = () => {
+              // Check if mixer exists before trying to update ita
+              if (mixer) {
+                const delta = clock.getDelta();
+                mixer.update(delta);
+              }
+              const id = requestAnimationFrame(animateInLoadScene);
+              let updatedAnimationIds = [...this.animationIds];
+              updatedAnimationIds[index] = id;
+              this.animationIds = updatedAnimationIds;
+              controls.update();
+              if (renderers[index] !== null && renderers[index] !== undefined) renderers[index].render(scenes[index], cameras[index]);
+            };
+
+            let animationIds: (number | null)[] = new Array(modelBlobs.length).fill(null);
+            animateInLoadScene();
+            this.setState({ renderers, cameras, scenes }, () => {
+              window.addEventListener('resize', this.handleWindowResize);
+            });
+          }
         },
         (progressEvent) => {
           const progress = progressEvent.loaded / progressEvent.total;
           console.log(`Model load progress (${index + 1}/${modelBlobs.length}):`, progress);
-        },
-        /*   (progress) => {
-          console.log('Model load progress:', progress, progress.loaded, progress.total);
-        },*/
-        (error) => {
-          console.error('An error occurred while loading the model:', error);
         }
+        /*   (progress) => {
+    console.log('Model load progress:', progress, progress.loaded, progress.total);
+  },*/
       );
     });
   };

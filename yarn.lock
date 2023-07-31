@@ -1079,6 +1079,16 @@
     "@babel/helper-validator-identifier" "^7.19.1"
     to-fast-properties "^2.0.0"
 
+"@babylonjs/core@^6.14.0":
+  version "6.14.0"
+  resolved "https://registry.yarnpkg.com/@babylonjs/core/-/core-6.14.0.tgz#da90c52f75d4235b8a202e7f5852148aae09070c"
+  integrity sha512-ciIfWMMtV5jsnqxqTn+v/CS65yji6CXTP2drmvLlzk+k+IZjE8RfkpMqZgZozN/KNkOmIVn2Li7qRMjg4ZUGlw==
+
+"@babylonjs/loaders@^6.14.0":
+  version "6.14.0"
+  resolved "https://registry.yarnpkg.com/@babylonjs/loaders/-/loaders-6.14.0.tgz#5e861748522dbf8da8b0b85140f64a04aa5c86ab"
+  integrity sha512-rGDMuyHEphpOHBO4JtY0vNIri2VMAmwUw3UmDJ+C00erQpiQDXyzG3IkJpXDHt7mWOJZNASRJjC76bPDu9zarg==
+
 "@bcoe/v8-coverage@^0.2.3":
   version "0.2.3"
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
