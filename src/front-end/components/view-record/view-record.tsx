@@ -174,33 +174,58 @@ export class ViewRecord extends Component<CompProps, CompState> {
         loader.load(url, (gltf: any) => resolve(gltf), undefined, reject);
       });
     } else if (loaderType === LoaderType.BabylonJS) {
-      console.log('modelUrls', modelUrls[index]);
-      const container = this.sceneContainerRef.current;
-      let canvas = container?.childNodes[0] as HTMLCanvasElement;
-      if (!canvas) {
-        canvas = document.createElement('canvas');
-        container?.appendChild(canvas);
-      }
-      const engine = new BABYLON.Engine(canvas, true); // Create a new Babylon.js engine
-      const scene = new BABYLON.Scene(engine); // Create a new Babylon.js scene
-      const camera = new BABYLON.FreeCamera('camera1', new BABYLON.Vector3(0, 5, -10), scene);
+      return new Promise<any>((resolve, reject) => {
+        console.log('modelUrls', modelUrls[index]);
+        const container = this.sceneContainerRef.current;
+        let canvas = container?.childNodes[0] as HTMLCanvasElement;
+        if (!canvas) {
+          canvas = document.createElement('canvas');
+          container?.appendChild(canvas);
+        }
+        const engine = new BABYLON.Engine(canvas, true); // Create a new Babylon.js engine
+        const scene = new BABYLON.Scene(engine); // Create a new Babylon.js scene
+        let linkx = `${HOST3D}:${PORT3D}/uploads/${this.state.data.recordUuid}/${modelUrls[index]}`;
+        BABYLON.SceneLoader.ImportMeshAsync(null, '', linkx, scene)
+          .then((result) => {
+            const { meshes } = result;
 
-      camera.setTarget(BABYLON.Vector3.Zero());
-      camera.attachControl(canvas, false);
-      console.log('this.state', this.state);
-      let linkx = `${HOST3D}:${PORT3D}/uploads/${this.state.data.recordUuid}/${modelUrls[index]}`;
-      console.log('linkx', linkx);
-      const result = await BABYLON.SceneLoader.ImportMeshAsync(null, '', linkx, scene);
-      const { meshes } = result;
+            scene.registerBeforeRender(function () {
+              meshes.forEach((mesh) => {
+                mesh.rotation.x += 0.01;
+                mesh.rotation.y += 0.01;
+              });
+            });
 
-      scene.registerBeforeRender(function () {
-        meshes.forEach((mesh) => {
-          mesh.rotation.x += 0.01;
-          mesh.rotation.y += 0.01;
-        });
+            resolve({ engine, scene, canvas, meshes });
+          })
+          .catch((error) => {
+            console.error(error);
+            reject(error);
+          });
+        // camera.setTarget(BABYLON.Vector3.Zero());
+        // camera.attachControl(canvas, false);
+        //  console.log('this.state', this.state);
+        /*    let linkx = `${HOST3D}:${PORT3D}/uploads/${this.state.data.recordUuid}/${modelUrls[index]}`;
+        console.log('linkx', linkx);
+
+        BABYLON.SceneLoader.ImportMeshAsync(null, '', linkx, scene)
+          .then((result) => {
+            const { meshes } = result;
+
+            scene.registerBeforeRender(function () {
+              meshes.forEach((mesh) => {
+                mesh.rotation.x += 0.01;
+                mesh.rotation.y += 0.01;
+              });
+            });
+
+            resolve({ engine, scene, meshes });
+          })
+          .catch((error) => {
+            console.error(error);
+            reject(error);
+          });*/
       });
-
-      return { engine, scene, meshes };
     }
   };
   loadScene = async () => {
@@ -215,14 +240,24 @@ export class ViewRecord extends Component<CompProps, CompState> {
       let lType = LoaderType.BabylonJS; /* loaderType *LoaderType.ThreeJS*/
       this.loadModel(blobUrl, modelUrls, index, lType).then(
         (result) => {
+          console.log('result', result);
           if (lType === LoaderType.BabylonJS) {
-            const { engine, scene } = result as { engine: BABYLON.Engine; scene: BABYLON.Scene };
+            const { engine, scene, canvas, meshes } = result as { engine: BABYLON.Engine; scene: BABYLON.Scene; canvas: any; meshes: any };
+
+            // Set scence
             // scene.clearColor = new BABYLON.Color4(1, 0, 0, 1);
 
+            // Set camera
+            const camera = new BABYLON.FreeCamera('camera1', new BABYLON.Vector3(0, 5, -10), scene);
+            camera.setTarget(BABYLON.Vector3.Zero());
+            camera.attachControl(canvas, false);
+
+            // Loop animation
             engine.runRenderLoop(() => {
               scene.render();
             });
 
+            // Canvas resiser
             window.addEventListener('resize', () => {
               engine.resize();
             });
