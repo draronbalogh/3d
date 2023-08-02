@@ -209,8 +209,8 @@ export class ViewRecord extends Component<CompProps, CompState> {
     const { engine, scene, canvas, meshes } = result as { engine: BABYLON.Engine; scene: BABYLON.Scene; canvas: any; meshes: any };
 
     // Set canvas size
-    engine.setSize(1280, 720);
-
+    //  engine.setSize(1280, 720);
+    engine.setSize(window.innerWidth, window.innerHeight);
     // Set camera
     const camera = new BABYLON.ArcRotateCamera('camera1', 0, 0, 0, new BABYLON.Vector3(0, 0, 0), scene);
 
@@ -224,6 +224,7 @@ export class ViewRecord extends Component<CompProps, CompState> {
       mesh.material = material;
       // Calculate the center of the scene
       center.addInPlace(mesh.getBoundingInfo().boundingBox.centerWorld);
+
       // Calculate the bounds of the scene
       minPoint = BABYLON.Vector3.Minimize(minPoint, mesh.getBoundingInfo().boundingBox.minimumWorld);
       maxPoint = BABYLON.Vector3.Maximize(maxPoint, mesh.getBoundingInfo().boundingBox.maximumWorld);
@@ -231,12 +232,16 @@ export class ViewRecord extends Component<CompProps, CompState> {
 
     // Calculate the size of the scene
     let sceneSize = BABYLON.Vector3.Distance(minPoint, maxPoint);
+
+    // Set the camera to a consistent distance from the center of the scene
     camera.setPosition(center.add(new BABYLON.Vector3(0, 0, sceneSize)));
+
     camera.attachControl(canvas, true);
-    camera.lowerRadiusLimit = 5; // minimum zoom
-    camera.upperRadiusLimit = 200; // maximum zoom
-    camera.wheelPrecision = 10; // sensitivity
-    camera.inertia = 0.5; // damping
+    // Adjust the camera settings based on the size of the scene
+    camera.lowerRadiusLimit = sceneSize * 0.5; // minimum zoom distance
+    camera.upperRadiusLimit = sceneSize * 2; // maximum zoom distance
+    camera.wheelPrecision = 100 / sceneSize; // zoom sensitivity
+    camera.inertia = 0.5; // damping, the smaller the faster
 
     // Create Lights
     const light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(0, 1, 0), scene);
@@ -253,7 +258,10 @@ export class ViewRecord extends Component<CompProps, CompState> {
 
     // Canvas resiser
     window.addEventListener('resize', () => {
+      engine.setSize(window.innerWidth, window.innerHeight);
       engine.resize();
+      // Update the camera's position when the window size changes
+      camera.setPosition(center.add(new BABYLON.Vector3(0, 0, sceneSize * 2)));
     });
   };
 
