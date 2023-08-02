@@ -182,8 +182,8 @@ export class ViewRecord extends Component<CompProps, CompState> {
           canvas = document.createElement('canvas');
           container?.appendChild(canvas);
         }
-        const engine = new BABYLON.Engine(canvas, true); // Create a new Babylon.js engine
-        const scene = new BABYLON.Scene(engine); // Create a new Babylon.js scene
+        const engine = new BABYLON.Engine(canvas, true);
+        const scene = new BABYLON.Scene(engine);
         let linkx = `${HOST3D}:${PORT3D}/uploads/${this.state.data.recordUuid}/${modelUrls[index]}`;
         BABYLON.SceneLoader.ImportMeshAsync(null, '', linkx, scene)
           .then((result) => {
@@ -202,32 +202,143 @@ export class ViewRecord extends Component<CompProps, CompState> {
             console.error(error);
             reject(error);
           });
-        // camera.setTarget(BABYLON.Vector3.Zero());
-        // camera.attachControl(canvas, false);
-        //  console.log('this.state', this.state);
-        /*    let linkx = `${HOST3D}:${PORT3D}/uploads/${this.state.data.recordUuid}/${modelUrls[index]}`;
-        console.log('linkx', linkx);
-
-        BABYLON.SceneLoader.ImportMeshAsync(null, '', linkx, scene)
-          .then((result) => {
-            const { meshes } = result;
-
-            scene.registerBeforeRender(function () {
-              meshes.forEach((mesh) => {
-                mesh.rotation.x += 0.01;
-                mesh.rotation.y += 0.01;
-              });
-            });
-
-            resolve({ engine, scene, meshes });
-          })
-          .catch((error) => {
-            console.error(error);
-            reject(error);
-          });*/
       });
     }
   };
+  handleBabylonJS = async (result: any) => {
+    const { engine, scene, canvas, meshes } = result as { engine: BABYLON.Engine; scene: BABYLON.Scene; canvas: any; meshes: any };
+
+    // Set camera
+    const camera = new BABYLON.ArcRotateCamera('camera1', 0, 0, 0, new BABYLON.Vector3(0, 0, 0), scene);
+
+    // Calculate center and size of the scene
+    // Calculate center and size of the scene
+    let center = BABYLON.Vector3.Zero();
+    let minPoint = new BABYLON.Vector3(Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE);
+    let maxPoint = new BABYLON.Vector3(-Number.MAX_VALUE, -Number.MAX_VALUE, -Number.MAX_VALUE);
+
+    let maxDistance = 0;
+
+    // Assuming 'meshes' is an array of the loaded meshes
+    meshes.forEach((mesh: any) => {
+      const material = new BABYLON.StandardMaterial('mat', scene);
+      mesh.material = material;
+
+      // Calculate the center of the scene
+      center.addInPlace(mesh.getBoundingInfo().boundingBox.centerWorld);
+
+      // Calculate the bounds of the scene
+      minPoint = BABYLON.Vector3.Minimize(minPoint, mesh.getBoundingInfo().boundingBox.minimumWorld);
+      maxPoint = BABYLON.Vector3.Maximize(maxPoint, mesh.getBoundingInfo().boundingBox.maximumWorld);
+    });
+    // Calculate the size of the scene
+    let sceneSize = BABYLON.Vector3.Distance(minPoint, maxPoint);
+    // Set the camera to a consistent distance from the center of the scene
+    camera.setPosition(center.add(new BABYLON.Vector3(0, 0, sceneSize)));
+
+    camera.attachControl(canvas, true);
+    camera.lowerRadiusLimit = 5; // minimum zoom distance
+    camera.upperRadiusLimit = 200; // maximum zoom distance
+    camera.wheelPrecision = 10; // zoom sensitivity
+    camera.inertia = 0.5; // damping, the smaller the faster
+
+    // Assuming 'meshes' is an array of the loaded meshes
+    meshes.forEach((mesh: any) => {
+      const material = new BABYLON.StandardMaterial('mat', scene);
+      mesh.material = material;
+    });
+
+    // Set canvas size
+    engine.setSize(1280, 720);
+
+    // Create Lights
+    const light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(0, 1, 0), scene);
+    light.intensity = 0.5;
+    light.diffuse = BABYLON.Color3.FromHexString('#404040');
+
+    const directionalLight = new BABYLON.DirectionalLight('DirectionalLight', new BABYLON.Vector3(0, -1, 0), scene);
+    directionalLight.diffuse = BABYLON.Color3.FromHexString('#ffffff');
+    directionalLight.intensity = 0.5;
+    // Loop animation
+    engine.runRenderLoop(() => {
+      scene.render();
+    });
+
+    // Canvas resiser
+    window.addEventListener('resize', () => {
+      engine.resize();
+    });
+  };
+
+  handleThreeJS = async (result: any, index: number, modelBlobs: Blob[], renderers: THREE.WebGLRenderer[], cameras: THREE.PerspectiveCamera[], scenes: THREE.Scene[]) => {
+    const gltf = result as any;
+
+    // Set scence
+    const scene = new THREE.Scene();
+    scene.add(gltf.scene);
+    scenes.push(scene);
+    scene.background = new THREE.Color(0x333333);
+
+    // Set lights
+    const ambientLight = new THREE.AmbientLight(0x404040);
+    scene.add(ambientLight);
+    const directionalLight = new THREE.DirectionalLight(0xffffff);
+    directionalLight.position.set(1, 1, 1).normalize();
+    scene.add(directionalLight);
+
+    // Check if animations exist before trying to play them
+    let mixer: THREE.AnimationMixer;
+    if (gltf.animations && gltf.animations.length > 0) {
+      mixer = new THREE.AnimationMixer(gltf.scene);
+      let action = mixer.clipAction(gltf.animations[0]);
+      action?.play();
+    }
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderers.push(renderer);
+
+    // Set camera
+    const aspectRatio = 1280 / 720;
+    const camera = new THREE.PerspectiveCamera(75, aspectRatio, 0.1, 1000);
+    const clock = new THREE.Clock();
+    cameras.push(camera);
+
+    // Set controls
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.25;
+    controls.enableZoom = true;
+
+    // Add new object
+    const box = new THREE.Box3().setFromObject(gltf.scene);
+    const size = box.getSize(new THREE.Vector3());
+    const center = box.getCenter(new THREE.Vector3());
+
+    // Focus camera on trg
+    camera.lookAt(center);
+    camera.position.z = size.length() / 2;
+    renderer.setSize(1280, 720);
+
+    const animateInLoadScene = () => {
+      if (mixer) {
+        const delta = clock.getDelta();
+        mixer.update(delta);
+      }
+      const id = requestAnimationFrame(animateInLoadScene);
+      let updatedAnimationIds = [...this.animationIds];
+      updatedAnimationIds[index] = id;
+      this.animationIds = updatedAnimationIds;
+      controls.update();
+      if (renderers[index] !== null && renderers[index] !== undefined) renderers[index].render(scenes[index], cameras[index]);
+    };
+
+    let animationIds: (number | null)[] = new Array(modelBlobs.length).fill(null);
+    animateInLoadScene();
+    this.setState({ renderers, cameras, scenes }, () => {
+      window.addEventListener('resize', this.handleWindowResize);
+    });
+  };
+
   loadScene = async () => {
     const { modelBlobs, modelUrls } = this.state;
     const scenes: THREE.Scene[] = [];
@@ -242,92 +353,15 @@ export class ViewRecord extends Component<CompProps, CompState> {
         (result) => {
           console.log('result', result);
           if (lType === LoaderType.BabylonJS) {
-            const { engine, scene, canvas, meshes } = result as { engine: BABYLON.Engine; scene: BABYLON.Scene; canvas: any; meshes: any };
-
-            // Set scence
-            // scene.clearColor = new BABYLON.Color4(1, 0, 0, 1);
-
-            // Set camera
-            const camera = new BABYLON.FreeCamera('camera1', new BABYLON.Vector3(0, 5, -10), scene);
-            camera.setTarget(BABYLON.Vector3.Zero());
-            camera.attachControl(canvas, false);
-
-            // Loop animation
-            engine.runRenderLoop(() => {
-              scene.render();
-            });
-
-            // Canvas resiser
-            window.addEventListener('resize', () => {
-              engine.resize();
-            });
+            this.handleBabylonJS(result);
           } else if (lType === LoaderType.ThreeJS) {
-            const gltf = result as any;
-            const scene = new THREE.Scene();
-            scenes.push(scene);
-            scene.background = new THREE.Color(0x333333);
-
-            const ambientLight = new THREE.AmbientLight(0x404040);
-            scene.add(ambientLight);
-            const directionalLight = new THREE.DirectionalLight(0xffffff);
-            directionalLight.position.set(1, 1, 1).normalize();
-            scene.add(directionalLight);
-
-            let mixer: THREE.AnimationMixer;
-            scene.add(gltf.scene);
-
-            // Check if animations exist before trying to play them
-            if (gltf.animations && gltf.animations.length > 0) {
-              mixer = new THREE.AnimationMixer(gltf.scene);
-              let action = mixer.clipAction(gltf.animations[0]);
-              action?.play();
-            }
-
-            const renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderers.push(renderer);
-            const aspectRatio = 1280 / 720;
-            const camera = new THREE.PerspectiveCamera(75, aspectRatio, 0.1, 1000);
-            const clock = new THREE.Clock();
-            cameras.push(camera);
-            const controls = new OrbitControls(camera, renderer.domElement);
-            controls.enableDamping = true;
-            controls.dampingFactor = 0.25;
-            controls.enableZoom = true;
-            const box = new THREE.Box3().setFromObject(gltf.scene);
-            const size = box.getSize(new THREE.Vector3());
-            const center = box.getCenter(new THREE.Vector3());
-
-            camera.lookAt(center);
-            camera.position.z = size.length() / 2;
-            renderer.setSize(1280, 720);
-
-            const animateInLoadScene = () => {
-              if (mixer) {
-                const delta = clock.getDelta();
-                mixer.update(delta);
-              }
-              const id = requestAnimationFrame(animateInLoadScene);
-              let updatedAnimationIds = [...this.animationIds];
-              updatedAnimationIds[index] = id;
-              this.animationIds = updatedAnimationIds;
-              controls.update();
-              if (renderers[index] !== null && renderers[index] !== undefined) renderers[index].render(scenes[index], cameras[index]);
-            };
-
-            let animationIds: (number | null)[] = new Array(modelBlobs.length).fill(null);
-            animateInLoadScene();
-            this.setState({ renderers, cameras, scenes }, () => {
-              window.addEventListener('resize', this.handleWindowResize);
-            });
+            this.handleThreeJS(result, index, modelBlobs, renderers, cameras, scenes);
           }
         },
         (progressEvent) => {
           const progress = progressEvent.loaded / progressEvent.total;
           console.log(`Model load progress (${index + 1}/${modelBlobs.length}):`, progress);
         }
-        /*   (progress) => {
-    console.log('Model load progress:', progress, progress.loaded, progress.total);
-  },*/
       );
     });
   };
