@@ -30,6 +30,7 @@ interface CompState {
   renderers: THREE.WebGLRenderer[];
   cameras: THREE.PerspectiveCamera[];
   controls: OrbitControls[];
+  numberOfObjects: number;
 }
 
 export class ViewRecord extends Component<CompProps, CompState> {
@@ -49,7 +50,8 @@ export class ViewRecord extends Component<CompProps, CompState> {
       renderers: [],
       cameras: [],
       scenes: [],
-      controls: []
+      controls: [],
+      numberOfObjects: 1
     };
   }
 
@@ -219,9 +221,20 @@ export class ViewRecord extends Component<CompProps, CompState> {
     let minPoint = new BABYLON.Vector3(Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE);
     let maxPoint = new BABYLON.Vector3(-Number.MAX_VALUE, -Number.MAX_VALUE, -Number.MAX_VALUE);
 
-    meshes.forEach((mesh: any) => {
+    meshes.forEach((mesh: any, index: number) => {
       const material = new BABYLON.StandardMaterial('mat', scene);
-      mesh.material = material;
+      // mesh.material = material;
+
+      // Create clones of each mesh and position them
+      for (let i = 1; i <= 5; i++) {
+        // adjust the number of clones as needed
+        const clone = mesh.clone(`clone${index}-${i}`);
+        // make the clone random position to mesh in 100px increments
+        let x = Math.floor(Math.random() * 100);
+        let y = Math.floor(Math.random() * 100);
+        let z = Math.floor(Math.random() * 100);
+        clone.position.addInPlace(new BABYLON.Vector3(i * x, i * y, i * z)); // adjust the position offset as needed
+      }
       // Calculate the center of the scene
       center.addInPlace(mesh.getBoundingInfo().boundingBox.centerWorld);
 
