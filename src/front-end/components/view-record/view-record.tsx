@@ -227,13 +227,24 @@ export class ViewRecord extends Component<CompProps, CompState> {
 
       // Create clones of each mesh and position them
       for (let i = 1; i <= 5; i++) {
-        // adjust the number of clones as needed
+        const boundingInfo = mesh.getBoundingInfo();
+
+        const wi = boundingInfo.maximum.x - boundingInfo.minimum.x;
+        const he = boundingInfo.maximum.y - boundingInfo.minimum.y;
+        const ze = boundingInfo.maximum.z - boundingInfo.minimum.z;
+
         const clone = mesh.clone(`clone${index}-${i}`);
-        // make the clone random position to mesh in 100px increments
-        let x = Math.floor(Math.random() * 100);
-        let y = Math.floor(Math.random() * 100);
-        let z = Math.floor(Math.random() * 100);
-        clone.position.addInPlace(new BABYLON.Vector3(i * x, i * y, i * z)); // adjust the position offset as needed
+        var min = 20;
+        var max = 300;
+        var random = Math.random() * (max - min) + min;
+        // set the clone's position to a fixed distance from the previous clone
+        let x = i * (wi + random);
+        let y = i * (he + random);
+        let z = i * (ze + random);
+
+        // add a small random offset
+
+        clone.position.addInPlace(new BABYLON.Vector3(x, y, z));
       }
       // Calculate the center of the scene
       center.addInPlace(mesh.getBoundingInfo().boundingBox.centerWorld);
@@ -252,7 +263,7 @@ export class ViewRecord extends Component<CompProps, CompState> {
     camera.attachControl(canvas, true);
     // Adjust the camera settings based on the size of the scene
     camera.lowerRadiusLimit = sceneSize * 0.5; // minimum zoom distance
-    camera.upperRadiusLimit = sceneSize * 2; // maximum zoom distance
+    camera.upperRadiusLimit = sceneSize * 10; // maximum zoom distance
     camera.wheelPrecision = 100 / sceneSize; // zoom sensitivity
     camera.inertia = 0.5; // damping, the smaller the faster
 
