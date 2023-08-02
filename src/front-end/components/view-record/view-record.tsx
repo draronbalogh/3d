@@ -209,6 +209,7 @@ export class ViewRecord extends Component<CompProps, CompState> {
   };
   handleBabylonJS = async (result: any) => {
     const { engine, scene, canvas, meshes } = result as { engine: BABYLON.Engine; scene: BABYLON.Scene; canvas: any; meshes: any };
+    const { numberOfObjects } = this.state;
 
     // Set canvas size
     //  engine.setSize(1280, 720);
@@ -220,38 +221,54 @@ export class ViewRecord extends Component<CompProps, CompState> {
     let center = BABYLON.Vector3.Zero();
     let minPoint = new BABYLON.Vector3(Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE);
     let maxPoint = new BABYLON.Vector3(-Number.MAX_VALUE, -Number.MAX_VALUE, -Number.MAX_VALUE);
-
-    meshes.forEach((mesh: any, index: number) => {
-      const material = new BABYLON.StandardMaterial('mat', scene);
-      // mesh.material = material;
-
+    let boundingBoxes: any = [];
+    console.log('meshes', meshes); // Add this line
+    console.log('numberOfObjects', numberOfObjects); // Add this line
+    meshes.forEach((mesh: BABYLON.Mesh, index: number) => {
       // Create clones of each mesh and position them
-      for (let i = 1; i <= 5; i++) {
+      for (let i = 1; i <= numberOfObjects; i++) {
+        console.log('first');
         const boundingInfo = mesh.getBoundingInfo();
-
         const wi = boundingInfo.maximum.x - boundingInfo.minimum.x;
         const he = boundingInfo.maximum.y - boundingInfo.minimum.y;
         const ze = boundingInfo.maximum.z - boundingInfo.minimum.z;
-
         const clone = mesh.clone(`clone${index}-${i}`);
-        var min = 20;
-        var max = 300;
-        var random = Math.random() * (max - min) + min;
-        // set the clone's position to a fixed distance from the previous clone
-        let x = i * (wi + random);
-        let y = i * (he + random);
-        let z = i * (ze + random);
 
-        // add a small random offset
+        if (mesh.material && mesh.material instanceof BABYLON.StandardMaterial) {
+          const originalMaterial = mesh.material as BABYLON.StandardMaterial;
+          const clonedMaterial = new BABYLON.StandardMaterial(`clonedMat${index}`, scene);
+          clonedMaterial.diffuseColor = originalMaterial.diffuseColor.clone();
+          clone.material = clonedMaterial;
+        }
+        // Position the clone at a random position
+        let x: number, y: number, z: number;
+        let overlaps;
+        do {
+          var min = 20;
+          var max = 300;
+
+          x = Math.random() * (max - min) + min; // random x
+          y = Math.random() * (max - min) + min; // random y
+          z = Math.random() * (max - min) + max; // random z
+
+          // Check if the new position overlaps with any existing bounding boxes
+          overlaps = boundingBoxes.some((box: BABYLON.BoundingBox) => box.intersectsPoint(new BABYLON.Vector3(x, y, z)));
+        } while (overlaps);
 
         clone.position.addInPlace(new BABYLON.Vector3(x, y, z));
+
+        // Add the clone's bounding box to the list
+        boundingBoxes.push(clone.getBoundingInfo().boundingBox);
       }
+      // After cloning
+
       // Calculate the center of the scene
       center.addInPlace(mesh.getBoundingInfo().boundingBox.centerWorld);
 
       // Calculate the bounds of the scene
       minPoint = BABYLON.Vector3.Minimize(minPoint, mesh.getBoundingInfo().boundingBox.minimumWorld);
       maxPoint = BABYLON.Vector3.Maximize(maxPoint, mesh.getBoundingInfo().boundingBox.maximumWorld);
+      //   mesh.dispose();
     });
 
     // Calculate the size of the scene
@@ -264,7 +281,7 @@ export class ViewRecord extends Component<CompProps, CompState> {
     // Adjust the camera settings based on the size of the scene
     camera.lowerRadiusLimit = sceneSize * 0.5; // minimum zoom distance
     camera.upperRadiusLimit = sceneSize * 10; // maximum zoom distance
-    camera.wheelPrecision = 100 / sceneSize; // zoom sensitivity
+    camera.wheelPrecision = 50 / sceneSize; // zoom sensitivity
     camera.inertia = 0.5; // damping, the smaller the faster
 
     // Create Lights
@@ -463,14 +480,28 @@ export class ViewRecord extends Component<CompProps, CompState> {
       </div>
     ));
   };
+  handleChangeNumberOfObjects = (e: any) => {
+    // get input value from the input field
+    let numberOfObjects = e.target.value;
+    console.log('numberObjects', numberOfObjects);
+
+    this.setState({ numberOfObjects: numberOfObjects });
+  };
+
+  handleBlurNumberOfObjects = () => {
+    this.loadScene();
+  };
 
   render() {
-    const { recordId, data } = this.state;
+    const { recordId, data, numberOfObjects } = this.state;
 
     return (
       <>
         <div>3d component ({recordId})</div>
         <br />
+
+        <input type='text' onChange={this.handleChangeNumberOfObjects} onBlur={this.handleBlurNumberOfObjects} />
+
         <div>{this.getTitle()}</div>
         <br />
         <div>
