@@ -212,22 +212,19 @@ export class ViewRecord extends Component<CompProps, CompState> {
     const { numberOfObjects } = this.state;
 
     // Set canvas size
-    //  engine.setSize(1280, 720);
     engine.setSize(window.innerWidth, window.innerHeight);
+
     // Set camera
     const camera = new BABYLON.ArcRotateCamera('camera1', 0, 0, 0, new BABYLON.Vector3(0, 0, 0), scene);
 
-    // Calculate center and size of the scene
-    let center = BABYLON.Vector3.Zero();
+    let clones: BABYLON.Mesh[] = [];
     let minPoint = new BABYLON.Vector3(Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE);
     let maxPoint = new BABYLON.Vector3(-Number.MAX_VALUE, -Number.MAX_VALUE, -Number.MAX_VALUE);
     let boundingBoxes: any = [];
-    console.log('meshes', meshes); // Add this line
-    console.log('numberOfObjects', numberOfObjects); // Add this line
+
     meshes.forEach((mesh: BABYLON.Mesh, index: number) => {
       // Create clones of each mesh and position them
       for (let i = 1; i <= numberOfObjects; i++) {
-        console.log('first');
         const boundingInfo = mesh.getBoundingInfo();
         const wi = boundingInfo.maximum.x - boundingInfo.minimum.x;
         const he = boundingInfo.maximum.y - boundingInfo.minimum.y;
@@ -240,6 +237,7 @@ export class ViewRecord extends Component<CompProps, CompState> {
           clonedMaterial.diffuseColor = originalMaterial.diffuseColor.clone();
           clone.material = clonedMaterial;
         }
+
         // Position the clone at a random position
         let x: number, y: number, z: number;
         let overlaps;
@@ -259,23 +257,28 @@ export class ViewRecord extends Component<CompProps, CompState> {
 
         // Add the clone's bounding box to the list
         boundingBoxes.push(clone.getBoundingInfo().boundingBox);
+
+        // Add the clone to the list
+        clones.push(clone);
+
+        // Calculate the bounds of the scene
+        minPoint = BABYLON.Vector3.Minimize(minPoint, clone.getBoundingInfo().boundingBox.minimumWorld);
+        maxPoint = BABYLON.Vector3.Maximize(maxPoint, clone.getBoundingInfo().boundingBox.maximumWorld);
       }
-      // After cloning
-
-      // Calculate the center of the scene
-      center.addInPlace(mesh.getBoundingInfo().boundingBox.centerWorld);
-
-      // Calculate the bounds of the scene
-      minPoint = BABYLON.Vector3.Minimize(minPoint, mesh.getBoundingInfo().boundingBox.minimumWorld);
-      maxPoint = BABYLON.Vector3.Maximize(maxPoint, mesh.getBoundingInfo().boundingBox.maximumWorld);
-      //   mesh.dispose();
     });
+
+    // Calculate the center of the clones
+    let cloneCenter = new BABYLON.Vector3();
+    clones.forEach((clone: BABYLON.Mesh) => {
+      cloneCenter.addInPlace(clone.position);
+    });
+    cloneCenter = cloneCenter.scale(1 / clones.length);
 
     // Calculate the size of the scene
     let sceneSize = BABYLON.Vector3.Distance(minPoint, maxPoint);
 
     // Set the camera to a consistent distance from the center of the scene
-    camera.setPosition(center.add(new BABYLON.Vector3(0, 0, sceneSize)));
+    camera.setPosition(cloneCenter.add(new BABYLON.Vector3(0, 0, sceneSize)));
 
     camera.attachControl(canvas, true);
     // Adjust the camera settings based on the size of the scene
@@ -292,6 +295,7 @@ export class ViewRecord extends Component<CompProps, CompState> {
     const directionalLight = new BABYLON.DirectionalLight('DirectionalLight', new BABYLON.Vector3(0, -1, 0), scene);
     directionalLight.diffuse = BABYLON.Color3.FromHexString('#ffffff');
     directionalLight.intensity = 0.5;
+
     // Loop animation
     engine.runRenderLoop(() => {
       scene.render();
@@ -302,7 +306,7 @@ export class ViewRecord extends Component<CompProps, CompState> {
       engine.setSize(window.innerWidth, window.innerHeight);
       engine.resize();
       // Update the camera's position when the window size changes
-      camera.setPosition(center.add(new BABYLON.Vector3(0, 0, sceneSize * 2)));
+      camera.setPosition(cloneCenter.add(new BABYLON.Vector3(0, 0, sceneSize)));
     });
   };
 
