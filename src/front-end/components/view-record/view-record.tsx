@@ -221,6 +221,7 @@ export class ViewRecord extends Component<CompProps, CompState> {
     let minPoint = new BABYLON.Vector3(Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE);
     let maxPoint = new BABYLON.Vector3(-Number.MAX_VALUE, -Number.MAX_VALUE, -Number.MAX_VALUE);
     let boundingBoxes: any = [];
+    const originalMeshes = meshes.slice(); // Copy the original meshes
 
     meshes.forEach((mesh: BABYLON.Mesh, index: number) => {
       // Create clones of each mesh and position them
@@ -230,11 +231,13 @@ export class ViewRecord extends Component<CompProps, CompState> {
         const he = boundingInfo.maximum.y - boundingInfo.minimum.y;
         const ze = boundingInfo.maximum.z - boundingInfo.minimum.z;
         const clone = mesh.clone(`clone${index}-${i}`);
-
+        //
         if (mesh.material && mesh.material instanceof BABYLON.StandardMaterial) {
           const originalMaterial = mesh.material as BABYLON.StandardMaterial;
-          const clonedMaterial = new BABYLON.StandardMaterial(`clonedMat${index}`, scene);
-          clonedMaterial.diffuseColor = originalMaterial.diffuseColor.clone();
+          const clonedMaterial = originalMaterial.clone(`clonedMat${index}-${i}`);
+          if (originalMaterial.diffuseTexture) {
+            clonedMaterial.diffuseTexture = originalMaterial.diffuseTexture.clone();
+          }
           clone.material = clonedMaterial;
         }
 
@@ -243,9 +246,9 @@ export class ViewRecord extends Component<CompProps, CompState> {
         let overlaps;
         do {
           var min = 20;
-          var max = 300;
+          var max = 500;
 
-          x = Math.random() * (max - min) + min; // random x
+          x = Math.random() * (max - min) + min * 10 * (numberOfObjects / 100); // random x
           y = Math.random() * (max - min) + min; // random y
           z = Math.random() * (max - min) + max; // random z
 
@@ -254,7 +257,7 @@ export class ViewRecord extends Component<CompProps, CompState> {
         } while (overlaps);
 
         clone.position.addInPlace(new BABYLON.Vector3(x, y, z));
-
+        clone.computeWorldMatrix(true);
         // Add the clone's bounding box to the list
         boundingBoxes.push(clone.getBoundingInfo().boundingBox);
 
@@ -266,18 +269,20 @@ export class ViewRecord extends Component<CompProps, CompState> {
         maxPoint = BABYLON.Vector3.Maximize(maxPoint, clone.getBoundingInfo().boundingBox.maximumWorld);
       }
     });
-
+    console.log('clones', clones);
     // Calculate the center of the clones
     let cloneCenter = new BABYLON.Vector3();
+    console.log('cloneCenter', cloneCenter);
     clones.forEach((clone: BABYLON.Mesh) => {
       cloneCenter.addInPlace(clone.position);
     });
     cloneCenter = cloneCenter.scale(1 / clones.length);
-
+    originalMeshes.forEach((mesh: BABYLON.Mesh) => mesh.dispose());
     // Calculate the size of the scene
     let sceneSize = BABYLON.Vector3.Distance(minPoint, maxPoint);
 
     // Set the camera to a consistent distance from the center of the scene
+    camera.target = cloneCenter;
     camera.setPosition(cloneCenter.add(new BABYLON.Vector3(0, 0, sceneSize)));
 
     camera.attachControl(canvas, true);
@@ -305,8 +310,9 @@ export class ViewRecord extends Component<CompProps, CompState> {
     window.addEventListener('resize', () => {
       engine.setSize(window.innerWidth, window.innerHeight);
       engine.resize();
-      // Update the camera's position when the window size changes
+
       camera.setPosition(cloneCenter.add(new BABYLON.Vector3(0, 0, sceneSize)));
+      camera.target = cloneCenter;
     });
   };
 
