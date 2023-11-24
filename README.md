@@ -42,6 +42,8 @@ To contribute code changes, please follow these steps:
 This project is licensed under the Creative Commons Attribution-NonCommercial 4.0 International License https://creativecommons.org/licenses/by-nc/4.0/.
 
 This means that you are free to use and modify the code for non-commercial purposes, as long as you give attribution to the original author and license any derivative works under the same license. If you want to use the code for commercial purposes, please contact me.
+## Upgrade
+# yarn upgrade-interactive
 
 ## Contact
 Feel free to contact me through [my LinkedIn profile](https://www.linkedin.com/in/balogh-aron/)!
