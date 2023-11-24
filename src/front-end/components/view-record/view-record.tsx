@@ -124,7 +124,7 @@ export class ViewRecord extends Component<CompProps, CompState> {
 
   getTitle = () => {
     return Object.entries(recordConfig).map(([key, value]) => {
-      return <td key={key}>{value.label}</td>;
+      return <td key={key}>{value?.label}</td>;
     });
   };
 
@@ -157,7 +157,7 @@ export class ViewRecord extends Component<CompProps, CompState> {
       const videoBlobs = await this.loadAssets(data.recordVideos, 'videoBlobs');
       const materialUrlBlobs = await this.loadAssets(data.recordMaterialUrl, 'materialUrlBlobs');
       const modelBlobs = await this.loadAssets(data.recordModels3d, 'modelBlobs');
-      const modelUrls = data.recordModels3d.split(',');
+      const modelUrls = data.recordModels3d?.split(',');
       this.setState({ imageBlobs, videoBlobs, materialUrlBlobs, modelBlobs, modelUrls }, () => {
         console.log('Assets loaded successfully!'); // Kiírás, hogy az assetek betöltődtek
         this.loadScene();
@@ -492,7 +492,7 @@ export class ViewRecord extends Component<CompProps, CompState> {
   };
   handleChangeNumberOfObjects = (e: any) => {
     // get input value from the input field
-    let numberOfObjects = e.target.value;
+    let numberOfObjects = e.target?.value;
     console.log('numberObjects', numberOfObjects);
 
     this.setState({ numberOfObjects: numberOfObjects });
@@ -512,10 +512,38 @@ export class ViewRecord extends Component<CompProps, CompState> {
 
         <input type='text' onChange={this.handleChangeNumberOfObjects} onBlur={this.handleBlurNumberOfObjects} />
 
-        <div>{this.getTitle()}</div>
+        <table>
+          <thead>
+            <tr>
+              <td>1</td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>{this.getTitle()}</tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td>1</td>
+            </tr>
+          </tfoot>
+        </table>
         <br />
+        <table>
+          <thead>
+            <tr>
+              <td>1</td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>{this.printModelDesc()}</tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td>1</td>
+            </tr>
+          </tfoot>
+        </table>
         <div>
-          {this.printModelDesc()}
           {[
             // this.renderImages(),
             // this.renderVideos(),
